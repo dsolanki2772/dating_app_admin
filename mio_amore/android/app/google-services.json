@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "705774753844",
+    "project_id": "mio-amore-incevio",
+    "storage_bucket": "mio-amore-incevio.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:705774753844:android:f67bdc31387586e85bd261",
+        "android_client_info": {
+          "package_name": "com.incevio.mio_amore"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "705774753844-e6j67j4dh7msmr8fncdgs2f6un8eku4e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.incevio.mio_amore",
+            "certificate_hash": "6f30923529dd91ef9897c3dfb80a9fedefc347e6"
+          }
+        },
+        {
+          "client_id": "705774753844-g562qgj0k4tboru6jvkjrjdpa4233mfc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDm6PZ3RbcrhFSOr1-wPHYbOjnvvFzIVZE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "705774753844-g562qgj0k4tboru6jvkjrjdpa4233mfc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
