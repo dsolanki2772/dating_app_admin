@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/models/country_code.dart';
 import 'package:mio_amore/views/auth/otp_page.dart';
+import 'package:mio_amore/views/auth/select_country_page.dart';
 import 'package:mio_amore/views/custom/custom_button.dart';
 import 'package:mio_amore/views/custom/custom_headline.dart';
 
@@ -79,7 +80,12 @@ class _LoginWithPhoneNumberPageState
                           hintText: "Phone Number",
                           prefixIcon: GestureDetector(
                             onTap: () {
-                              Navigator.pop(context);
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const SelectCountryPage()),
+                              );
                             },
                             child: Text(
                               getFormattedCountryCode(_countryCode),

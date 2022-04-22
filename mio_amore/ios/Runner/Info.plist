@@ -51,6 +51,10 @@
 	<string>Microphone is required to record sound.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Location is required to show nearby users.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs access to location to save your default location.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app needs access to location to save your default location.</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

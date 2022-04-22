@@ -112,8 +112,8 @@ class UserAccountSettingsModel {
 
 class UserLocation {
   String addressText;
-  int latitude;
-  int longitude;
+  double latitude;
+  double longitude;
   UserLocation({
     required this.addressText,
     required this.latitude,
@@ -122,8 +122,8 @@ class UserLocation {
 
   UserLocation copyWith({
     String? addressText,
-    int? latitude,
-    int? longitude,
+    double? latitude,
+    double? longitude,
   }) {
     return UserLocation(
       addressText: addressText ?? this.addressText,
@@ -145,8 +145,8 @@ class UserLocation {
   factory UserLocation.fromMap(Map<String, dynamic> map) {
     return UserLocation(
       addressText: map['addressText'] ?? '',
-      latitude: map['latitude']?.toInt() ?? 0,
-      longitude: map['longitude']?.toInt() ?? 0,
+      latitude: map['latitude']?.toDouble() ?? 0.0,
+      longitude: map['longitude']?.toDouble() ?? 0.0,
     );
   }
 

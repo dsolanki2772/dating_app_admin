@@ -44,6 +44,10 @@ class AppConfig {
   static const String femaleText = "female";
   static const String transText = "other";
 
+// Location Settings
+  static const String locationApiKey =
+      "AIzaSyDvkwrf9abC92F6SFdYEDmmYIgdvBrLi9o";
+
 // Other Settings
   static const bool canChangeName = true;
   static const int minimumAgeRequired = 12;

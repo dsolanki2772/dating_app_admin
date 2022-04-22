@@ -8,6 +8,8 @@ import 'package:mio_amore/config/config.dart';
 import 'package:mio_amore/helpers/config_loading.dart';
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/providers/auth_providers.dart';
+import 'package:mio_amore/providers/country_codes_provider.dart';
+import 'package:mio_amore/providers/get_current_location_provider.dart';
 import 'package:mio_amore/views/auth/login_page.dart';
 import 'package:mio_amore/views/others/error_page.dart';
 import 'package:mio_amore/views/others/loading_page.dart';
@@ -44,7 +46,7 @@ class MyApp extends StatelessWidget {
             centerTitle: true,
             backgroundColor: AppConstants.primaryColor),
       ),
-      home: const LandingWidget(),
+      home: const GetLocationWidget(),
     );
   }
 }
@@ -63,6 +65,33 @@ class LandingWidget extends ConsumerWidget {
           } else {
             return const LoginPage();
           }
+        },
+        error: (_, e) {
+          return const ErrorPage();
+        },
+        loading: () => const LoadingPage());
+  }
+}
+
+class GetLocationWidget extends ConsumerWidget {
+  const GetLocationWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final _countryCodesProvider = ref.watch(countryCodesProvider);
+    final _currentLocationProviderProvider =
+        ref.watch(getCurrentLocationProviderProvider);
+
+    return _countryCodesProvider.when(
+        data: (data) {
+          return _currentLocationProviderProvider.when(
+              data: (location) {
+                return const LandingWidget();
+              },
+              error: (_, e) {
+                return const ErrorPage();
+              },
+              loading: () => const LoadingPage());
         },
         error: (_, e) {
           return const ErrorPage();

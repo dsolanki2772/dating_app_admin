@@ -1,12 +1,16 @@
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mio_amore/config/config.dart';
 import 'package:mio_amore/helpers/constants.dart';
+import 'package:mio_amore/models/country_code.dart';
+import 'package:mio_amore/models/user_account_settings_model.dart';
 import 'package:mio_amore/providers/auth_providers.dart';
+import 'package:mio_amore/providers/country_codes_provider.dart';
+import 'package:mio_amore/providers/get_current_location_provider.dart';
+import 'package:mio_amore/views/auth/login_with_phone_page.dart';
 import 'package:mio_amore/views/auth/select_country_page.dart';
 import 'package:mio_amore/views/custom/custom_button.dart';
 import 'package:mio_amore/views/custom/custom_headline.dart';
@@ -76,12 +80,52 @@ class LoginPage extends ConsumerWidget {
                 color: AppConstants.primaryColor,
                 size: AppConstants.defaultNumericValue * 2,
               ),
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const SelectCountryPage(),
-                        fullscreenDialog: true));
+              onPressed: () async {
+                final _countryCodesProvider = ref.read(countryCodesProvider);
+                final _currentLocationProviderProvider =
+                    ref.read(getCurrentLocationProviderProvider);
+
+                final List<CountryCode> _countryCodes = [];
+                _countryCodesProvider.whenData((value) {
+                  _countryCodes.addAll(value);
+                });
+
+                UserLocation? _userCurrentLocation;
+
+                _currentLocationProviderProvider.whenData((value) {
+                  _userCurrentLocation = value;
+                });
+
+                if (_userCurrentLocation != null && _countryCodes.isNotEmpty) {
+                  final _filteredCountryCodes = _countryCodes.where((element) {
+                    return _userCurrentLocation!.addressText
+                        .contains(element.name);
+                  }).toList();
+
+                  if (_filteredCountryCodes.isNotEmpty) {
+                    final CountryCode _countryCode =
+                        _filteredCountryCodes.first;
+
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LoginWithPhoneNumberPage(
+                                countryCode: _countryCode)));
+                  } else {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SelectCountryPage(),
+                            fullscreenDialog: true));
+                  }
+                } else {
+                  EasyLoading.dismiss();
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SelectCountryPage(),
+                          fullscreenDialog: true));
+                }
               },
               text: "Log in with phone",
             ),

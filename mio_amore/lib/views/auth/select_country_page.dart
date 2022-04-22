@@ -96,7 +96,7 @@ class _SelectCountryPageState extends ConsumerState<SelectCountryPage> {
                       children: _filteredData
                           .map((e) => ListTile(
                                 onTap: () {
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
