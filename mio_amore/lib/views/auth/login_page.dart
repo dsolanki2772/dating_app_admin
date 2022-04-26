@@ -14,6 +14,8 @@ import 'package:mio_amore/views/auth/login_with_phone_page.dart';
 import 'package:mio_amore/views/auth/select_country_page.dart';
 import 'package:mio_amore/views/custom/custom_button.dart';
 import 'package:mio_amore/views/custom/custom_headline.dart';
+import 'package:mio_amore/views/others/error_page.dart';
+import 'package:mio_amore/views/others/loading_page.dart';
 
 class LoginPage extends ConsumerWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -81,51 +83,12 @@ class LoginPage extends ConsumerWidget {
                 size: AppConstants.defaultNumericValue * 2,
               ),
               onPressed: () async {
-                final _countryCodesProvider = ref.read(countryCodesProvider);
-                final _currentLocationProviderProvider =
-                    ref.read(getCurrentLocationProviderProvider);
-
-                final List<CountryCode> _countryCodes = [];
-                _countryCodesProvider.whenData((value) {
-                  _countryCodes.addAll(value);
-                });
-
-                UserLocation? _userCurrentLocation;
-
-                _currentLocationProviderProvider.whenData((value) {
-                  _userCurrentLocation = value;
-                });
-
-                if (_userCurrentLocation != null && _countryCodes.isNotEmpty) {
-                  final _filteredCountryCodes = _countryCodes.where((element) {
-                    return _userCurrentLocation!.addressText
-                        .contains(element.name);
-                  }).toList();
-
-                  if (_filteredCountryCodes.isNotEmpty) {
-                    final CountryCode _countryCode =
-                        _filteredCountryCodes.first;
-
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => LoginWithPhoneNumberPage(
-                                countryCode: _countryCode)));
-                  } else {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const SelectCountryPage(),
-                            fullscreenDialog: true));
-                  }
-                } else {
-                  EasyLoading.dismiss();
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const SelectCountryPage(),
-                          fullscreenDialog: true));
-                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PhoneLoginLandingWidget(),
+                  ),
+                );
               },
               text: "Log in with phone",
             ),
@@ -155,6 +118,45 @@ class LoginPage extends ConsumerWidget {
         ),
       ),
     );
+  }
+}
+
+class PhoneLoginLandingWidget extends ConsumerWidget {
+  const PhoneLoginLandingWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final _countryCodesProvider = ref.watch(countryCodesProvider);
+    final _currentLocationProviderProvider =
+        ref.watch(getCurrentLocationProviderProvider);
+
+    return _countryCodesProvider.when(
+        data: (data) {
+          return _currentLocationProviderProvider.when(
+              data: (location) {
+                if (location != null) {
+                  final List<CountryCode> _countryCodes = data
+                      .where((element) =>
+                          location.addressText.contains(element.name))
+                      .toList();
+
+                  return _countryCodes.isEmpty
+                      ? const SelectCountryPage()
+                      : LoginWithPhoneNumberPage(
+                          countryCode: _countryCodes.first);
+                } else {
+                  return const SelectCountryPage();
+                }
+              },
+              error: (_, e) {
+                return const ErrorPage();
+              },
+              loading: () => const LoadingPage());
+        },
+        error: (_, e) {
+          return const ErrorPage();
+        },
+        loading: () => const LoadingPage());
   }
 }
 

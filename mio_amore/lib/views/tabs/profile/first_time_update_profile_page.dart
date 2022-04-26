@@ -11,6 +11,7 @@ import 'package:mio_amore/providers/auth_providers.dart';
 import 'package:mio_amore/providers/user_profile_provider.dart';
 import 'package:mio_amore/views/custom/custom_button.dart';
 import 'package:intl/intl.dart';
+import 'package:mio_amore/views/others/set_user_location_page.dart';
 
 class FirstTimeUserProfilePage extends ConsumerStatefulWidget {
   const FirstTimeUserProfilePage({
@@ -168,7 +169,7 @@ class _FirstTimeUserProfilePageState
                           _gender = gender;
                         });
 
-                        print(gender);
+                        // print(gender);
                       },
                       onNext: () {
                         if (_gender != null) {
@@ -220,7 +221,13 @@ class _FirstTimeUserProfilePageState
                       location: _userLocation,
                       onNext: () {
                         if (_formKey.currentState!.validate()) {
-                          _onSubmit();
+                          if (_userLocation != null) {
+                            // _onSubmit();
+                            print(_userLocation);
+                          } else {
+                            EasyLoading.showInfo(
+                                "Please set your location to continue.");
+                          }
                         }
                       },
                       onBack: () {
@@ -677,51 +684,58 @@ class _UserLocationScreen extends StatelessWidget {
                         .copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: AppConstants.defaultNumericValue),
-                  // TextFormField(
-                  //   controller: birthdayController,
-                  //   autofocus: true,
-                  //   readOnly: true,
-                  //   textAlign: TextAlign.center,
-                  //   style: Theme.of(context)
-                  //       .textTheme
-                  //       .bodyLarge!
-                  //       .copyWith(fontWeight: FontWeight.bold),
-                  //   decoration: const InputDecoration(
-                  //     hintText: "MM/DD/YYYY",
-                  //     // border: InputBorder.none,
-                  //   ),
-                  //   validator: (value) {
-                  //     if (value!.isEmpty) {
-                  //       return 'Please Select Your Birthday';
-                  //     }
-                  //     return null;
-                  //   },
-                  //   onTap: () {
-                  //     const _duration =
-                  //         Duration(days: 365 * AppConfig.minimumAgeRequired);
-                  //     showDatePicker(
-                  //             context: context,
-                  //             firstDate: DateTime(1900),
-                  //             lastDate: DateTime.now().subtract(_duration),
-                  //             initialDate: birthday ??
-                  //                 DateTime.now().subtract(_duration))
-                  //         .then((value) {
-                  //       if (value != null) {
-                  //         onLocationChanged(value);
-                  //         birthdayController.text =
-                  //             DateFormat("MM/dd/yyyy").format(value);
-                  //       }
-                  //     });
-                  //   },
+                  // const SizedBox(
+                  //   height: 300,
+                  //   child: Center(
+                  //       child: Text(
+                  //     "Not Yet Implemented!\nYou can move on!",
+                  //     textAlign: TextAlign.center,
+                  //   )),
                   // ),
+                  GestureDetector(
+                    onTap: () async {
+                      final _location = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SetUserLocation(),
+                          fullscreenDialog: true,
+                        ),
+                      );
 
-                  const SizedBox(
-                    height: 300,
-                    child: Center(
-                        child: Text(
-                      "Not Yet Implemented!\nYou can move on!",
-                      textAlign: TextAlign.center,
-                    )),
+                      if (_location != null) {
+                        onLocationChanged(_location);
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(
+                          AppConstants.defaultNumericValue),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        borderRadius: BorderRadius.circular(
+                            AppConstants.defaultNumericValue),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.location_on,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          const SizedBox(
+                              width: AppConstants.defaultNumericValue),
+                          Expanded(
+                            child: Text(
+                              location?.addressText ?? "Tap to set location",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                   const SizedBox(height: AppConstants.defaultNumericValue),
                   Text(

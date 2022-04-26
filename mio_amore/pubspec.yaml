@@ -56,6 +56,7 @@ dependencies:
   auto_size_text: ^3.0.0
   geolocator: ^8.2.0
   http: ^0.13.4
+  geocoding: ^2.0.4
 
 dependency_overrides:
   photo_view:
