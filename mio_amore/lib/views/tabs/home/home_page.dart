@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mio_amore/helpers/constants.dart';
+import 'package:mio_amore/providers/user_profile_provider.dart';
 import 'package:mio_amore/views/custom/custom_app_bar.dart';
 import 'package:mio_amore/views/custom/custom_icon_button.dart';
 import 'package:mio_amore/views/tabs/home/app_drawer.dart';
@@ -47,39 +49,57 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.all(
                     AppConstants.defaultNumericValue / 1.5),
               ),
-              title: GestureDetector(
-                onTap: () {
-                  //TODO: Open Location!!
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      CupertinoIcons.location_solid,
-                      color: AppConstants.primaryColor,
-                      size: 18,
-                    ),
-                    const SizedBox(width: AppConstants.defaultNumericValue / 3),
-                    Flexible(
-                      child: Text(
-                        'New York, USA',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context)
-                            .textTheme
-                            .subtitle2!
-                            .copyWith(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    const SizedBox(width: AppConstants.defaultNumericValue / 3),
-                    Icon(
-                      Icons.keyboard_arrow_down,
-                      color: AppConstants.primaryColor,
-                    ),
-                  ],
-                ),
-              ),
+              title: Consumer(builder: (context, ref, _) {
+                final _user = ref.read(userProfileStreamProvider);
+
+                return _user.when(
+                    data: (data) {
+                      return data == null
+                          ? const SizedBox()
+                          : GestureDetector(
+                              onTap: () {
+                                //TODO: Open Location!!
+                              },
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    CupertinoIcons.location_solid,
+                                    color: AppConstants.primaryColor,
+                                    size: 18,
+                                  ),
+                                  const SizedBox(
+                                      width:
+                                          AppConstants.defaultNumericValue / 3),
+                                  Flexible(
+                                    child: Text(
+                                      data.userAccountSettingsModel.location
+                                              ?.addressText ??
+                                          "",
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .subtitle2!
+                                          .copyWith(
+                                              fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                      width:
+                                          AppConstants.defaultNumericValue / 3),
+                                  Icon(
+                                    Icons.keyboard_arrow_down,
+                                    color: AppConstants.primaryColor,
+                                  ),
+                                ],
+                              ),
+                            );
+                    },
+                    error: (_, __) => const SizedBox(),
+                    loading: () => const SizedBox());
+              }),
               trailing: CustomIconButton(
                 icon: CupertinoIcons.bell_solid,
                 onPressed: () {

@@ -1,16 +1,12 @@
 import 'dart:convert';
 
 class UserAccountSettingsModel {
-  String id;
-  String userId;
   UserLocation? location;
   double distanceInKm;
   String? interestedIn;
   int? minimumAge;
   int? maximumAge;
   UserAccountSettingsModel({
-    required this.id,
-    required this.userId,
     required this.location,
     required this.distanceInKm,
     this.interestedIn,
@@ -19,8 +15,6 @@ class UserAccountSettingsModel {
   });
 
   UserAccountSettingsModel copyWith({
-    String? id,
-    String? userId,
     UserLocation? location,
     double? distanceInKm,
     String? interestedIn,
@@ -28,8 +22,6 @@ class UserAccountSettingsModel {
     int? maximumAge,
   }) {
     return UserAccountSettingsModel(
-      id: id ?? this.id,
-      userId: userId ?? this.userId,
       location: location ?? this.location,
       distanceInKm: distanceInKm ?? this.distanceInKm,
       interestedIn: interestedIn ?? this.interestedIn,
@@ -41,8 +33,6 @@ class UserAccountSettingsModel {
   Map<String, dynamic> toMap() {
     final result = <String, dynamic>{};
 
-    result.addAll({'id': id});
-    result.addAll({'userId': userId});
     if (location != null) {
       result.addAll({'location': location!.toMap()});
     }
@@ -62,8 +52,6 @@ class UserAccountSettingsModel {
 
   factory UserAccountSettingsModel.fromMap(Map<String, dynamic> map) {
     return UserAccountSettingsModel(
-      id: map['id'] ?? '',
-      userId: map['userId'] ?? '',
       location: map['location'] != null
           ? UserLocation.fromMap(map['location'])
           : null,
@@ -81,7 +69,7 @@ class UserAccountSettingsModel {
 
   @override
   String toString() {
-    return 'UserAccountSettingsModel(id: $id, userId: $userId, location: $location, distanceInKm: $distanceInKm, interestedIn: $interestedIn, minimumAge: $minimumAge, maximumAge: $maximumAge)';
+    return 'UserAccountSettingsModel(location: $location, distanceInKm: $distanceInKm, interestedIn: $interestedIn, minimumAge: $minimumAge, maximumAge: $maximumAge)';
   }
 
   @override
@@ -89,8 +77,6 @@ class UserAccountSettingsModel {
     if (identical(this, other)) return true;
 
     return other is UserAccountSettingsModel &&
-        other.id == id &&
-        other.userId == userId &&
         other.location == location &&
         other.distanceInKm == distanceInKm &&
         other.interestedIn == interestedIn &&
@@ -100,9 +86,7 @@ class UserAccountSettingsModel {
 
   @override
   int get hashCode {
-    return id.hashCode ^
-        userId.hashCode ^
-        location.hashCode ^
+    return location.hashCode ^
         distanceInKm.hashCode ^
         interestedIn.hashCode ^
         minimumAge.hashCode ^

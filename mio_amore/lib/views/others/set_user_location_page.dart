@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:mio_amore/config/config.dart';
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/helpers/get_location_prediction.dart';
 import 'package:mio_amore/models/country_code.dart';
 import 'package:mio_amore/models/prediction_model.dart';
+import 'package:mio_amore/models/user_account_settings_model.dart';
 import 'package:mio_amore/providers/country_codes_provider.dart';
 import 'package:mio_amore/providers/get_current_location_provider.dart';
 import 'package:mio_amore/views/others/error_page.dart';
@@ -57,14 +60,6 @@ class _SetUserLocationState extends ConsumerState<SetUserLocation> {
           data: (data) {
             return _currentLocationProviderProvider.when(
                 data: (location) {
-                  // final List<CountryCode> _countryCodes = [];
-                  // _countryCodes.addAll(location != null
-                  //     ? data
-                  //         .where((element) =>
-                  //             location.addressText.contains(element.name))
-                  //         .toList()
-                  //     : []);
-
                   return SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -116,6 +111,31 @@ class _SetUserLocationState extends ConsumerState<SetUserLocation> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       ListTile(
+                                        onTap: () async {
+                                          EasyLoading.show(
+                                              status: "Please wait...");
+
+                                          List<Location> _locations =
+                                              await locationFromAddress(
+                                                  e.description!);
+
+                                          if (_locations.isNotEmpty) {
+                                            final _userLocation = UserLocation(
+                                              addressText: e.description!,
+                                              latitude:
+                                                  _locations.first.latitude,
+                                              longitude:
+                                                  _locations.first.longitude,
+                                            );
+                                            EasyLoading.dismiss();
+
+                                            Navigator.of(context)
+                                                .pop(_userLocation);
+                                          } else {
+                                            EasyLoading.dismiss();
+                                            Navigator.of(context).pop();
+                                          }
+                                        },
                                         title: Text(e.description!),
                                       ),
                                       const Divider(height: 0),

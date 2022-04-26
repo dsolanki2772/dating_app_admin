@@ -1,12 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:mio_amore/config/config.dart';
 import 'package:mio_amore/helpers/constants.dart';
+import 'package:mio_amore/models/user_account_settings_model.dart';
+import 'package:mio_amore/models/user_profile_model.dart';
+import 'package:mio_amore/providers/user_profile_provider.dart';
 import 'package:mio_amore/views/custom/custom_button.dart';
+import 'package:mio_amore/views/others/error_page.dart';
+import 'package:mio_amore/views/others/loading_page.dart';
+import 'package:mio_amore/views/others/set_user_location_page.dart';
+
+class AccountSettingsLandingWidget extends ConsumerWidget {
+  const AccountSettingsLandingWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final _user = ref.read(userProfileStreamProvider);
+
+    return _user.when(
+      data: (data) {
+        return AccountSettingsPage(user: data);
+      },
+      error: (_, __) => const ErrorPage(),
+      loading: () => const LoadingPage(),
+    );
+  }
+}
 
 class AccountSettingsPage extends ConsumerStatefulWidget {
-  const AccountSettingsPage({Key? key}) : super(key: key);
+  final UserProfileModel? user;
+  const AccountSettingsPage({Key? key, required this.user}) : super(key: key);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -14,15 +37,34 @@ class AccountSettingsPage extends ConsumerStatefulWidget {
 }
 
 class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
-  final _locationController = TextEditingController();
-  double _distanceInKm = 5;
-  final double _maxDistanceInKm = 100;
-  double _minimumAge = 18;
-  double _maximumAge = 28;
+  UserLocation? _userLocation;
+  late double _distanceInKm;
+  late double _maxDistanceInKm;
+  late double _minimumAge;
+  late double _maximumAge;
   String? _interestedIn;
 
   @override
   void initState() {
+    if (widget.user == null) {
+      _distanceInKm = AppConfig.initialDistanceInKM;
+      _minimumAge = AppConfig.initialMinimumAge.toDouble();
+      _maximumAge = AppConfig.initialMaximumAge.toDouble();
+    } else {
+      _distanceInKm = widget.user!.userAccountSettingsModel.distanceInKm;
+      _interestedIn = widget.user!.userAccountSettingsModel.interestedIn;
+
+      _userLocation = widget.user!.userAccountSettingsModel.location;
+      _minimumAge = widget.user!.userAccountSettingsModel.minimumAge == null
+          ? AppConfig.initialMinimumAge.toDouble()
+          : widget.user!.userAccountSettingsModel.minimumAge!.toDouble();
+      _maximumAge = widget.user!.userAccountSettingsModel.maximumAge == null
+          ? AppConfig.initialMaximumAge.toDouble()
+          : widget.user!.userAccountSettingsModel.maximumAge!.toDouble();
+    }
+
+    _maxDistanceInKm = AppConfig.initialMaximumDistanceInKM;
+
     super.initState();
   }
 
@@ -46,36 +88,47 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                   .copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: AppConstants.defaultNumericValue),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppConstants.defaultNumericValue,
-                vertical: AppConstants.defaultNumericValue / 2,
-              ),
-              decoration: BoxDecoration(
-                color: AppConstants.primaryColor.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(
-                  AppConstants.defaultNumericValue,
+            GestureDetector(
+              onTap: () async {
+                final _newLocation = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SetUserLocation()));
+
+                if (_newLocation != null) {
+                  setState(() {
+                    _userLocation = _newLocation;
+                  });
+                }
+              },
+              child: Container(
+                padding: const EdgeInsets.all(AppConstants.defaultNumericValue),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  borderRadius: BorderRadius.circular(
+                    AppConstants.defaultNumericValue,
+                  ),
                 ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.location_on,
-                    color: AppConstants.primaryColor,
-                  ),
-                  const SizedBox(width: AppConstants.defaultNumericValue / 2),
-                  Expanded(
-                    child: TextField(
-                      controller: _locationController,
-                      readOnly: true,
-                      onTap: () {},
-                      decoration: const InputDecoration(
-                        hintText: 'Set your location',
-                        border: InputBorder.none,
-                      ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.location_on,
+                      color: AppConstants.primaryColor,
                     ),
-                  ),
-                ],
+                    const SizedBox(width: AppConstants.defaultNumericValue / 2),
+                    Text(
+                      _userLocation == null
+                          ? 'Not set'
+                          : _userLocation!.addressText,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge!
+                          .copyWith(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: AppConstants.defaultNumericValue * 2),
@@ -197,7 +250,16 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
             ),
             const SizedBox(height: AppConstants.defaultNumericValue * 2),
             CustomButton(
-              onPressed: () {},
+              onPressed: () async {
+                final UserAccountSettingsModel userAccountSettingsModel =
+                    UserAccountSettingsModel(
+                  distanceInKm: _distanceInKm,
+                  interestedIn: _interestedIn,
+                  minimumAge: _minimumAge.toInt(),
+                  maximumAge: _maximumAge.toInt(),
+                  location: _userLocation,
+                );
+              },
               text: 'Apply',
             ),
           ],

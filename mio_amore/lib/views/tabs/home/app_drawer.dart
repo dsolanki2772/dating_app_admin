@@ -82,7 +82,8 @@ class AppDrawer extends ConsumerWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const AccountSettingsPage(),
+                              builder: (context) =>
+                                  const AccountSettingsLandingWidget(),
                               fullscreenDialog: true));
                     },
                     title: 'Account Settings',

@@ -51,17 +51,33 @@ class _FirstTimeUserProfilePageState
 
   void _onSubmit() async {
     final _userId = FirebaseAuth.instance.currentUser!.uid;
+
+    final UserAccountSettingsModel _userAccountSettingsModel =
+        UserAccountSettingsModel(
+      location: _userLocation,
+      distanceInKm: AppConfig.initialDistanceInKM,
+      interestedIn: _gender == null
+          ? null
+          : _gender == AppConfig.maleText
+              ? AppConfig.femaleText
+              : AppConfig.maleText,
+      maximumAge: AppConfig.initialMaximumAge,
+      minimumAge: AppConfig.initialMinimumAge,
+    );
+
     final UserProfileModel _userProfileModel = UserProfileModel(
-        id: _userId,
-        userId: _userId,
-        fullName: _fullNameController.text.trim(),
-        mediaFiles: [],
-        interests: [],
-        gender: _gender!,
-        birthDay: _birthday!,
-        email: FirebaseAuth.instance.currentUser!.email,
-        phoneNumber: FirebaseAuth.instance.currentUser!.phoneNumber,
-        profilePicture: FirebaseAuth.instance.currentUser!.photoURL);
+      id: _userId,
+      userId: _userId,
+      fullName: _fullNameController.text.trim(),
+      mediaFiles: [],
+      interests: [],
+      gender: _gender!,
+      birthDay: _birthday!,
+      email: FirebaseAuth.instance.currentUser!.email,
+      phoneNumber: FirebaseAuth.instance.currentUser!.phoneNumber,
+      userAccountSettingsModel: _userAccountSettingsModel,
+      isVerified: false,
+    );
     final _result = await ref
         .read(userProfileProvider)
         .createUserProfile(_userProfileModel);
@@ -222,8 +238,7 @@ class _FirstTimeUserProfilePageState
                       onNext: () {
                         if (_formKey.currentState!.validate()) {
                           if (_userLocation != null) {
-                            // _onSubmit();
-                            print(_userLocation);
+                            _onSubmit();
                           } else {
                             EasyLoading.showInfo(
                                 "Please set your location to continue.");

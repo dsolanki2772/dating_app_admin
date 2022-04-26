@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:collection/collection.dart';
 
+import 'package:mio_amore/models/user_account_settings_model.dart';
+
 class UserProfileModel {
   String id;
   String userId;
@@ -14,6 +16,8 @@ class UserProfileModel {
   DateTime birthDay;
   List<String> mediaFiles;
   List<String> interests;
+  UserAccountSettingsModel userAccountSettingsModel;
+  bool isVerified;
   UserProfileModel({
     required this.id,
     required this.userId,
@@ -26,6 +30,8 @@ class UserProfileModel {
     required this.birthDay,
     required this.mediaFiles,
     required this.interests,
+    required this.userAccountSettingsModel,
+    required this.isVerified,
   });
 
   UserProfileModel copyWith({
@@ -40,6 +46,8 @@ class UserProfileModel {
     DateTime? birthDay,
     List<String>? mediaFiles,
     List<String>? interests,
+    UserAccountSettingsModel? userAccountSettingsModel,
+    bool? isVerified,
   }) {
     return UserProfileModel(
       id: id ?? this.id,
@@ -53,6 +61,9 @@ class UserProfileModel {
       birthDay: birthDay ?? this.birthDay,
       mediaFiles: mediaFiles ?? this.mediaFiles,
       interests: interests ?? this.interests,
+      userAccountSettingsModel:
+          userAccountSettingsModel ?? this.userAccountSettingsModel,
+      isVerified: isVerified ?? this.isVerified,
     );
   }
 
@@ -78,6 +89,9 @@ class UserProfileModel {
     result.addAll({'birthDay': birthDay.millisecondsSinceEpoch});
     result.addAll({'mediaFiles': mediaFiles});
     result.addAll({'interests': interests});
+    result
+        .addAll({'userAccountSettingsModel': userAccountSettingsModel.toMap()});
+    result.addAll({'isVerified': isVerified});
 
     return result;
   }
@@ -95,6 +109,9 @@ class UserProfileModel {
       birthDay: DateTime.fromMillisecondsSinceEpoch(map['birthDay']),
       mediaFiles: List<String>.from(map['mediaFiles']),
       interests: List<String>.from(map['interests']),
+      userAccountSettingsModel:
+          UserAccountSettingsModel.fromMap(map['userAccountSettingsModel']),
+      isVerified: map['isVerified'] ?? false,
     );
   }
 
@@ -105,7 +122,7 @@ class UserProfileModel {
 
   @override
   String toString() {
-    return 'UserProfileModel(id: $id, userId: $userId, fullName: $fullName, email: $email, profilePicture: $profilePicture, phoneNumber: $phoneNumber, gender: $gender, about: $about, birthDay: $birthDay, mediaFiles: $mediaFiles, interests: $interests)';
+    return 'UserProfileModel(id: $id, userId: $userId, fullName: $fullName, email: $email, profilePicture: $profilePicture, phoneNumber: $phoneNumber, gender: $gender, about: $about, birthDay: $birthDay, mediaFiles: $mediaFiles, interests: $interests, userAccountSettingsModel: $userAccountSettingsModel, isVerified: $isVerified)';
   }
 
   @override
@@ -124,7 +141,9 @@ class UserProfileModel {
         other.about == about &&
         other.birthDay == birthDay &&
         listEquals(other.mediaFiles, mediaFiles) &&
-        listEquals(other.interests, interests);
+        listEquals(other.interests, interests) &&
+        other.userAccountSettingsModel == userAccountSettingsModel &&
+        other.isVerified == isVerified;
   }
 
   @override
@@ -139,6 +158,8 @@ class UserProfileModel {
         about.hashCode ^
         birthDay.hashCode ^
         mediaFiles.hashCode ^
-        interests.hashCode;
+        interests.hashCode ^
+        userAccountSettingsModel.hashCode ^
+        isVerified.hashCode;
   }
 }
