@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:geocoding/geocoding.dart';
+import 'package:mio_amore/config/config.dart';
+import 'package:http/http.dart' as http;
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/helpers/get_location_prediction.dart';
 import 'package:mio_amore/models/prediction_model.dart';
@@ -132,17 +135,15 @@ class _SetUserLocationState extends ConsumerState<SetUserLocation> {
                                           EasyLoading.show(
                                               status: "Please wait...");
 
-                                          List<Location> _locations =
-                                              await locationFromAddress(
-                                                  e.description!);
+                                          _LocationComponents? _location =
+                                              await getLocationFromPlaceID(
+                                                  e.placeId!);
 
-                                          if (_locations.isNotEmpty) {
+                                          if (_location != null) {
                                             final _userLocation = UserLocation(
                                               addressText: e.description!,
-                                              latitude:
-                                                  _locations.first.latitude,
-                                              longitude:
-                                                  _locations.first.longitude,
+                                              latitude: _location.lat,
+                                              longitude: _location.long,
                                             );
                                             EasyLoading.dismiss();
 
@@ -176,4 +177,38 @@ class _SetUserLocationState extends ConsumerState<SetUserLocation> {
           loading: () => const LoadingPage()),
     );
   }
+}
+
+Future<_LocationComponents?> getLocationFromPlaceID(String placeId) async {
+  final _url = Uri.parse(
+      "https://maps.googleapis.com/maps/api/place/details/json?placeid=$placeId&key=${AppConfig.locationApiKey}");
+
+  var response = await http.get(_url, headers: {"Accept": "application/json"});
+
+  if (response.statusCode == 200) {
+    var data = json.decode(response.body);
+
+    if (data["status"] != "OK") {
+      return null;
+    } else {
+      double? _lat = data["result"]["geometry"]["location"]["lat"];
+      double? _long = data["result"]["geometry"]["location"]["lng"];
+
+      if (_lat != null && _long != null) {
+        return _LocationComponents(lat: _lat, long: _long);
+      }
+    }
+  } else {
+    return null;
+  }
+  return null;
+}
+
+class _LocationComponents {
+  double lat;
+  double long;
+  _LocationComponents({
+    required this.lat,
+    required this.long,
+  });
 }

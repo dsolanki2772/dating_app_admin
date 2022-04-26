@@ -7,17 +7,15 @@ import 'package:mio_amore/models/user_account_settings_model.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
 import 'package:mio_amore/providers/user_profile_provider.dart';
 
-final otherUsersProvider = FutureProvider<List<UserProfileModel>>((ref) async {
-  final _userCollection = FirebaseFirestore.instance
-      .collection(FirebaseConstants.userProfileCollection);
-  final _myUserId = FirebaseAuth.instance.currentUser!.uid;
+final filteredOtherUsersProvider =
+    FutureProvider<List<UserProfileModel>>((ref) async {
+  List<UserProfileModel> _usersList = [];
 
-  final _otherUsers =
-      await _userCollection.where("userId", isNotEqualTo: _myUserId).get();
+  final _otherUsersProvider = ref.watch(otherUsersProvider);
 
-  List<UserProfileModel> _usersList = _otherUsers.docs.map((doc) {
-    return UserProfileModel.fromMap(doc.data());
-  }).toList();
+  _otherUsersProvider.whenData((value) {
+    _usersList.addAll(value);
+  });
 
   final _myProfileProvider = ref.watch(userProfileStreamProvider);
 
@@ -69,4 +67,17 @@ final otherUsersProvider = FutureProvider<List<UserProfileModel>>((ref) async {
   });
 
   return _filteredUserList;
+});
+
+final otherUsersProvider = FutureProvider<List<UserProfileModel>>((ref) async {
+  final _userCollection = FirebaseFirestore.instance
+      .collection(FirebaseConstants.userProfileCollection);
+  final _myUserId = FirebaseAuth.instance.currentUser!.uid;
+
+  final _otherUsers =
+      await _userCollection.where("userId", isNotEqualTo: _myUserId).get();
+
+  return _otherUsers.docs.map((doc) {
+    return UserProfileModel.fromMap(doc.data());
+  }).toList();
 });

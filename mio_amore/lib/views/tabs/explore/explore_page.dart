@@ -14,7 +14,7 @@ class ExplorePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    final _otherUsersProvider = ref.watch(otherUsersProvider);
+    final _otherUsersProvider = ref.watch(filteredOtherUsersProvider);
 
     return Scaffold(
       appBar: AppBar(

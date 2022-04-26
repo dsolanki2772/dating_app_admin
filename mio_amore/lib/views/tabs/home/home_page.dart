@@ -7,6 +7,7 @@ import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/providers/user_profile_provider.dart';
 import 'package:mio_amore/views/custom/custom_app_bar.dart';
 import 'package:mio_amore/views/custom/custom_icon_button.dart';
+import 'package:mio_amore/views/settings/account_settings.dart';
 import 'package:mio_amore/views/tabs/home/app_drawer.dart';
 
 class HomePage extends StatefulWidget {
@@ -57,7 +58,13 @@ class _HomePageState extends State<HomePage> {
                           ? const SizedBox()
                           : GestureDetector(
                               onTap: () {
-                                //TODO: Open Location!!
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const AccountSettingsLandingWidget(),
+                                  ),
+                                );
                               },
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
