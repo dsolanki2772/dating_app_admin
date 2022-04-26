@@ -24,7 +24,7 @@ class UserAccountSettingsModel {
     return UserAccountSettingsModel(
       location: location ?? this.location,
       distanceInKm: distanceInKm ?? this.distanceInKm,
-      interestedIn: interestedIn ?? this.interestedIn,
+      interestedIn: interestedIn,
       minimumAge: minimumAge ?? this.minimumAge,
       maximumAge: maximumAge ?? this.maximumAge,
     );

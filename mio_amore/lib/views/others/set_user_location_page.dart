@@ -104,6 +104,22 @@ class _SetUserLocationState extends ConsumerState<SetUserLocation> {
                             ),
                           ),
                         ),
+                        if (_predictions.isEmpty &&
+                            _searchController.text.isNotEmpty)
+                          const SizedBox(
+                            height: 300,
+                            child: Center(
+                              child: Text("No results found"),
+                            ),
+                          ),
+                        if (_predictions.isEmpty &&
+                            _searchController.text.isEmpty)
+                          const SizedBox(
+                            height: 300,
+                            child: Center(
+                              child: Text("Find a location"),
+                            ),
+                          ),
                         ..._predictions.map(
                           (e) {
                             return e.description != null

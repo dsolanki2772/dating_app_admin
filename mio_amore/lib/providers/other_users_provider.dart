@@ -7,8 +7,8 @@ import 'package:mio_amore/models/user_profile_model.dart';
 final otherUsersProvider = FutureProvider<List<UserProfileModel>>((ref) async {
   final _userCollection = FirebaseFirestore.instance
       .collection(FirebaseConstants.userProfileCollection);
-
   final _myUserId = FirebaseAuth.instance.currentUser!.uid;
+
   final _otherUsers =
       await _userCollection.where("userId", isNotEqualTo: _myUserId).get();
 

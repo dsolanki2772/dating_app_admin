@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mio_amore/config/config.dart';
 import 'package:mio_amore/helpers/constants.dart';
@@ -19,7 +20,9 @@ class AccountSettingsLandingWidget extends ConsumerWidget {
 
     return _user.when(
       data: (data) {
-        return AccountSettingsPage(user: data);
+        return data == null
+            ? const ErrorPage()
+            : AccountSettingsPage(user: data);
       },
       error: (_, __) => const ErrorPage(),
       loading: () => const LoadingPage(),
@@ -28,7 +31,7 @@ class AccountSettingsLandingWidget extends ConsumerWidget {
 }
 
 class AccountSettingsPage extends ConsumerStatefulWidget {
-  final UserProfileModel? user;
+  final UserProfileModel user;
   const AccountSettingsPage({Key? key, required this.user}) : super(key: key);
 
   @override
@@ -46,22 +49,16 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
 
   @override
   void initState() {
-    if (widget.user == null) {
-      _distanceInKm = AppConfig.initialDistanceInKM;
-      _minimumAge = AppConfig.initialMinimumAge.toDouble();
-      _maximumAge = AppConfig.initialMaximumAge.toDouble();
-    } else {
-      _distanceInKm = widget.user!.userAccountSettingsModel.distanceInKm;
-      _interestedIn = widget.user!.userAccountSettingsModel.interestedIn;
+    _distanceInKm = widget.user.userAccountSettingsModel.distanceInKm;
+    _interestedIn = widget.user.userAccountSettingsModel.interestedIn;
 
-      _userLocation = widget.user!.userAccountSettingsModel.location;
-      _minimumAge = widget.user!.userAccountSettingsModel.minimumAge == null
-          ? AppConfig.initialMinimumAge.toDouble()
-          : widget.user!.userAccountSettingsModel.minimumAge!.toDouble();
-      _maximumAge = widget.user!.userAccountSettingsModel.maximumAge == null
-          ? AppConfig.initialMaximumAge.toDouble()
-          : widget.user!.userAccountSettingsModel.maximumAge!.toDouble();
-    }
+    _userLocation = widget.user.userAccountSettingsModel.location;
+    _minimumAge = widget.user.userAccountSettingsModel.minimumAge == null
+        ? AppConfig.initialMinimumAge.toDouble()
+        : widget.user.userAccountSettingsModel.minimumAge!.toDouble();
+    _maximumAge = widget.user.userAccountSettingsModel.maximumAge == null
+        ? AppConfig.initialMaximumAge.toDouble()
+        : widget.user.userAccountSettingsModel.maximumAge!.toDouble();
 
     _maxDistanceInKm = AppConfig.initialMaximumDistanceInKM;
 
@@ -251,14 +248,25 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
             const SizedBox(height: AppConstants.defaultNumericValue * 2),
             CustomButton(
               onPressed: () async {
-                final UserAccountSettingsModel userAccountSettingsModel =
+                final UserAccountSettingsModel _userAccountSettingsModel =
                     UserAccountSettingsModel(
-                  distanceInKm: _distanceInKm,
+                  distanceInKm: _distanceInKm.toInt().toDouble(),
                   interestedIn: _interestedIn,
                   minimumAge: _minimumAge.toInt(),
                   maximumAge: _maximumAge.toInt(),
                   location: _userLocation,
                 );
+
+                final _userProfileModel = widget.user.copyWith(
+                  userAccountSettingsModel: _userAccountSettingsModel,
+                );
+                EasyLoading.show(status: 'Updating...');
+
+                await ref
+                    .read(userProfileProvider)
+                    .updateUserProfile(_userProfileModel);
+                EasyLoading.dismiss();
+                Navigator.pop(context);
               },
               text: 'Apply',
             ),

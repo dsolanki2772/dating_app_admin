@@ -50,8 +50,7 @@ class _HomePageState extends State<HomePage> {
                     AppConstants.defaultNumericValue / 1.5),
               ),
               title: Consumer(builder: (context, ref, _) {
-                final _user = ref.read(userProfileStreamProvider);
-
+                final _user = ref.watch(userProfileStreamProvider);
                 return _user.when(
                     data: (data) {
                       return data == null
@@ -86,13 +85,13 @@ class _HomePageState extends State<HomePage> {
                                               fontWeight: FontWeight.bold),
                                     ),
                                   ),
-                                  const SizedBox(
-                                      width:
-                                          AppConstants.defaultNumericValue / 3),
-                                  Icon(
-                                    Icons.keyboard_arrow_down,
-                                    color: AppConstants.primaryColor,
-                                  ),
+                                  // const SizedBox(
+                                  //     width:
+                                  //         AppConstants.defaultNumericValue / 3),
+                                  // Icon(
+                                  //   Icons.keyboard_arrow_down,
+                                  //   color: AppConstants.primaryColor,
+                                  // ),
                                 ],
                               ),
                             );
