@@ -74,8 +74,7 @@ class _HomePageState extends State<HomePage> {
                                   Flexible(
                                     child: Text(
                                       data.userAccountSettingsModel.location
-                                              ?.addressText ??
-                                          "",
+                                          .addressText,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: Theme.of(context)

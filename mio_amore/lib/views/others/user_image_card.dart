@@ -34,19 +34,37 @@ class UserImageCard extends StatelessWidget {
           child: ClipRRect(
             borderRadius:
                 BorderRadius.circular(AppConstants.defaultNumericValue),
-            child: (user.mediaFiles.isEmpty)
+            child: (user.mediaFiles.isEmpty && user.profilePicture == null)
                 ? const Center(
                     child: Icon(CupertinoIcons.photo),
                   )
-                : CachedNetworkImage(
-                    imageUrl:
-                        user.mediaFiles.isNotEmpty ? user.mediaFiles.first : '',
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) =>
-                        const Center(child: CupertinoActivityIndicator()),
-                    errorWidget: (context, url, error) {
-                      return const Center(child: Icon(CupertinoIcons.photo));
-                    }),
+                : (user.profilePicture != null)
+                    ? CachedNetworkImage(
+                        imageUrl: user.profilePicture!,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) =>
+                            const Center(child: CupertinoActivityIndicator()),
+                        errorWidget: (context, url, error) {
+                          return const Center(
+                              child: Icon(CupertinoIcons.photo));
+                        },
+                      )
+                    : user.mediaFiles.isEmpty
+                        ? const Center(
+                            child: Icon(CupertinoIcons.photo),
+                          )
+                        : CachedNetworkImage(
+                            imageUrl: user.mediaFiles.isNotEmpty
+                                ? user.mediaFiles.first
+                                : '',
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => const Center(
+                                child: CupertinoActivityIndicator()),
+                            errorWidget: (context, url, error) {
+                              return const Center(
+                                  child: Icon(CupertinoIcons.photo));
+                            },
+                          ),
           ),
         ),
         footer: Padding(
@@ -55,6 +73,8 @@ class UserImageCard extends StatelessWidget {
             horizontal: AppConstants.defaultNumericValue,
           ),
           child: ClipRRect(
+            borderRadius:
+                BorderRadius.circular(AppConstants.defaultNumericValue / 2),
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
               child: Container(
@@ -62,7 +82,6 @@ class UserImageCard extends StatelessWidget {
                 padding:
                     const EdgeInsets.all(AppConstants.defaultNumericValue / 2),
                 decoration: BoxDecoration(
-                  //Gradient Frosted Box
                   borderRadius: BorderRadius.circular(
                       AppConstants.defaultNumericValue / 2),
                   color: Colors.black38,

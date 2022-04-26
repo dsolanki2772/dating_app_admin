@@ -158,7 +158,9 @@ class UserDetailsPage extends StatelessWidget {
                                     width:
                                         AppConstants.defaultNumericValue / 4),
                                 Flexible(
-                                  child: Text("New York, USA",
+                                  child: Text(
+                                      user.userAccountSettingsModel.location
+                                          .addressText,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: Theme.of(context)

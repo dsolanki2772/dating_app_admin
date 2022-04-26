@@ -54,7 +54,7 @@ class _FirstTimeUserProfilePageState
 
     final UserAccountSettingsModel _userAccountSettingsModel =
         UserAccountSettingsModel(
-      location: _userLocation,
+      location: _userLocation!,
       distanceInKm: AppConfig.initialDistanceInKM,
       interestedIn: _gender == null
           ? null

@@ -1,17 +1,17 @@
 import 'dart:convert';
 
 class UserAccountSettingsModel {
-  UserLocation? location;
+  UserLocation location;
   double distanceInKm;
   String? interestedIn;
-  int? minimumAge;
-  int? maximumAge;
+  int minimumAge;
+  int maximumAge;
   UserAccountSettingsModel({
     required this.location,
     required this.distanceInKm,
     this.interestedIn,
-    this.minimumAge,
-    this.maximumAge,
+    required this.minimumAge,
+    required this.maximumAge,
   });
 
   UserAccountSettingsModel copyWith({
@@ -24,7 +24,7 @@ class UserAccountSettingsModel {
     return UserAccountSettingsModel(
       location: location ?? this.location,
       distanceInKm: distanceInKm ?? this.distanceInKm,
-      interestedIn: interestedIn,
+      interestedIn: interestedIn ?? this.interestedIn,
       minimumAge: minimumAge ?? this.minimumAge,
       maximumAge: maximumAge ?? this.maximumAge,
     );
@@ -33,32 +33,24 @@ class UserAccountSettingsModel {
   Map<String, dynamic> toMap() {
     final result = <String, dynamic>{};
 
-    if (location != null) {
-      result.addAll({'location': location!.toMap()});
-    }
+    result.addAll({'location': location.toMap()});
     result.addAll({'distanceInKm': distanceInKm});
     if (interestedIn != null) {
       result.addAll({'interestedIn': interestedIn});
     }
-    if (minimumAge != null) {
-      result.addAll({'minimumAge': minimumAge});
-    }
-    if (maximumAge != null) {
-      result.addAll({'maximumAge': maximumAge});
-    }
+    result.addAll({'minimumAge': minimumAge});
+    result.addAll({'maximumAge': maximumAge});
 
     return result;
   }
 
   factory UserAccountSettingsModel.fromMap(Map<String, dynamic> map) {
     return UserAccountSettingsModel(
-      location: map['location'] != null
-          ? UserLocation.fromMap(map['location'])
-          : null,
+      location: UserLocation.fromMap(map['location']),
       distanceInKm: map['distanceInKm']?.toDouble() ?? 0.0,
       interestedIn: map['interestedIn'],
-      minimumAge: map['minimumAge']?.toInt(),
-      maximumAge: map['maximumAge']?.toInt(),
+      minimumAge: map['minimumAge']?.toInt() ?? 0,
+      maximumAge: map['maximumAge']?.toInt() ?? 0,
     );
   }
 

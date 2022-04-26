@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:mio_amore/config/config.dart';
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/helpers/get_location_prediction.dart';
-import 'package:mio_amore/models/country_code.dart';
 import 'package:mio_amore/models/prediction_model.dart';
 import 'package:mio_amore/models/user_account_settings_model.dart';
 import 'package:mio_amore/providers/country_codes_provider.dart';
@@ -87,6 +85,9 @@ class _SetUserLocationState extends ConsumerState<SetUserLocation> {
                                   .copyWith(fontWeight: FontWeight.bold),
                             ),
                           ),
+                        if (location == null)
+                          const SizedBox(
+                              height: AppConstants.defaultNumericValue),
                         Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: AppConstants.defaultNumericValue),

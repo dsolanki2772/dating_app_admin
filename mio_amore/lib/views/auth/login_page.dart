@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mio_amore/config/config.dart';
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/models/country_code.dart';
-import 'package:mio_amore/models/user_account_settings_model.dart';
 import 'package:mio_amore/providers/auth_providers.dart';
 import 'package:mio_amore/providers/country_codes_provider.dart';
 import 'package:mio_amore/providers/get_current_location_provider.dart';

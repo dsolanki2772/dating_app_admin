@@ -200,7 +200,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                     labelText: "Email",
                   ),
                   validator: (value) {
-                    if (!emailVerificationRedExp.hasMatch(value!)) {
+                    if (value!.isEmpty) {
+                      return null;
+                    } else if (!emailVerificationRedExp.hasMatch(value)) {
                       return "Please enter a valid email";
                     }
                     return null;

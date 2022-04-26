@@ -40,7 +40,7 @@ class AccountSettingsPage extends ConsumerStatefulWidget {
 }
 
 class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
-  UserLocation? _userLocation;
+  late UserLocation _userLocation;
   late double _distanceInKm;
   late double _maxDistanceInKm;
   late double _minimumAge;
@@ -53,12 +53,8 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
     _interestedIn = widget.user.userAccountSettingsModel.interestedIn;
 
     _userLocation = widget.user.userAccountSettingsModel.location;
-    _minimumAge = widget.user.userAccountSettingsModel.minimumAge == null
-        ? AppConfig.initialMinimumAge.toDouble()
-        : widget.user.userAccountSettingsModel.minimumAge!.toDouble();
-    _maximumAge = widget.user.userAccountSettingsModel.maximumAge == null
-        ? AppConfig.initialMaximumAge.toDouble()
-        : widget.user.userAccountSettingsModel.maximumAge!.toDouble();
+    _minimumAge = widget.user.userAccountSettingsModel.minimumAge.toDouble();
+    _maximumAge = widget.user.userAccountSettingsModel.maximumAge.toDouble();
 
     _maxDistanceInKm = AppConfig.initialMaximumDistanceInKM;
 
@@ -116,9 +112,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                     ),
                     const SizedBox(width: AppConstants.defaultNumericValue / 2),
                     Text(
-                      _userLocation == null
-                          ? 'Not set'
-                          : _userLocation!.addressText,
+                      _userLocation.addressText,
                       style: Theme.of(context)
                           .textTheme
                           .bodyLarge!
