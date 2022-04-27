@@ -2,14 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
 import 'package:mio_amore/providers/other_users_provider.dart';
 import 'package:mio_amore/providers/user_profile_provider.dart';
 import 'package:mio_amore/views/custom/custom_app_bar.dart';
 import 'package:mio_amore/views/custom/custom_icon_button.dart';
-import 'package:mio_amore/views/others/user_image_card.dart';
+import 'package:mio_amore/views/others/user_card_widget.dart';
 import 'package:mio_amore/views/settings/account_settings.dart';
 import 'package:mio_amore/views/tabs/home/app_drawer.dart';
 import 'package:swipe_cards/swipe_cards.dart';
@@ -157,7 +156,7 @@ class HomeBody extends StatefulWidget {
 
 class _HomeBodyState extends State<HomeBody> {
   late MatchEngine _matchEngine;
-  List<SwipeItem> _swipeItems = [];
+  final List<SwipeItem> _swipeItems = [];
 
   @override
   void initState() {
@@ -199,7 +198,18 @@ class _HomeBodyState extends State<HomeBody> {
             print("Stack Finished");
           },
           itemBuilder: (context, index) {
-            return UserImageCard(user: _swipeItems[index].content);
+            return UserCardWidget(
+              user: _swipeItems[index].content,
+              onTapBolt: () {
+                _matchEngine.currentItem?.superLike();
+              },
+              onTapCross: () {
+                _matchEngine.currentItem?.nope();
+              },
+              onTapHeart: () {
+                _matchEngine.currentItem?.like();
+              },
+            );
           },
         ),
       ),
