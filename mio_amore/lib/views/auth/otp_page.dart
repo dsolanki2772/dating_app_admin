@@ -135,15 +135,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
                     text: "Enter The Code",
                     secondPartColor: AppConstants.primaryColor),
                 const SizedBox(height: AppConstants.defaultNumericValue),
-                const SizedBox(
-                  height: 140,
-                  child: Center(
-                    child: Text(
-                      "Not Yet Implemented!\nYou can just test the UI!",
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
+                const SizedBox(height: 140),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

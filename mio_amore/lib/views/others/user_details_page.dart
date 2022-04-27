@@ -25,11 +25,15 @@ class UserDetailsPage extends StatelessWidget {
           children: [
             Stack(
               children: [
-                SizedBox(
-                  height: AppConstants.defaultNumericValue * 28,
-                  width: MediaQuery.of(context).size.width,
-                  child:
-                      (user.profilePicture == null && user.mediaFiles.isEmpty)
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox(
+                      height: AppConstants.defaultNumericValue * 28,
+                      width: MediaQuery.of(context).size.width,
+                      child: (user.profilePicture == null &&
+                              user.mediaFiles.isEmpty)
                           ? const Center(
                               child: Icon(CupertinoIcons.photo),
                             )
@@ -66,6 +70,11 @@ class UserDetailsPage extends StatelessWidget {
                                 },
                               ),
                             ),
+                    ),
+                    Container(
+                        height: 2,
+                        color: Theme.of(context).scaffoldBackgroundColor)
+                  ],
                 ),
                 //Top Bar
                 Positioned(
@@ -214,7 +223,9 @@ class UserDetailsPage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(
                       horizontal: AppConstants.defaultNumericValue),
-                  child: Text(user.about ?? "Not available"),
+                  child: Text(user.about == null || user.about!.isEmpty
+                      ? "Not Available"
+                      : user.about!),
                 ),
                 const SizedBox(height: AppConstants.defaultNumericValue),
                 Padding(

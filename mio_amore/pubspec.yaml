@@ -57,6 +57,7 @@ dependencies:
   geolocator: ^8.2.0
   http: ^0.13.4
   geocoding: ^2.0.4
+  swipe_cards: ^1.0.0
 
 dependency_overrides:
   photo_view:

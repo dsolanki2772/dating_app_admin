@@ -88,7 +88,10 @@ class UserImageCard extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    user.fullName,
+                    user.fullName.split(" ").first +
+                        ' ' +
+                        (DateTime.now().difference(user.birthDay).inDays ~/ 365)
+                            .toString(),
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -101,7 +104,7 @@ class UserImageCard extends StatelessWidget {
         ),
         header: isFavorite
             ? Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: const [
                   Padding(
                     padding: EdgeInsets.all(8.0),
