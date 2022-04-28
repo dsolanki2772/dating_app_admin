@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class ChatWallpaperModel {
   Color? solidColor;
   String? imagePath;
+
   ChatWallpaperModel({
     this.solidColor,
     this.imagePath,

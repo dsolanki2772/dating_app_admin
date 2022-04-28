@@ -1,0 +1,126 @@
+import 'dart:convert';
+
+class ChatItemModel {
+  String id;
+  String userId;
+  String conversationId;
+  String? message;
+  String? image;
+  String? video;
+  String? audio;
+  String? file;
+  DateTime createdAt;
+  ChatItemModel({
+    required this.id,
+    required this.userId,
+    required this.conversationId,
+    this.message,
+    this.image,
+    this.video,
+    this.audio,
+    this.file,
+    required this.createdAt,
+  });
+
+  ChatItemModel copyWith({
+    String? id,
+    String? userId,
+    String? conversationId,
+    String? message,
+    String? image,
+    String? video,
+    String? audio,
+    String? file,
+    DateTime? createdAt,
+  }) {
+    return ChatItemModel(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      conversationId: conversationId ?? this.conversationId,
+      message: message ?? this.message,
+      image: image ?? this.image,
+      video: video ?? this.video,
+      audio: audio ?? this.audio,
+      file: file ?? this.file,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    final result = <String, dynamic>{};
+  
+    result.addAll({'id': id});
+    result.addAll({'userId': userId});
+    result.addAll({'conversationId': conversationId});
+    if(message != null){
+      result.addAll({'message': message});
+    }
+    if(image != null){
+      result.addAll({'image': image});
+    }
+    if(video != null){
+      result.addAll({'video': video});
+    }
+    if(audio != null){
+      result.addAll({'audio': audio});
+    }
+    if(file != null){
+      result.addAll({'file': file});
+    }
+    result.addAll({'createdAt': createdAt.millisecondsSinceEpoch});
+  
+    return result;
+  }
+
+  factory ChatItemModel.fromMap(Map<String, dynamic> map) {
+    return ChatItemModel(
+      id: map['id'] ?? '',
+      userId: map['userId'] ?? '',
+      conversationId: map['conversationId'] ?? '',
+      message: map['message'],
+      image: map['image'],
+      video: map['video'],
+      audio: map['audio'],
+      file: map['file'],
+      createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt']),
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory ChatItemModel.fromJson(String source) => ChatItemModel.fromMap(json.decode(source));
+
+  @override
+  String toString() {
+    return 'ChatItemModel(id: $id, userId: $userId, conversationId: $conversationId, message: $message, image: $image, video: $video, audio: $audio, file: $file, createdAt: $createdAt)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+  
+    return other is ChatItemModel &&
+      other.id == id &&
+      other.userId == userId &&
+      other.conversationId == conversationId &&
+      other.message == message &&
+      other.image == image &&
+      other.video == video &&
+      other.audio == audio &&
+      other.file == file &&
+      other.createdAt == createdAt;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+      userId.hashCode ^
+      conversationId.hashCode ^
+      message.hashCode ^
+      image.hashCode ^
+      video.hashCode ^
+      audio.hashCode ^
+      file.hashCode ^
+      createdAt.hashCode;
+  }
+}
