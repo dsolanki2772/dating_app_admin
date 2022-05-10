@@ -21,7 +21,7 @@ class FirebaseConstants {
   FirebaseConstants._();
 
   static const String userProfileCollection = "userProfile";
-  static const String favouriteUsersCollection = "favouriteUsers";
+  static const String userInteractionCollection = "userInteraction";
 }
 
 class HiveConstants {

@@ -2,10 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
-import 'package:mio_amore/providers/favourite_users_provider.dart';
 import 'package:mio_amore/views/custom/custom_icon_button.dart';
 import 'package:mio_amore/views/others/photo_view_page.dart';
 
@@ -99,7 +97,7 @@ class UserDetailsPage extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            _AddToFavButton(user: user),
+                            // _AddToFavButton(user: user),
                             const SizedBox(
                                 width: AppConstants.defaultNumericValue / 2),
                             CustomIconButton(
@@ -351,37 +349,37 @@ class UserDetailsPage extends StatelessWidget {
   }
 }
 
-class _AddToFavButton extends ConsumerWidget {
-  final UserProfileModel user;
-  const _AddToFavButton({
-    Key? key,
-    required this.user,
-  }) : super(key: key);
+// class _AddToFavButton extends ConsumerWidget {
+//   final UserProfileModel user;
+//   const _AddToFavButton({
+//     Key? key,
+//     required this.user,
+//   }) : super(key: key);
 
-  @override
-  Widget build(BuildContext context, ref) {
-    final _favouriteUsersStreamProvider =
-        ref.watch(favouriteUsersStreamProvider);
-    return _favouriteUsersStreamProvider.when(
-        data: (data) {
-          bool _isFavorite = data.contains(user.id);
+//   @override
+//   Widget build(BuildContext context, ref) {
+//     final _favouriteUsersStreamProvider =
+//         ref.watch(favouriteUsersStreamProvider);
+//     return _favouriteUsersStreamProvider.when(
+//         data: (data) {
+//           bool _isFavorite = data.contains(user.id);
 
-          return CustomIconButton(
-            icon:
-                _isFavorite ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
-            color: _isFavorite ? CupertinoColors.systemRed : Colors.white,
-            onPressed: () {
-              if (_isFavorite) {
-                ref.read(favouriteUsersProvider).removeFromFavourite(user.id);
-              } else {
-                ref.read(favouriteUsersProvider).addToFavourite(user.id);
-              }
-            },
-            padding:
-                const EdgeInsets.all(AppConstants.defaultNumericValue / 1.5),
-          );
-        },
-        error: (_, __) => const SizedBox(),
-        loading: () => const SizedBox());
-  }
-}
+//           return CustomIconButton(
+//             icon:
+//                 _isFavorite ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
+//             color: _isFavorite ? CupertinoColors.systemRed : Colors.white,
+//             onPressed: () {
+//               if (_isFavorite) {
+//                 ref.read(favouriteUsersProvider).removeFromFavourite(user.id);
+//               } else {
+//                 ref.read(favouriteUsersProvider).addToFavourite(user.id);
+//               }
+//             },
+//             padding:
+//                 const EdgeInsets.all(AppConstants.defaultNumericValue / 1.5),
+//           );
+//         },
+//         error: (_, __) => const SizedBox(),
+//         loading: () => const SizedBox());
+//   }
+// }
