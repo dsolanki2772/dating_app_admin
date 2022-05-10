@@ -5,7 +5,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/models/user_account_settings_model.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
-import 'package:mio_amore/providers/user_interaction_provider.dart';
 import 'package:mio_amore/providers/user_profile_provider.dart';
 
 final filteredOtherUsersProvider =
@@ -66,33 +65,6 @@ final filteredOtherUsersProvider =
       }
     }
   });
-
-  // final _userIneractionFutureProvider = ref.watch(userIneractionFutureProvider);
-
-  // List<UserProfileModel> _filteredUserListWithInteraction = [];
-
-  // _userIneractionFutureProvider.whenData((value) {
-  //   print("value: $value");
-
-  //   for (var user in _filteredUserList) {
-  //     for (var element in value) {
-  //       if (!element.userIds.contains(user.id)) {
-  //         _filteredUserListWithInteraction.add(user);
-  //       }
-
-  //       if (element.userIds.contains(user.id)) {
-  //         final _myUserId = FirebaseAuth.instance.currentUser!.uid;
-
-  //         if (!element.interactions.any((e) => e.userId == _myUserId)) {
-  //           _filteredUserListWithInteraction.add(user);
-  //         }
-  //       }
-  //     }
-  //   }
-  // });
-
-  // print(
-  //     'filteredUserListWithInteraction: ${_filteredUserListWithInteraction.length}');
 
   return _filteredUserList;
 });

@@ -6,8 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/models/user_interaction_model.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
+import 'package:mio_amore/providers/interaction_provider.dart';
 import 'package:mio_amore/providers/other_users_provider.dart';
-import 'package:mio_amore/providers/user_interaction_provider.dart';
 import 'package:mio_amore/providers/user_profile_provider.dart';
 import 'package:mio_amore/views/custom/custom_app_bar.dart';
 import 'package:mio_amore/views/custom/custom_icon_button.dart';
@@ -157,31 +157,22 @@ class FilterInteraction extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _intercationProvider = ref.watch(userIneractionFutureProvider);
-    return _intercationProvider.when(
+    final _interactionFutureProvider = ref.watch(interactionFutureProvider);
+
+    return _interactionFutureProvider.when(
       data: (data) {
         final List<UserProfileModel> _filteredUsers = [];
-        final List<UserInteractionModel> _existingInteractions = [];
 
         for (final user in users) {
-          if (!data.any((element) => element.userIds.contains(user.userId)) ||
-              data.any((element) => element.interactions.any(
-                  (i) => i.userId != FirebaseAuth.instance.currentUser!.uid))) {
+          if (!data.any(
+              (element) => element.intractToUserId.contains(user.userId))) {
             _filteredUsers.add(user);
-          }
-
-          if (data.any((element) => element.interactions.any(
-              (i) => i.userId != FirebaseAuth.instance.currentUser!.uid))) {
-            _existingInteractions.add(data.firstWhere((element) =>
-                element.interactions.any((i) =>
-                    i.userId != FirebaseAuth.instance.currentUser!.uid)));
           }
         }
 
         return _filteredUsers.isEmpty
             ? const Center(child: Text("No User Found!"))
-            : HomeBody(
-                users: _filteredUsers, interactions: _existingInteractions);
+            : HomeBody(users: _filteredUsers);
       },
       error: (_, __) => const Center(
         child: Text("Something Went Wrong!"),
@@ -195,12 +186,10 @@ class FilterInteraction extends ConsumerWidget {
 
 class HomeBody extends ConsumerStatefulWidget {
   final List<UserProfileModel> users;
-  final List<UserInteractionModel> interactions;
 
   const HomeBody({
     Key? key,
     required this.users,
-    required this.interactions,
   }) : super(key: key);
 
   @override
@@ -212,89 +201,86 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
   final List<SwipeItem> _swipeItems = [];
   bool _isFinished = false;
 
-  List<UserInteractionModel> _existingInteractions = [];
+  void showMatchingDialog(
+      BuildContext context, WidgetRef ref, String otherUserId) {
+    final _filteredUsers = ref.watch(filteredOtherUsersProvider);
+
+    UserProfileModel? _otherUserProfile;
+    _filteredUsers.whenData((value) {
+      _otherUserProfile =
+          value.firstWhere((element) => element.userId == otherUserId);
+    });
+    if (_otherUserProfile != null) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text("Matching With ${_otherUserProfile!.fullName}"),
+            children: [
+              const SizedBox(height: AppConstants.defaultNumericValue),
+              Center(
+                child: Text(
+                    "You are now matched with ${_otherUserProfile!.fullName}"),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
 
   @override
   void initState() {
-    final _userInteractionProvider = ref.read(userInteractionProvider);
-
-    _existingInteractions = widget.interactions;
-
     for (var user in widget.users) {
+      final _interactionProvider = ref.read(interactionProvider);
+
       final String _myUserId = FirebaseAuth.instance.currentUser!.uid;
-      final String _id = user.userId + _myUserId;
-      final List<String> _userIds = [
-        user.userId,
-        FirebaseAuth.instance.currentUser!.uid
-      ];
+      final String _id = _myUserId + user.id;
 
       final UserInteractionModel _interaction = UserInteractionModel(
         id: _id,
-        interactions: [],
-        userIds: _userIds,
+        userId: _myUserId,
+        intractToUserId: user.id,
+        isSuperLike: false,
+        isLike: false,
+        isDislike: false,
         createdAt: DateTime.now(),
       );
-
-      UserInteractionModel? _existedUserInteraction;
-
-      if (_existingInteractions.any((element) =>
-          element.id == _myUserId + user.userId ||
-          element.id == user.userId + _myUserId)) {
-        _existedUserInteraction = _existingInteractions.firstWhere((element) =>
-            element.id == _myUserId + user.userId ||
-            element.id == user.userId + _myUserId);
-      }
 
       _swipeItems.add(
         SwipeItem(
           content: user,
-          likeAction: () {
-            final InteractionUser _interactionUser = InteractionUser(
-              userId: _myUserId,
-              isDisliked: false,
-              isLiked: true,
-              isSuperliked: false,
-            );
-            if (_existedUserInteraction != null) {
-              _existedUserInteraction.interactions.add(_interactionUser);
-              _userInteractionProvider
-                  .updateUserInteraction(_existedUserInteraction);
-            } else {
-              _interaction.interactions.add(_interactionUser);
-              _userInteractionProvider.createUserInteraction(_interaction);
-            }
-          },
-          nopeAction: () {
-            final InteractionUser _interactionUser = InteractionUser(
-              userId: _myUserId,
-              isDisliked: true,
-              isLiked: false,
-              isSuperliked: false,
-            );
+          likeAction: () async {
+            final _newInteraction =
+                _interaction.copyWith(isLike: true, createdAt: DateTime.now());
+            final _result =
+                await _interactionProvider.createInteraction(_newInteraction);
 
-            if (_existedUserInteraction != null) {
-              _existedUserInteraction.interactions.add(_interactionUser);
-              _userInteractionProvider
-                  .updateUserInteraction(_existedUserInteraction);
-            } else {
-              _interaction.interactions.add(_interactionUser);
-              _userInteractionProvider.createUserInteraction(_interaction);
+            if (_result) {
+              final UserInteractionModel? _otherUserInteraction =
+                  await _interactionProvider.getExistingInteraction(user.id);
+              if (_otherUserInteraction != null) {
+                showMatchingDialog(context, ref, _otherUserInteraction.userId);
+              }
             }
           },
-          superlikeAction: () {
-            final InteractionUser _interactionUser = InteractionUser(
-              userId: _myUserId,
-              isDisliked: false,
-              isLiked: false,
-              isSuperliked: true,
-            );
-            if (_existedUserInteraction != null) {
-              _existedUserInteraction.interactions.add(_interactionUser);
-              _userInteractionProvider
-                  .updateUserInteraction(_existedUserInteraction);
-            } else {
-              _interaction.interactions.add(_interactionUser);
-              _userInteractionProvider.createUserInteraction(_interaction);
+          nopeAction: () async {
+            final _newInteraction = _interaction.copyWith(
+                isDislike: true, createdAt: DateTime.now());
+            await _interactionProvider.createInteraction(_newInteraction);
+          },
+          superlikeAction: () async {
+            final _newInteraction = _interaction.copyWith(
+                isSuperLike: true, createdAt: DateTime.now());
+            final _result =
+                await _interactionProvider.createInteraction(_newInteraction);
+
+            if (_result) {
+              final UserInteractionModel? _otherUserInteraction =
+                  await _interactionProvider.getExistingInteraction(user.id);
+              if (_otherUserInteraction != null) {
+                showMatchingDialog(context, ref, _otherUserInteraction.userId);
+              }
             }
           },
         ),
