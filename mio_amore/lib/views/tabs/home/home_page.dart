@@ -1,8 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mio_amore/models/match_model.dart';
+import 'package:mio_amore/providers/match_provider.dart';
+import 'package:swipe_cards/swipe_cards.dart';
+
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/models/user_interaction_model.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
@@ -14,7 +19,6 @@ import 'package:mio_amore/views/custom/custom_icon_button.dart';
 import 'package:mio_amore/views/others/user_card_widget.dart';
 import 'package:mio_amore/views/settings/account_settings.dart';
 import 'package:mio_amore/views/tabs/home/app_drawer.dart';
-import 'package:swipe_cards/swipe_cards.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -201,34 +205,6 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
   final List<SwipeItem> _swipeItems = [];
   bool _isFinished = false;
 
-  void showMatchingDialog(
-      BuildContext context, WidgetRef ref, String otherUserId) {
-    final _filteredUsers = ref.watch(filteredOtherUsersProvider);
-
-    UserProfileModel? _otherUserProfile;
-    _filteredUsers.whenData((value) {
-      _otherUserProfile =
-          value.firstWhere((element) => element.userId == otherUserId);
-    });
-    if (_otherUserProfile != null) {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return SimpleDialog(
-            title: Text("Matching With ${_otherUserProfile!.fullName}"),
-            children: [
-              const SizedBox(height: AppConstants.defaultNumericValue),
-              Center(
-                child: Text(
-                    "You are now matched with ${_otherUserProfile!.fullName}"),
-              ),
-            ],
-          );
-        },
-      );
-    }
-  }
-
   @override
   void initState() {
     for (var user in widget.users) {
@@ -331,5 +307,137 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
               ),
       ),
     );
+  }
+}
+
+class UserCirlePicture extends StatelessWidget {
+  final String? imageUrl;
+  final double? size;
+  const UserCirlePicture({
+    Key? key,
+    required this.imageUrl,
+    this.size,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final _size = size ?? AppConstants.defaultNumericValue * 5;
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius:
+            BorderRadius.circular(AppConstants.defaultNumericValue * 10),
+        border: Border.all(color: AppConstants.primaryColor, width: 2),
+      ),
+      child: ClipRRect(
+        borderRadius:
+            BorderRadius.circular(AppConstants.defaultNumericValue * 10),
+        child: SizedBox(
+          width: _size,
+          height: _size,
+          child: imageUrl == null || imageUrl!.isEmpty
+              ? CircleAvatar(
+                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                  child: Icon(
+                    CupertinoIcons.person_fill,
+                    color: AppConstants.primaryColor,
+                    size: _size * 0.8,
+                  ),
+                )
+              : CachedNetworkImage(
+                  imageUrl: imageUrl!,
+                  placeholder: (context, url) =>
+                      const Center(child: CircularProgressIndicator()),
+                  errorWidget: (context, url, error) =>
+                      const Center(child: Icon(Icons.error)),
+                  fit: BoxFit.cover,
+                ),
+        ),
+      ),
+    );
+  }
+}
+
+Future<void> showMatchingDialog(
+    BuildContext context, WidgetRef ref, String otherUserId) async {
+  final _filteredUsers = ref.watch(filteredOtherUsersProvider);
+  final _userProfile = ref.watch(userProfileStreamProvider);
+  final _mathcProvider = ref.read(matchProvider);
+
+  UserProfileModel? _otherUserProfile;
+  UserProfileModel? _currentUserProfile;
+
+  _filteredUsers.whenData((value) {
+    _otherUserProfile =
+        value.firstWhere((element) => element.userId == otherUserId);
+  });
+
+  _userProfile.whenData((value) {
+    _currentUserProfile = value;
+  });
+
+  if (_otherUserProfile != null && _currentUserProfile != null) {
+    final MatchModel _matchModel = MatchModel(
+      id: _currentUserProfile!.userId + _otherUserProfile!.userId,
+      userIds: [_currentUserProfile!.userId, _otherUserProfile!.userId],
+    );
+
+    final _matchResult = await _mathcProvider.createConversation(_matchModel);
+
+    if (_matchResult) {
+      return await showDialog(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius:
+                  BorderRadius.circular(AppConstants.defaultNumericValue),
+            ),
+            insetPadding:
+                const EdgeInsets.all(AppConstants.defaultNumericValue * 2),
+            contentPadding:
+                const EdgeInsets.all(AppConstants.defaultNumericValue * 2),
+            title: const Center(child: Text("Matched")),
+            children: [
+              const SizedBox(height: AppConstants.defaultNumericValue),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  UserCirlePicture(imageUrl: _otherUserProfile?.profilePicture),
+                  const SizedBox(width: AppConstants.defaultNumericValue / 4),
+                  UserCirlePicture(
+                      imageUrl: _currentUserProfile?.profilePicture),
+                ],
+              ),
+              const SizedBox(height: AppConstants.defaultNumericValue),
+              Center(
+                child: Text(
+                    "You are now matched with ${_otherUserProfile!.fullName}"),
+              ),
+              const SizedBox(height: AppConstants.defaultNumericValue),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                      child: OutlinedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text("Not Now"))),
+                  const SizedBox(width: AppConstants.defaultNumericValue),
+                  Expanded(
+                    child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          //TODO: Open Chat Screen
+                        },
+                        child: const Text("Start Chat")),
+                  ),
+                ],
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 }

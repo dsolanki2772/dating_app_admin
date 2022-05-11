@@ -1,19 +1,20 @@
 import 'dart:convert';
 import 'package:collection/collection.dart';
 
-class ConversationModel {
+class MatchModel {
   String id;
   List<String> userIds;
-  ConversationModel({
+
+  MatchModel({
     required this.id,
     required this.userIds,
   });
 
-  ConversationModel copyWith({
+  MatchModel copyWith({
     String? id,
     List<String>? userIds,
   }) {
-    return ConversationModel(
+    return MatchModel(
       id: id ?? this.id,
       userIds: userIds ?? this.userIds,
     );
@@ -28,8 +29,8 @@ class ConversationModel {
     return result;
   }
 
-  factory ConversationModel.fromMap(Map<String, dynamic> map) {
-    return ConversationModel(
+  factory MatchModel.fromMap(Map<String, dynamic> map) {
+    return MatchModel(
       id: map['id'] ?? '',
       userIds: List<String>.from(map['userIds']),
     );
@@ -37,18 +38,18 @@ class ConversationModel {
 
   String toJson() => json.encode(toMap());
 
-  factory ConversationModel.fromJson(String source) =>
-      ConversationModel.fromMap(json.decode(source));
+  factory MatchModel.fromJson(String source) =>
+      MatchModel.fromMap(json.decode(source));
 
   @override
-  String toString() => 'ConversationModel(id: $id, userIds: $userIds)';
+  String toString() => 'MatchModel(id: $id, userIds: $userIds)';
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     final listEquals = const DeepCollectionEquality().equals;
 
-    return other is ConversationModel &&
+    return other is MatchModel &&
         other.id == id &&
         listEquals(other.userIds, userIds);
   }

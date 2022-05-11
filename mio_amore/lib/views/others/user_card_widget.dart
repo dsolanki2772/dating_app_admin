@@ -1,9 +1,11 @@
 import 'dart:ui';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
 import 'package:mio_amore/providers/user_profile_provider.dart';
@@ -238,79 +240,10 @@ class _UserCardWidgetState extends State<UserCardWidget> {
                                   const SizedBox(
                                       height:
                                           AppConstants.defaultNumericValue / 2),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal:
-                                            AppConstants.defaultNumericValue),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        GestureDetector(
-                                          onTap: widget.onTapCross,
-                                          child: Container(
-                                            padding: const EdgeInsets.all(
-                                                AppConstants
-                                                        .defaultNumericValue /
-                                                    2),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(100),
-                                              border: Border.all(
-                                                  color: const Color.fromARGB(
-                                                      255, 246, 40, 25),
-                                                  width: 2),
-                                            ),
-                                            child: const Icon(Icons.clear,
-                                                color: Color.fromARGB(
-                                                    255, 246, 45, 30)),
-                                          ),
-                                        ),
-                                        GestureDetector(
-                                          onTap: widget.onTapBolt,
-                                          child: Container(
-                                            padding: const EdgeInsets.all(
-                                                AppConstants
-                                                        .defaultNumericValue /
-                                                    2),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(100),
-                                              border: Border.all(
-                                                  color: const Color.fromARGB(
-                                                      255, 40, 205, 251),
-                                                  width: 2),
-                                            ),
-                                            child: const Icon(Icons.bolt,
-                                                color: Color.fromARGB(
-                                                    255, 40, 205, 251),
-                                                size: 32),
-                                          ),
-                                        ),
-                                        GestureDetector(
-                                          onTap: widget.onTapHeart,
-                                          child: Container(
-                                            padding: const EdgeInsets.all(
-                                                AppConstants
-                                                        .defaultNumericValue /
-                                                    2),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(100),
-                                              border: Border.all(
-                                                  color: const Color.fromARGB(
-                                                      255, 120, 243, 124),
-                                                  width: 2),
-                                            ),
-                                            child: const Icon(Icons.favorite,
-                                                color: Color.fromARGB(
-                                                    255, 121, 250, 125)),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                  UserLikeActions(
+                                    onTapCross: widget.onTapCross,
+                                    onTapBolt: widget.onTapBolt,
+                                    onTapHeart: widget.onTapHeart,
                                   ),
                                   const SizedBox(
                                       height: AppConstants.defaultNumericValue),
@@ -329,6 +262,74 @@ class _UserCardWidgetState extends State<UserCardWidget> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class UserLikeActions extends StatelessWidget {
+  final VoidCallback onTapCross;
+  final VoidCallback onTapBolt;
+  final VoidCallback onTapHeart;
+  const UserLikeActions({
+    Key? key,
+    required this.onTapCross,
+    required this.onTapBolt,
+    required this.onTapHeart,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppConstants.defaultNumericValue),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          GestureDetector(
+            onTap: onTapCross,
+            child: Container(
+              padding:
+                  const EdgeInsets.all(AppConstants.defaultNumericValue / 2),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(100),
+                border: Border.all(
+                    color: const Color.fromARGB(255, 246, 40, 25), width: 2),
+              ),
+              child: const Icon(Icons.clear,
+                  color: Color.fromARGB(255, 246, 45, 30)),
+            ),
+          ),
+          GestureDetector(
+            onTap: onTapBolt,
+            child: Container(
+              padding:
+                  const EdgeInsets.all(AppConstants.defaultNumericValue / 2),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(100),
+                border: Border.all(
+                    color: const Color.fromARGB(255, 40, 205, 251), width: 2),
+              ),
+              child: const Icon(Icons.bolt,
+                  color: Color.fromARGB(255, 40, 205, 251), size: 32),
+            ),
+          ),
+          GestureDetector(
+            onTap: onTapHeart,
+            child: Container(
+              padding:
+                  const EdgeInsets.all(AppConstants.defaultNumericValue / 2),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(100),
+                border: Border.all(
+                    color: const Color.fromARGB(255, 120, 243, 124), width: 2),
+              ),
+              child: const Icon(Icons.favorite,
+                  color: Color.fromARGB(255, 121, 250, 125)),
+            ),
+          ),
+        ],
       ),
     );
   }
