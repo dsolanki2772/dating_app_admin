@@ -49,8 +49,8 @@ class AppConfig {
       "AIzaSyDvkwrf9abC92F6SFdYEDmmYIgdvBrLi9o";
 
 // Base settings for a user!
-  static const double initialDistanceInKM = 10.0;
-  static const double initialMaximumDistanceInKM = 100;
+  static const double initialDistanceInKM = 50;
+  static const double initialMaximumDistanceInKM = 500;
   static const int initialMinimumAge = 18;
   static const int initialMaximumAge = 28;
 

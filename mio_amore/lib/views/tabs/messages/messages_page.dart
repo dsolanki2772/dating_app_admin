@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mio_amore/helpers/constants.dart';
-import 'package:mio_amore/models/match_model.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
 import 'package:mio_amore/providers/match_provider.dart';
 import 'package:mio_amore/providers/other_users_provider.dart';

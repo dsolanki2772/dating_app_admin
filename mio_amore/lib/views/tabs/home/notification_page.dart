@@ -20,14 +20,14 @@ import 'package:mio_amore/views/others/user_card_widget.dart';
 import 'package:mio_amore/views/settings/account_settings.dart';
 import 'package:mio_amore/views/tabs/home/app_drawer.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class NotificationPage extends StatefulWidget {
+  const NotificationPage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<NotificationPage> createState() => _NotificationPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _NotificationPageState extends State<NotificationPage> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {

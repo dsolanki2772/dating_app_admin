@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/models/user_interaction_model.dart';
-import 'package:twitter_login/entity/user.dart';
 
 final interactionFutureProvider =
     FutureProvider.autoDispose<List<UserInteractionModel>>((ref) async {

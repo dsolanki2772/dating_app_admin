@@ -47,70 +47,85 @@ class _UserCardWidgetState extends State<UserCardWidget> {
   @override
   Widget build(BuildContext context) {
     return GridTile(
-      child: PageView(
-        controller: _pageController,
-        onPageChanged: (_) {
-          setState(() {});
-        },
-        physics: const NeverScrollableScrollPhysics(),
-        children: _images.map((e) {
-          return Stack(
-            fit: StackFit.expand,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius:
-                      BorderRadius.circular(AppConstants.defaultNumericValue),
-                ),
-                child: ClipRRect(
-                  borderRadius:
-                      BorderRadius.circular(AppConstants.defaultNumericValue),
-                  child: CachedNetworkImage(
-                    imageUrl: e,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) =>
-                        const Center(child: CupertinoActivityIndicator()),
-                    errorWidget: (context, url, error) {
-                      return const Center(child: Icon(CupertinoIcons.photo));
-                    },
-                  ),
-                ),
+      child: _images.isEmpty
+          ? Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius:
+                    BorderRadius.circular(AppConstants.defaultNumericValue),
+                border: Border.all(color: Colors.grey, width: 2),
               ),
-              Positioned.fill(
-                child: Row(
+              child: ClipRRect(
+                borderRadius:
+                    BorderRadius.circular(AppConstants.defaultNumericValue),
+                child: const Center(child: Icon(CupertinoIcons.photo)),
+              ),
+            )
+          : PageView(
+              controller: _pageController,
+              onPageChanged: (_) {
+                setState(() {});
+              },
+              physics: const NeverScrollableScrollPhysics(),
+              children: _images.map((e) {
+                return Stack(
+                  fit: StackFit.expand,
                   children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          _pageController.previousPage(
-                              duration: const Duration(milliseconds: 500),
-                              curve: Curves.easeInOut);
-                        },
-                        child: Container(
-                          color: Colors.transparent,
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(
+                            AppConstants.defaultNumericValue),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(
+                            AppConstants.defaultNumericValue),
+                        child: CachedNetworkImage(
+                          imageUrl: e,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) =>
+                              const Center(child: CupertinoActivityIndicator()),
+                          errorWidget: (context, url, error) {
+                            return const Center(
+                                child: Icon(CupertinoIcons.photo));
+                          },
                         ),
                       ),
                     ),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          _pageController.nextPage(
-                              duration: const Duration(milliseconds: 500),
-                              curve: Curves.easeInOut);
-                        },
-                        child: Container(
-                          color: Colors.transparent,
-                        ),
+                    Positioned.fill(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                _pageController.previousPage(
+                                    duration: const Duration(milliseconds: 500),
+                                    curve: Curves.easeInOut);
+                              },
+                              child: Container(
+                                color: Colors.transparent,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                _pageController.nextPage(
+                                    duration: const Duration(milliseconds: 500),
+                                    curve: Curves.easeInOut);
+                              },
+                              child: Container(
+                                color: Colors.transparent,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
+                    )
                   ],
-                ),
-              )
-            ],
-          );
-        }).toList(),
-      ),
+                );
+              }).toList(),
+            ),
       header: _pageController.hasClients
           ? Align(
               alignment: Alignment.topRight,
