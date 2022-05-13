@@ -7,8 +7,6 @@ import 'package:mio_amore/models/user_account_settings_model.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
 import 'package:mio_amore/providers/user_profile_provider.dart';
 import 'package:mio_amore/views/custom/custom_button.dart';
-import 'package:mio_amore/views/others/error_page.dart';
-import 'package:mio_amore/views/others/loading_page.dart';
 import 'package:mio_amore/views/others/set_user_location_page.dart';
 
 class LanguageSelection extends ConsumerStatefulWidget {

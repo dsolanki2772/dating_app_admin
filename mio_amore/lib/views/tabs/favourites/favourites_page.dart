@@ -69,7 +69,7 @@ class FavouritesPage extends ConsumerWidget {
                         final List<UserProfileModel> _favUsers = [];
 
                         for (final user in data) {
-                          if (favourites.contains(user.id)) {
+                          if (favourites.contains(user)) {
                             _favUsers.add(user);
                           }
                         }
