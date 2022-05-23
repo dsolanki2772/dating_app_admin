@@ -2,8 +2,8 @@ import 'dart:convert';
 
 class ChatItemModel {
   String id;
-  String userId;
-  String conversationId;
+  String? userId;
+  String matchId;
   String? message;
   String? image;
   String? video;
@@ -12,8 +12,8 @@ class ChatItemModel {
   DateTime createdAt;
   ChatItemModel({
     required this.id,
-    required this.userId,
-    required this.conversationId,
+    this.userId,
+    required this.matchId,
     this.message,
     this.image,
     this.video,
@@ -25,7 +25,7 @@ class ChatItemModel {
   ChatItemModel copyWith({
     String? id,
     String? userId,
-    String? conversationId,
+    String? matchId,
     String? message,
     String? image,
     String? video,
@@ -36,7 +36,7 @@ class ChatItemModel {
     return ChatItemModel(
       id: id ?? this.id,
       userId: userId ?? this.userId,
-      conversationId: conversationId ?? this.conversationId,
+      matchId: matchId ?? this.matchId,
       message: message ?? this.message,
       image: image ?? this.image,
       video: video ?? this.video,
@@ -48,35 +48,37 @@ class ChatItemModel {
 
   Map<String, dynamic> toMap() {
     final result = <String, dynamic>{};
-  
+
     result.addAll({'id': id});
-    result.addAll({'userId': userId});
-    result.addAll({'conversationId': conversationId});
-    if(message != null){
+    if (userId != null) {
+      result.addAll({'userId': userId});
+    }
+    result.addAll({'matchId': matchId});
+    if (message != null) {
       result.addAll({'message': message});
     }
-    if(image != null){
+    if (image != null) {
       result.addAll({'image': image});
     }
-    if(video != null){
+    if (video != null) {
       result.addAll({'video': video});
     }
-    if(audio != null){
+    if (audio != null) {
       result.addAll({'audio': audio});
     }
-    if(file != null){
+    if (file != null) {
       result.addAll({'file': file});
     }
     result.addAll({'createdAt': createdAt.millisecondsSinceEpoch});
-  
+
     return result;
   }
 
   factory ChatItemModel.fromMap(Map<String, dynamic> map) {
     return ChatItemModel(
       id: map['id'] ?? '',
-      userId: map['userId'] ?? '',
-      conversationId: map['conversationId'] ?? '',
+      userId: map['userId'],
+      matchId: map['matchId'] ?? '',
       message: map['message'],
       image: map['image'],
       video: map['video'],
@@ -88,39 +90,40 @@ class ChatItemModel {
 
   String toJson() => json.encode(toMap());
 
-  factory ChatItemModel.fromJson(String source) => ChatItemModel.fromMap(json.decode(source));
+  factory ChatItemModel.fromJson(String source) =>
+      ChatItemModel.fromMap(json.decode(source));
 
   @override
   String toString() {
-    return 'ChatItemModel(id: $id, userId: $userId, conversationId: $conversationId, message: $message, image: $image, video: $video, audio: $audio, file: $file, createdAt: $createdAt)';
+    return 'ChatItemModel(id: $id, userId: $userId, matchId: $matchId, message: $message, image: $image, video: $video, audio: $audio, file: $file, createdAt: $createdAt)';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-  
+
     return other is ChatItemModel &&
-      other.id == id &&
-      other.userId == userId &&
-      other.conversationId == conversationId &&
-      other.message == message &&
-      other.image == image &&
-      other.video == video &&
-      other.audio == audio &&
-      other.file == file &&
-      other.createdAt == createdAt;
+        other.id == id &&
+        other.userId == userId &&
+        other.matchId == matchId &&
+        other.message == message &&
+        other.image == image &&
+        other.video == video &&
+        other.audio == audio &&
+        other.file == file &&
+        other.createdAt == createdAt;
   }
 
   @override
   int get hashCode {
     return id.hashCode ^
-      userId.hashCode ^
-      conversationId.hashCode ^
-      message.hashCode ^
-      image.hashCode ^
-      video.hashCode ^
-      audio.hashCode ^
-      file.hashCode ^
-      createdAt.hashCode;
+        userId.hashCode ^
+        matchId.hashCode ^
+        message.hashCode ^
+        image.hashCode ^
+        video.hashCode ^
+        audio.hashCode ^
+        file.hashCode ^
+        createdAt.hashCode;
   }
 }

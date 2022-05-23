@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,18 +8,20 @@ import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/models/user_interaction_model.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
 import 'package:mio_amore/providers/interaction_provider.dart';
+import 'package:mio_amore/views/custom/custom_button.dart';
 import 'package:mio_amore/views/custom/custom_icon_button.dart';
 import 'package:mio_amore/views/others/photo_view_page.dart';
 import 'package:mio_amore/views/others/user_card_widget.dart';
 import 'package:mio_amore/views/tabs/home/home_page.dart';
+import 'package:mio_amore/views/tabs/messages/components/chat_page.dart';
 
 class UserDetailsPage extends ConsumerWidget {
   final UserProfileModel user;
-  final bool isMatched;
+  final String? matchId;
   const UserDetailsPage({
     Key? key,
     required this.user,
-    this.isMatched = false,
+    this.matchId,
   }) : super(key: key);
 
   @override
@@ -44,7 +45,41 @@ class UserDetailsPage extends ConsumerWidget {
       body: Stack(
         children: [
           DetailsBody(user: user),
-          if (!isMatched)
+          if (matchId != null)
+            Positioned(
+              bottom: 0,
+              child: ClipRRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                  child: Container(
+                    color: Theme.of(context)
+                        .scaffoldBackgroundColor
+                        .withOpacity(0.8),
+                    padding: const EdgeInsets.only(
+                        bottom: AppConstants.defaultNumericValue * 2,
+                        top: AppConstants.defaultNumericValue),
+                    width: MediaQuery.of(context).size.width,
+                    child: Center(
+                      child: CustomButton(
+                        text: "Start Chatting",
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ChatPage(
+                                otherUser: user,
+                                matchId: matchId!,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          if (matchId == null)
             Positioned(
               bottom: 0,
               child: ClipRRect(

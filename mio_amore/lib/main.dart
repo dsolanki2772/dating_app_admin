@@ -19,7 +19,6 @@ void main() async {
 
   await Hive.initFlutter();
   await Hive.openBox(HiveConstants.hiveBox);
-
   configLoading();
 
   runApp(const ProviderScope(child: MyApp()));

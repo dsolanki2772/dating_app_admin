@@ -136,7 +136,7 @@ final List<_BottomNavBarItem> _navItems = [
     title: 'Message',
     icon: CupertinoIcons.mail,
     activeIcon: CupertinoIcons.mail_solid,
-    page: const MessagesPage(),
+    page: const MessageConsumerPage(),
   ),
   //Proile
   _BottomNavBarItem(

@@ -7,11 +7,11 @@ import 'package:mio_amore/models/user_profile_model.dart';
 import 'package:mio_amore/views/others/user_details_page.dart';
 
 class UserImageCard extends StatelessWidget {
-  final bool isFavorite;
+  final String? matchId;
   final UserProfileModel user;
   const UserImageCard({
     Key? key,
-    this.isFavorite = false,
+    this.matchId,
     required this.user,
   }) : super(key: key);
 
@@ -22,7 +22,8 @@ class UserImageCard extends StatelessWidget {
         Navigator.push(
             context,
             CupertinoPageRoute(
-                builder: (context) => UserDetailsPage(user: user)));
+                builder: (context) =>
+                    UserDetailsPage(user: user, matchId: matchId)));
       },
       child: GridTile(
         child: Container(
@@ -102,7 +103,7 @@ class UserImageCard extends StatelessWidget {
             ),
           ),
         ),
-        header: isFavorite
+        header: matchId != null
             ? Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: const [

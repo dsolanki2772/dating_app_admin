@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mio_amore/models/match_model.dart';
 import 'package:mio_amore/providers/match_provider.dart';
+import 'package:mio_amore/views/tabs/messages/components/chat_page.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 
 import 'package:mio_amore/helpers/constants.dart';
@@ -435,7 +436,14 @@ Future<void> showMatchingDialog(
                     child: ElevatedButton(
                         onPressed: () {
                           Navigator.of(context).pop();
-                          //TODO: Open Chat Screen
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => ChatPage(
+                                matchId: _matchModel.id,
+                                otherUser: _otherUserProfile!,
+                              ),
+                            ),
+                          );
                         },
                         child: const Text("Start Chat")),
                   ),

@@ -1,26 +1,55 @@
 import 'dart:io';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:mio_amore/config/config.dart';
 import 'package:mio_amore/helpers/constants.dart';
+import 'package:mio_amore/helpers/date_formater.dart';
+import 'package:mio_amore/models/chat_item_model.dart';
+import 'package:mio_amore/models/user_profile_model.dart';
+import 'package:mio_amore/providers/chat_provider.dart';
+import 'package:mio_amore/views/others/user_details_page.dart';
+import 'package:mio_amore/views/tabs/home/notification_page.dart';
 import 'package:mio_amore/views/tabs/messages/components/chat_page_background.dart';
 
-class ChatPage extends StatefulWidget {
-  const ChatPage({Key? key}) : super(key: key);
+class ChatPage extends ConsumerStatefulWidget {
+  final UserProfileModel otherUser;
+  final String matchId;
+  const ChatPage({
+    Key? key,
+    required this.otherUser,
+    required this.matchId,
+  }) : super(key: key);
 
   @override
-  State<ChatPage> createState() => _ChatPageState();
+  ConsumerState<ChatPage> createState() => _ChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _ChatPageState extends ConsumerState<ChatPage> {
   final _chatController = TextEditingController();
   bool emojiShowing = false;
 
-  void _onSendMessage() {}
+  void _onSendMessage() async {
+    final _chatProvider = ref.read(chatProvider);
+
+    if (_chatController.text.isNotEmpty) {
+      final _currentTime = DateTime.now();
+      ChatItemModel chatItem = ChatItemModel(
+        message: _chatController.text,
+        createdAt: _currentTime,
+        id: _currentTime.millisecondsSinceEpoch.toString(),
+        userId: FirebaseAuth.instance.currentUser!.uid,
+        matchId: widget.matchId,
+      );
+      await _chatProvider.createChatItem(widget.matchId, chatItem);
+      _chatController.clear();
+    }
+  }
 
   _onEmojiSelected(Emoji emoji) {
     setState(() {
@@ -63,9 +92,12 @@ class _ChatPageState extends State<ChatPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const ChatTopBar(),
-                const Expanded(
-                  child: ChatBody(),
+                ChatTopBar(
+                  otherUser: widget.otherUser,
+                  matchId: widget.matchId,
+                ),
+                Expanded(
+                  child: ChatBody(matchId: widget.matchId),
                 ),
                 const SizedBox(height: AppConstants.defaultNumericValue / 2),
                 ChatTextFieldAndOthers(
@@ -110,82 +142,133 @@ class _ChatPageState extends State<ChatPage> {
   }
 }
 
-class ChatBody extends StatelessWidget {
+class ChatBody extends ConsumerWidget {
+  final String matchId;
   const ChatBody({
     Key? key,
+    required this.matchId,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return ListView(
-      reverse: true,
-      shrinkWrap: true,
-      children: [
-        for (var i = 0; i < 100; i++)
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(
-                  right: i % 2 == 0 ? AppConstants.defaultNumericValue * 4 : 0,
-                  left: i % 2 == 0 ? 0 : AppConstants.defaultNumericValue * 4,
-                ),
-                child: Card(
-                  color: i % 2 == 0
-                      ? AppConfig.chatTextFieldAndOtherText
-                      : AppConfig.chatMyTextColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                      topLeft: const Radius.circular(
-                          AppConstants.defaultNumericValue),
-                      topRight: const Radius.circular(
-                          AppConstants.defaultNumericValue),
-                      bottomLeft: i % 2 == 0
-                          ? Radius.zero
-                          : const Radius.circular(
-                              AppConstants.defaultNumericValue),
-                      bottomRight: i % 2 == 0
-                          ? const Radius.circular(
-                              AppConstants.defaultNumericValue)
-                          : Radius.zero,
-                    ),
-                  ),
-                  elevation: 0,
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: AppConstants.defaultNumericValue,
-                        vertical: AppConstants.defaultNumericValue / 2),
-                    title: const Text(
-                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-                        textAlign: TextAlign.left),
-                    subtitle: Text("12:34 PM",
-                        textAlign: TextAlign.right,
-                        style: Theme.of(context).textTheme.caption),
-                  ),
-                ),
-              ),
-              i == 0
-                  ? const SizedBox(
-                      height: AppConstants.defaultNumericValue,
+  Widget build(BuildContext context, ref) {
+    final _chatStreams = ref.watch(chatStreamProviderProvider(matchId));
+
+    return _chatStreams.when(
+        data: (data) {
+          return ListView(
+            reverse: true,
+            children: data.map((e) {
+              final bool? _isNotMe = e.userId == null
+                  ? null
+                  : e.userId != FirebaseAuth.instance.currentUser?.uid;
+
+              return _isNotMe == null
+                  ? Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Center(
+                          child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppConstants.defaultNumericValue,
+                          vertical: AppConstants.defaultNumericValue / 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(
+                            AppConstants.defaultNumericValue,
+                          ),
+                        ),
+                        child: Text(e.message ?? ""),
+                      )),
                     )
-                  : const SizedBox()
-            ],
-          )
-      ],
-    );
+                  : Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Align(
+                          alignment: _isNotMe
+                              ? Alignment.centerLeft
+                              : Alignment.centerRight,
+                          child: Container(
+                            margin: const EdgeInsets.all(
+                                AppConstants.defaultNumericValue / 4),
+                            constraints: BoxConstraints(
+                              maxWidth: MediaQuery.of(context).size.width * 0.8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: _isNotMe
+                                  ? AppConfig.chatTextFieldAndOtherText
+                                  : AppConfig.chatMyTextColor,
+                              borderRadius: BorderRadius.only(
+                                topLeft: const Radius.circular(
+                                    AppConstants.defaultNumericValue),
+                                topRight: const Radius.circular(
+                                    AppConstants.defaultNumericValue),
+                                bottomLeft: _isNotMe
+                                    ? Radius.zero
+                                    : const Radius.circular(
+                                        AppConstants.defaultNumericValue),
+                                bottomRight: _isNotMe
+                                    ? const Radius.circular(
+                                        AppConstants.defaultNumericValue)
+                                    : Radius.zero,
+                              ),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(
+                                  AppConstants.defaultNumericValue / 1.3),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    e.message ?? "",
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    DateFormatter.toWholeDateTime(e.createdAt),
+                                    style: Theme.of(context).textTheme.caption,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        _isNotMe
+                            ? const SizedBox(
+                                height: AppConstants.defaultNumericValue / 8)
+                            : const SizedBox()
+                      ],
+                    );
+            }).toList(),
+          );
+        },
+        error: (_, __) => const SizedBox(),
+        loading: () => const SizedBox());
+    // return ListView(
+    //   reverse: true,
+    //   shrinkWrap: true,
+    //   children: [
+    //     for (var i = 0; i < 100; i++)
+
+    //   ],
+    // );
   }
 }
 
-class ChatTopBar extends StatefulWidget {
+class ChatTopBar extends ConsumerStatefulWidget {
+  final UserProfileModel otherUser;
+  final String matchId;
   const ChatTopBar({
     Key? key,
+    required this.otherUser,
+    required this.matchId,
   }) : super(key: key);
 
   @override
-  State<ChatTopBar> createState() => _ChatTopBarState();
+  ConsumerState<ChatTopBar> createState() => _ChatTopBarState();
 }
 
-class _ChatTopBarState extends State<ChatTopBar> {
+class _ChatTopBarState extends ConsumerState<ChatTopBar> {
   final CustomPopupMenuController _moreMenuController =
       CustomPopupMenuController();
 
@@ -199,10 +282,19 @@ class _ChatTopBarState extends State<ChatTopBar> {
           ),
           gradient: AppConstants.defaultGradient),
       child: ListTile(
-        onTap: null,
-        contentPadding: EdgeInsets.zero,
+        onTap: () {
+          Navigator.of(context).push(
+            CupertinoPageRoute(
+              builder: (context) => UserDetailsPage(
+                user: widget.otherUser,
+                matchId: widget.matchId,
+              ),
+            ),
+          );
+        },
+        contentPadding: const EdgeInsets.only(bottom: 4),
         title: Text(
-          "John Doe",
+          widget.otherUser.fullName,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: Theme.of(context).textTheme.subtitle1!.copyWith(
@@ -210,29 +302,14 @@ class _ChatTopBarState extends State<ChatTopBar> {
                 color: Colors.white,
               ),
         ),
-        subtitle: const Text(
-          "Online",
-          style: TextStyle(color: Colors.white),
-        ),
         leading: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             const BackButton(color: Colors.white),
-            Container(
-              width: AppConstants.defaultNumericValue * 3,
-              height: AppConstants.defaultNumericValue * 3,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(
-                      AppConstants.defaultNumericValue * 4)),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(
-                    AppConstants.defaultNumericValue * 10),
-                child: CachedNetworkImage(
-                  imageUrl: profilePicture,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
+            UserCirlePicture(
+              imageUrl: widget.otherUser.profilePicture,
+              size: AppConstants.defaultNumericValue * 3,
+            )
           ],
         ),
         trailing: Row(
@@ -270,6 +347,14 @@ class _ChatTopBarState extends State<ChatTopBar> {
                           title: 'View Profile',
                           onTap: () {
                             _moreMenuController.hideMenu();
+                            Navigator.of(context).push(
+                              CupertinoPageRoute(
+                                builder: (context) => UserDetailsPage(
+                                  user: widget.otherUser,
+                                  matchId: widget.matchId,
+                                ),
+                              ),
+                            );
                           },
                         ),
                         MoreMenuTitle(
@@ -298,8 +383,16 @@ class _ChatTopBarState extends State<ChatTopBar> {
                         ),
                         MoreMenuTitle(
                           title: 'Clear Chat',
-                          onTap: () {
+                          onTap: () async {
                             _moreMenuController.hideMenu();
+                            await ref
+                                .read(chatProvider)
+                                .clearChat(widget.matchId)
+                                .then((value) {
+                              if (value) {
+                                Navigator.of(context).pop();
+                              }
+                            });
                           },
                         ),
                         MoreMenuTitle(
