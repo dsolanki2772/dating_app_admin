@@ -166,34 +166,47 @@ class _UserCardWidgetState extends State<UserCardWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: AppConstants.defaultNumericValue),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: AppConstants.defaultNumericValue),
-                    child: Text.rich(
-                      TextSpan(
-                        children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: AppConstants.defaultNumericValue),
+                        child: Text.rich(
                           TextSpan(
-                            text: widget.user.fullName + ' ',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 21,
-                            ),
+                            children: [
+                              TextSpan(
+                                text: widget.user.fullName + ' ',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 21,
+                                ),
+                              ),
+                              TextSpan(
+                                text: (DateTime.now()
+                                            .difference(widget.user.birthDay)
+                                            .inDays ~/
+                                        365)
+                                    .toString(),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
-                          TextSpan(
-                            text: (DateTime.now()
-                                        .difference(widget.user.birthDay)
-                                        .inDays ~/
-                                    365)
-                                .toString(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
+                      widget.user.isVerified
+                          ? const Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: AppConstants.defaultNumericValue),
+                              child: Icon(Icons.verified_user,
+                                  color: CupertinoColors.activeGreen),
+                            )
+                          : const SizedBox(),
+                    ],
                   ),
                   Consumer(
                     builder: (context, ref, child) {

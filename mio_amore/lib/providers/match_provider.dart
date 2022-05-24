@@ -41,6 +41,7 @@ class MatchProvider {
         message: "Say Hi!",
         matchId: match.id,
         createdAt: _currentTime,
+        isRead: true,
       );
       await _chatCollection
           .doc(_currentTime.millisecondsSinceEpoch.toString())

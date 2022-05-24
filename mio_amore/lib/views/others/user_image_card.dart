@@ -106,13 +106,20 @@ class UserImageCard extends StatelessWidget {
         header: matchId != null
             ? Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Padding(
+                children: [
+                  const Padding(
                     padding: EdgeInsets.all(8.0),
                     child: Icon(CupertinoIcons.heart_solid,
                         color: CupertinoColors.destructiveRed,
                         size: AppConstants.defaultNumericValue * 1.5),
                   ),
+                  if (user.isVerified)
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Icon(Icons.verified_user,
+                          color: CupertinoColors.activeGreen,
+                          size: AppConstants.defaultNumericValue * 1.5),
+                    ),
                 ],
               )
             : null,

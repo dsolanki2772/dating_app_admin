@@ -1,12 +1,9 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/models/chat_item_model.dart';
-import 'package:mio_amore/models/user_profile_model.dart';
 
 final chatStreamProviderProvider =
     StreamProvider.family<List<ChatItemModel>, String>((ref, matchId) {
@@ -76,6 +73,44 @@ class ChatProvider {
       return true;
     } catch (e) {
       return false;
+    }
+  }
+
+  //Update chat
+  Future<bool> updateChatItem(String matchId, ChatItemModel chat) async {
+    final _chatCollection = FirebaseFirestore.instance
+        .collection(FirebaseConstants.matchCollection)
+        .doc(matchId)
+        .collection(FirebaseConstants.chatCollection);
+
+    try {
+      await _chatCollection.doc(chat.id).update(chat.toMap());
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<String?> uploadFile(
+      {required File file, required String matchId}) async {
+    final _currentTime = DateTime.now();
+
+    try {
+      final _ref = FirebaseStorage.instance
+          .ref()
+          .child(FirebaseConstants.chatCollection)
+          .child(matchId)
+          .child(_currentTime.millisecondsSinceEpoch.toString());
+
+      final _uploadTask = _ref.putFile(file);
+      String? _url;
+      await _uploadTask.whenComplete(() async {
+        _url = await _ref.getDownloadURL();
+      });
+
+      return _url;
+    } catch (e) {
+      return null;
     }
   }
 }

@@ -612,7 +612,7 @@ PODS:
   - BoringSSL-GRPC/Implementation (0.0.24):
     - BoringSSL-GRPC/Interface (= 0.0.24)
   - BoringSSL-GRPC/Interface (0.0.24)
-  - cloud_firestore (3.1.15):
+  - cloud_firestore (3.1.16):
     - Firebase/Firestore (= 8.15.0)
     - firebase_core
     - Flutter
@@ -935,7 +935,7 @@ SPEC CHECKSUMS:
   audio_session: 4f3e461722055d21515cf3261b64c973c062f345
   awesome_notifications: 04530aafec8dac4635244ed4b4072f4aea6cc938
   BoringSSL-GRPC: 3175b25143e648463a56daeaaa499c6cb86dad33
-  cloud_firestore: 76e73835a6ac79ac825190eefd876a1e100c7835
+  cloud_firestore: c85ca781dc18eed0b05c90973b4b030e6802acc4
   device_info_plus: e5c5da33f982a436e103237c0c85f9031142abed
   emoji_picker_flutter: df19dac03a2b39ac667dc8d1da939ef3a9e21347
   FBAEMKit: c2b2895363b7e57192013d1dc49fdf498b28624c

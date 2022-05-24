@@ -10,6 +10,7 @@ class ChatItemModel {
   String? audio;
   String? file;
   DateTime createdAt;
+  bool isRead;
   ChatItemModel({
     required this.id,
     this.userId,
@@ -20,6 +21,7 @@ class ChatItemModel {
     this.audio,
     this.file,
     required this.createdAt,
+    required this.isRead,
   });
 
   ChatItemModel copyWith({
@@ -32,6 +34,7 @@ class ChatItemModel {
     String? audio,
     String? file,
     DateTime? createdAt,
+    bool? isRead,
   }) {
     return ChatItemModel(
       id: id ?? this.id,
@@ -43,6 +46,7 @@ class ChatItemModel {
       audio: audio ?? this.audio,
       file: file ?? this.file,
       createdAt: createdAt ?? this.createdAt,
+      isRead: isRead ?? this.isRead,
     );
   }
 
@@ -70,6 +74,7 @@ class ChatItemModel {
       result.addAll({'file': file});
     }
     result.addAll({'createdAt': createdAt.millisecondsSinceEpoch});
+    result.addAll({'isRead': isRead});
 
     return result;
   }
@@ -85,6 +90,7 @@ class ChatItemModel {
       audio: map['audio'],
       file: map['file'],
       createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt']),
+      isRead: map['isRead'] ?? false,
     );
   }
 
@@ -95,7 +101,7 @@ class ChatItemModel {
 
   @override
   String toString() {
-    return 'ChatItemModel(id: $id, userId: $userId, matchId: $matchId, message: $message, image: $image, video: $video, audio: $audio, file: $file, createdAt: $createdAt)';
+    return 'ChatItemModel(id: $id, userId: $userId, matchId: $matchId, message: $message, image: $image, video: $video, audio: $audio, file: $file, createdAt: $createdAt, isRead: $isRead)';
   }
 
   @override
@@ -111,7 +117,8 @@ class ChatItemModel {
         other.video == video &&
         other.audio == audio &&
         other.file == file &&
-        other.createdAt == createdAt;
+        other.createdAt == createdAt &&
+        other.isRead == isRead;
   }
 
   @override
@@ -124,6 +131,7 @@ class ChatItemModel {
         video.hashCode ^
         audio.hashCode ^
         file.hashCode ^
-        createdAt.hashCode;
+        createdAt.hashCode ^
+        isRead.hashCode;
   }
 }

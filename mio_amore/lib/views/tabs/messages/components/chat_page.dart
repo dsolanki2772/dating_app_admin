@@ -1,20 +1,25 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:mio_amore/config/config.dart';
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/helpers/date_formater.dart';
+import 'package:mio_amore/helpers/media_picker_helper.dart';
 import 'package:mio_amore/models/chat_item_model.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
 import 'package:mio_amore/providers/chat_provider.dart';
+import 'package:mio_amore/views/others/photo_view_page.dart';
 import 'package:mio_amore/views/others/user_details_page.dart';
+import 'package:mio_amore/views/others/video_player_page.dart';
 import 'package:mio_amore/views/tabs/home/notification_page.dart';
+import 'package:mio_amore/views/tabs/messages/components/chat_media_gallery_page.dart';
 import 'package:mio_amore/views/tabs/messages/components/chat_page_background.dart';
 
 class ChatPage extends ConsumerStatefulWidget {
@@ -33,21 +38,75 @@ class ChatPage extends ConsumerStatefulWidget {
 class _ChatPageState extends ConsumerState<ChatPage> {
   final _chatController = TextEditingController();
   bool emojiShowing = false;
+  String? _imagePath;
+  String? _videoPath;
+  String? _audioPath;
+  String? _filePath;
 
   void _onSendMessage() async {
     final _chatProvider = ref.read(chatProvider);
 
-    if (_chatController.text.isNotEmpty) {
+    if (_chatController.text.isNotEmpty ||
+        _imagePath != null ||
+        _videoPath != null ||
+        _audioPath != null ||
+        _filePath != null) {
       final _currentTime = DateTime.now();
+
+      String? _imageUrl;
+      String? _videoUrl;
+      String? _audioUrl;
+      String? _fileUrl;
+
+      if (_imagePath != null) {
+        EasyLoading.show(status: 'Uploading image...');
+        _imageUrl = await _chatProvider.uploadFile(
+            file: File(_imagePath!), matchId: widget.matchId);
+        EasyLoading.dismiss();
+      }
+
+      if (_videoPath != null) {
+        EasyLoading.show(status: 'Uploading video...');
+        _videoUrl = await _chatProvider.uploadFile(
+            file: File(_videoPath!), matchId: widget.matchId);
+        EasyLoading.dismiss();
+      }
+
+      if (_audioPath != null) {
+        EasyLoading.show(status: 'Uploading audio...');
+        _audioUrl = await _chatProvider.uploadFile(
+            file: File(_audioPath!), matchId: widget.matchId);
+        EasyLoading.dismiss();
+      }
+
+      if (_filePath != null) {
+        EasyLoading.show(status: 'Uploading file...');
+        _fileUrl = await _chatProvider.uploadFile(
+            file: File(_filePath!), matchId: widget.matchId);
+        EasyLoading.dismiss();
+      }
+
       ChatItemModel chatItem = ChatItemModel(
-        message: _chatController.text,
+        message: _chatController.text.isEmpty ? null : _chatController.text,
         createdAt: _currentTime,
         id: _currentTime.millisecondsSinceEpoch.toString(),
         userId: FirebaseAuth.instance.currentUser!.uid,
         matchId: widget.matchId,
+        isRead: false,
+        image: _imageUrl,
+        video: _videoUrl,
+        audio: _audioUrl,
+        file: _fileUrl,
       );
-      await _chatProvider.createChatItem(widget.matchId, chatItem);
+
+      _chatProvider.createChatItem(widget.matchId, chatItem);
       _chatController.clear();
+      setState(() {
+        _imagePath = null;
+        _videoPath = null;
+        _audioPath = null;
+        _filePath = null;
+      });
     }
   }
 
@@ -117,6 +176,30 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                       emojiShowing = false;
                     });
                   },
+                  imageUrl: _imagePath,
+                  videoUrl: _videoPath,
+                  audioUrl: _audioPath,
+                  fileUrl: _filePath,
+                  onImageSelected: (String? path) {
+                    setState(() {
+                      _imagePath = path;
+                    });
+                  },
+                  onVideoSelected: (String? path) {
+                    setState(() {
+                      _videoPath = path;
+                    });
+                  },
+                  onAudioSelected: (String? path) {
+                    setState(() {
+                      _audioPath = path;
+                    });
+                  },
+                  onFileSelected: (String? path) {
+                    setState(() {
+                      _filePath = path;
+                    });
+                  },
                   onTapSend: _onSendMessage,
                 ),
                 const SizedBox(height: AppConstants.defaultNumericValue / 2),
@@ -157,106 +240,21 @@ class ChatBody extends ConsumerWidget {
         data: (data) {
           return ListView(
             reverse: true,
-            children: data.map((e) {
-              final bool? _isNotMe = e.userId == null
-                  ? null
-                  : e.userId != FirebaseAuth.instance.currentUser?.uid;
-
-              return _isNotMe == null
-                  ? Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Center(
-                          child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppConstants.defaultNumericValue,
-                          vertical: AppConstants.defaultNumericValue / 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(
-                            AppConstants.defaultNumericValue,
-                          ),
-                        ),
-                        child: Text(e.message ?? ""),
-                      )),
-                    )
-                  : Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Align(
-                          alignment: _isNotMe
-                              ? Alignment.centerLeft
-                              : Alignment.centerRight,
-                          child: Container(
-                            margin: const EdgeInsets.all(
-                                AppConstants.defaultNumericValue / 4),
-                            constraints: BoxConstraints(
-                              maxWidth: MediaQuery.of(context).size.width * 0.8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _isNotMe
-                                  ? AppConfig.chatTextFieldAndOtherText
-                                  : AppConfig.chatMyTextColor,
-                              borderRadius: BorderRadius.only(
-                                topLeft: const Radius.circular(
-                                    AppConstants.defaultNumericValue),
-                                topRight: const Radius.circular(
-                                    AppConstants.defaultNumericValue),
-                                bottomLeft: _isNotMe
-                                    ? Radius.zero
-                                    : const Radius.circular(
-                                        AppConstants.defaultNumericValue),
-                                bottomRight: _isNotMe
-                                    ? const Radius.circular(
-                                        AppConstants.defaultNumericValue)
-                                    : Radius.zero,
-                              ),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(
-                                  AppConstants.defaultNumericValue / 1.3),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    e.message ?? "",
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    DateFormatter.toWholeDateTime(e.createdAt),
-                                    style: Theme.of(context).textTheme.caption,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        _isNotMe
-                            ? const SizedBox(
-                                height: AppConstants.defaultNumericValue / 8)
-                            : const SizedBox()
-                      ],
-                    );
-            }).toList(),
+            children: data.map(
+              (e) {
+                return MessageSingleTile(chat: e, matchId: matchId);
+              },
+            ).toList(),
           );
         },
         error: (_, __) => const SizedBox(),
         loading: () => const SizedBox());
-    // return ListView(
-    //   reverse: true,
-    //   shrinkWrap: true,
-    //   children: [
-    //     for (var i = 0; i < 100; i++)
-
-    //   ],
-    // );
   }
 }
 
 class ChatTopBar extends ConsumerStatefulWidget {
   final UserProfileModel otherUser;
+
   final String matchId;
   const ChatTopBar({
     Key? key,
@@ -361,6 +359,13 @@ class _ChatTopBarState extends ConsumerState<ChatTopBar> {
                           title: 'Media Gallery',
                           onTap: () {
                             _moreMenuController.hideMenu();
+                            Navigator.of(context).push(
+                              CupertinoPageRoute(
+                                builder: (context) =>
+                                    ChatMediaGalleryConsumerPage(
+                                        matchId: widget.matchId),
+                              ),
+                            );
                           },
                         ),
                         MoreMenuTitle(
@@ -381,20 +386,20 @@ class _ChatTopBarState extends ConsumerState<ChatTopBar> {
                             _moreMenuController.hideMenu();
                           },
                         ),
-                        MoreMenuTitle(
-                          title: 'Clear Chat',
-                          onTap: () async {
-                            _moreMenuController.hideMenu();
-                            await ref
-                                .read(chatProvider)
-                                .clearChat(widget.matchId)
-                                .then((value) {
-                              if (value) {
-                                Navigator.of(context).pop();
-                              }
-                            });
-                          },
-                        ),
+                        // MoreMenuTitle(
+                        //   title: 'Clear Chat',
+                        //   onTap: () async {
+                        //     _moreMenuController.hideMenu();
+                        //     await ref
+                        //         .read(chatProvider)
+                        //         .clearChat(widget.matchId)
+                        //         .then((value) {
+                        //       if (value) {
+                        //         Navigator.of(context).pop();
+                        //       }
+                        //     });
+                        //   },
+                        // ),
                         MoreMenuTitle(
                           title: 'Report',
                           onTap: () {
@@ -433,6 +438,15 @@ class ChatTextFieldAndOthers extends StatefulWidget {
   final VoidCallback onTapSend;
   final VoidCallback onChangeText;
   final VoidCallback onTapTextField;
+  final String? imageUrl;
+  final String? videoUrl;
+  final String? audioUrl;
+  final String? fileUrl;
+  final Function(String?) onImageSelected;
+  final Function(String?) onVideoSelected;
+  final Function(String?) onAudioSelected;
+  final Function(String?) onFileSelected;
+
   const ChatTextFieldAndOthers({
     Key? key,
     required this.chatController,
@@ -441,6 +455,14 @@ class ChatTextFieldAndOthers extends StatefulWidget {
     required this.onTapSend,
     required this.onChangeText,
     required this.onTapTextField,
+    this.imageUrl,
+    this.videoUrl,
+    this.audioUrl,
+    this.fileUrl,
+    required this.onImageSelected,
+    required this.onVideoSelected,
+    required this.onAudioSelected,
+    required this.onFileSelected,
   }) : super(key: key);
 
   @override
@@ -453,117 +475,157 @@ class _ChatTextFieldAndOthersState extends State<ChatTextFieldAndOthers> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.end,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        CustomPopupMenu(
-          child: CupertinoButton(
-            padding: EdgeInsets.zero,
-            child: Icon(CupertinoIcons.add_circled_solid,
-                color: AppConstants.primaryColor),
-            onPressed: null,
+        if (widget.imageUrl != null)
+          Image.file(
+            File(widget.imageUrl!),
+            fit: BoxFit.cover,
+            height: 300,
           ),
-          menuBuilder: () => ClipRRect(
-            borderRadius:
-                BorderRadius.circular(AppConstants.defaultNumericValue / 2),
-            child: Container(
-              decoration: BoxDecoration(color: AppConstants.primaryColor),
-              child: IntrinsicWidth(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+        if (widget.videoUrl != null)
+          VideoPlayerThumbNail(onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) =>
+                  VideoPlayerPage(isNetwork: false, videoUrl: widget.videoUrl!),
+            ));
+          }),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            CustomPopupMenu(
+              child: CupertinoButton(
+                padding: EdgeInsets.zero,
+                child: Icon(CupertinoIcons.add_circled_solid,
+                    color: AppConstants.primaryColor),
+                onPressed: null,
+              ),
+              menuBuilder: () => ClipRRect(
+                borderRadius:
+                    BorderRadius.circular(AppConstants.defaultNumericValue / 2),
+                child: Container(
+                  decoration: BoxDecoration(color: AppConstants.primaryColor),
+                  child: IntrinsicWidth(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        ChatAddMenuItem(
+                          icon: CupertinoIcons.photo_camera_solid,
+                          title: 'Camera',
+                          onTap: () async {
+                            _addMenuController.hideMenu();
+                            pickMedia(isCamera: true).then((value) {
+                              widget.onImageSelected(value);
+                            });
+                          },
+                        ),
+                        ChatAddMenuItem(
+                          icon: CupertinoIcons.photo_fill,
+                          title: 'Gallery',
+                          onTap: () {
+                            _addMenuController.hideMenu();
+                            pickMedia(isCamera: false).then((value) {
+                              widget.onImageSelected(value);
+                            });
+                          },
+                        ),
+                        // ChatAddMenuItem(
+                        //   icon: CupertinoIcons.mic_solid,
+                        //   title: 'Audio',
+                        //   onTap: () {
+                        //     _addMenuController.hideMenu();
+                        //     widget.onAudioSelected(null);
+                        //   },
+                        // ),
+                        ChatAddMenuItem(
+                          icon: CupertinoIcons.video_camera_solid,
+                          title: 'Video',
+                          onTap: () {
+                            _addMenuController.hideMenu();
+                            pickMedia(isVideo: true).then((value) {
+                              widget.onVideoSelected(value);
+                            });
+                          },
+                        ),
+                        // ChatAddMenuItem(
+                        //   icon: CupertinoIcons.paperclip,
+                        //   title: 'File',
+                        //   onTap: () {
+                        //     _addMenuController.hideMenu();
+                        //     widget.onFileSelected(null);
+                        //   },
+                        // ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              pressType: PressType.singleClick,
+              verticalMargin: -10,
+              controller: _addMenuController,
+              arrowColor: AppConstants.primaryColor,
+              barrierColor: AppConstants.primaryColor.withOpacity(0.1),
+            ),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.only(
+                    left: AppConstants.defaultNumericValue),
+                decoration: BoxDecoration(
+                  borderRadius:
+                      BorderRadius.circular(AppConstants.defaultNumericValue),
+                  color: AppConfig.chatTextFieldAndOtherText,
+                ),
+                child: Row(
                   children: [
-                    ChatAddMenuItem(
-                      icon: CupertinoIcons.photo_camera_solid,
-                      title: 'Camera',
-                      onTap: () {
-                        _addMenuController.hideMenu();
-                      },
+                    Expanded(
+                      child: TextField(
+                        controller: widget.chatController,
+                        keyboardType: TextInputType.text,
+                        minLines: null,
+                        onTap: widget.onTapTextField,
+                        onSubmitted: (value) {
+                          widget.onTapSend();
+                        },
+                        onChanged: (_) {
+                          widget.onChangeText();
+                        },
+                        decoration: const InputDecoration(
+                          hintText: 'Type here...',
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.zero,
+                          isDense: true,
+                        ),
+                      ),
                     ),
-                    ChatAddMenuItem(
-                      icon: CupertinoIcons.photo_fill,
-                      title: 'Gallery',
-                      onTap: () {
-                        _addMenuController.hideMenu();
-                      },
-                    ),
-                    ChatAddMenuItem(
-                      icon: CupertinoIcons.mic_solid,
-                      title: 'Audio',
-                      onTap: () {
-                        _addMenuController.hideMenu();
-                      },
-                    ),
-                    ChatAddMenuItem(
-                      icon: CupertinoIcons.video_camera_solid,
-                      title: 'Video',
-                      onTap: () {
-                        _addMenuController.hideMenu();
-                      },
+                    //Emoji
+                    CupertinoButton(
+                      padding: EdgeInsets.zero,
+                      child: const Icon(CupertinoIcons.smiley),
+                      onPressed: widget.onTapEmoji,
                     ),
                   ],
                 ),
               ),
             ),
-          ),
-          pressType: PressType.singleClick,
-          verticalMargin: -10,
-          controller: _addMenuController,
-          arrowColor: AppConstants.primaryColor,
-          barrierColor: AppConstants.primaryColor.withOpacity(0.1),
-        ),
-        Expanded(
-          child: Container(
-            padding:
-                const EdgeInsets.only(left: AppConstants.defaultNumericValue),
-            decoration: BoxDecoration(
-              borderRadius:
-                  BorderRadius.circular(AppConstants.defaultNumericValue),
-              color: AppConfig.chatTextFieldAndOtherText,
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: widget.chatController,
-                    keyboardType: TextInputType.text,
-                    minLines: null,
-                    onTap: widget.onTapTextField,
-                    onSubmitted: (value) {
-                      widget.onTapSend();
-                    },
-                    onChanged: (_) {
-                      widget.onChangeText();
-                    },
-                    decoration: const InputDecoration(
-                      hintText: 'Type here...',
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.zero,
-                      isDense: true,
-                    ),
+            widget.chatController.text.isEmpty &&
+                    widget.imageUrl == null &&
+                    widget.videoUrl == null &&
+                    widget.audioUrl == null &&
+                    widget.fileUrl == null
+                ? CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    child: const Icon(CupertinoIcons.mic_circle_fill),
+                    onPressed: widget.onTapVoice,
+                  )
+                : CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    child: const Icon(CupertinoIcons.paperplane_fill),
+                    onPressed: widget.onTapSend,
                   ),
-                ),
-                //Emoji
-                CupertinoButton(
-                  padding: EdgeInsets.zero,
-                  child: const Icon(CupertinoIcons.smiley),
-                  onPressed: widget.onTapEmoji,
-                ),
-              ],
-            ),
-          ),
+          ],
         ),
-        widget.chatController.text.isEmpty
-            ? CupertinoButton(
-                padding: EdgeInsets.zero,
-                child: const Icon(CupertinoIcons.mic_circle_fill),
-                onPressed: widget.onTapVoice,
-              )
-            : CupertinoButton(
-                padding: EdgeInsets.zero,
-                child: const Icon(CupertinoIcons.paperplane_fill),
-                onPressed: widget.onTapSend,
-              ),
       ],
     );
   }
@@ -658,3 +720,148 @@ final _emojiPickerConfig = Config(
   categoryIcons: const CategoryIcons(),
   buttonMode: ButtonMode.CUPERTINO,
 );
+
+class MessageSingleTile extends ConsumerWidget {
+  final ChatItemModel chat;
+  final String matchId;
+  const MessageSingleTile({
+    Key? key,
+    required this.chat,
+    required this.matchId,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bool? _isNotMe = chat.userId == null
+        ? null
+        : chat.userId != FirebaseAuth.instance.currentUser?.uid;
+
+    if (_isNotMe == null) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Center(
+            child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppConstants.defaultNumericValue,
+            vertical: AppConstants.defaultNumericValue / 2,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(
+              AppConstants.defaultNumericValue,
+            ),
+          ),
+          child: Text(chat.message ?? ""),
+        )),
+      );
+    } else {
+      if (!chat.isRead) {
+        if (_isNotMe) {
+          ref
+              .read(chatProvider)
+              .updateChatItem(matchId, chat.copyWith(isRead: true));
+        }
+      }
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Align(
+            alignment: _isNotMe ? Alignment.centerLeft : Alignment.centerRight,
+            child: Container(
+              margin:
+                  const EdgeInsets.all(AppConstants.defaultNumericValue / 4),
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.8,
+              ),
+              decoration: BoxDecoration(
+                color: _isNotMe
+                    ? AppConfig.chatTextFieldAndOtherText
+                    : AppConfig.chatMyTextColor,
+                borderRadius: BorderRadius.only(
+                  topLeft:
+                      const Radius.circular(AppConstants.defaultNumericValue),
+                  topRight:
+                      const Radius.circular(AppConstants.defaultNumericValue),
+                  bottomLeft: _isNotMe
+                      ? Radius.zero
+                      : const Radius.circular(AppConstants.defaultNumericValue),
+                  bottomRight: _isNotMe
+                      ? const Radius.circular(AppConstants.defaultNumericValue)
+                      : Radius.zero,
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(
+                    AppConstants.defaultNumericValue / 1.3),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: _isNotMe
+                      ? CrossAxisAlignment.start
+                      : CrossAxisAlignment.end,
+                  children: [
+                    if (chat.image != null)
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.3,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => PhotoViewPage(
+                                images: [chat.image!],
+                                title: chat.message,
+                              ),
+                            ));
+                          },
+                          child: CachedNetworkImage(
+                            imageUrl: chat.image!,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    if (chat.image != null) const SizedBox(height: 8),
+                    if (chat.video != null)
+                      VideoPlayerThumbNail(onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => VideoPlayerPage(
+                              isNetwork: true, videoUrl: chat.video!),
+                        ));
+                      }),
+                    if (chat.video != null) const SizedBox(height: 8),
+                    if (chat.message != null)
+                      Text(
+                        chat.message ?? "",
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          DateFormatter.toWholeDateTime(chat.createdAt),
+                          style: Theme.of(context).textTheme.caption,
+                        ),
+                        if (!_isNotMe) const SizedBox(width: 8),
+                        if (!_isNotMe)
+                          Icon(
+                            Icons.done_all,
+                            size: 12,
+                            color: chat.isRead
+                                ? AppConstants.primaryColor
+                                : Colors.black,
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          _isNotMe
+              ? const SizedBox(height: AppConstants.defaultNumericValue / 8)
+              : const SizedBox()
+        ],
+      );
+    }
+  }
+}

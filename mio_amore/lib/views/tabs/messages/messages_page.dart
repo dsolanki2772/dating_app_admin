@@ -1,16 +1,12 @@
 import 'dart:convert';
-
-import 'package:collection/collection.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/helpers/date_formater.dart';
 import 'package:mio_amore/models/chat_item_model.dart';
-import 'package:mio_amore/models/match_model.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
 import 'package:mio_amore/providers/chat_provider.dart';
 import 'package:mio_amore/providers/match_provider.dart';
@@ -252,10 +248,32 @@ class ConversationTile extends ConsumerWidget {
               ),
             ],
           ),
-          subtitle: Text(
-            messageViewModel.lastMessage.message ?? "",
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+          subtitle: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              if (messageViewModel.lastMessage.userId ==
+                  FirebaseAuth.instance.currentUser!.uid)
+                const Text('You: '),
+              if (messageViewModel.lastMessage.image != null)
+                Icon(
+                  Icons.image,
+                  color: AppConstants.primaryColor,
+                ),
+              if (messageViewModel.lastMessage.image != null)
+                const SizedBox(width: AppConstants.defaultNumericValue / 2),
+              if (messageViewModel.lastMessage.video != null)
+                Icon(
+                  Icons.movie,
+                  color: AppConstants.primaryColor,
+                ),
+              if (messageViewModel.lastMessage.video != null)
+                const SizedBox(width: AppConstants.defaultNumericValue / 2),
+              Text(
+                messageViewModel.lastMessage.message ?? "",
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
           ),
           leading: UserCirlePicture(
               imageUrl: messageViewModel.matchedUser.profilePicture,

@@ -295,13 +295,25 @@ class DetailsBody extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(user.fullName,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headline6!
-                                  .copyWith(fontWeight: FontWeight.bold)),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                child: Text(user.fullName,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline6!
+                                        .copyWith(fontWeight: FontWeight.bold)),
+                              ),
+                              const SizedBox(
+                                  width: AppConstants.defaultNumericValue / 4),
+                              if (user.isVerified)
+                                const Icon(Icons.verified_user,
+                                    color: CupertinoColors.activeGreen),
+                            ],
+                          ),
                           const SizedBox(
                               height: AppConstants.defaultNumericValue / 4),
                           Row(
