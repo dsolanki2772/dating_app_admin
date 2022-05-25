@@ -4,11 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mio_amore/helpers/encrypt_helper.dart';
 import 'package:mio_amore/models/match_model.dart';
 import 'package:mio_amore/providers/match_provider.dart';
 import 'package:mio_amore/views/tabs/messages/components/chat_page.dart';
 import 'package:swipe_cards/swipe_cards.dart';
-
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/models/user_interaction_model.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
@@ -118,9 +118,7 @@ class _HomePageState extends State<HomePage> {
               }),
               trailing: CustomIconButton(
                 icon: CupertinoIcons.bell_solid,
-                onPressed: () {
-                  //TODO: Open Notifications!!
-                },
+                onPressed: () {},
                 padding: const EdgeInsets.all(
                     AppConstants.defaultNumericValue / 1.5),
               ),

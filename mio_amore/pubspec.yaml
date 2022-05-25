@@ -71,6 +71,9 @@ dependencies:
   flutter_spinkit: ^5.1.0
   twitter_login: ^4.2.3
   video_player: ^2.4.2
+  encrypt: ^5.0.1
+  social_media_recorder: ^0.1.61
+  voice_message_package: ^0.0.74
 
 dependency_overrides:
   photo_view:

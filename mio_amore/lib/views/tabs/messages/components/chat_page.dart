@@ -11,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mio_amore/config/config.dart';
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/helpers/date_formater.dart';
+import 'package:mio_amore/helpers/encrypt_helper.dart';
 import 'package:mio_amore/helpers/media_picker_helper.dart';
 import 'package:mio_amore/models/chat_item_model.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
@@ -21,6 +22,9 @@ import 'package:mio_amore/views/others/video_player_page.dart';
 import 'package:mio_amore/views/tabs/home/notification_page.dart';
 import 'package:mio_amore/views/tabs/messages/components/chat_media_gallery_page.dart';
 import 'package:mio_amore/views/tabs/messages/components/chat_page_background.dart';
+import 'package:social_media_recorder/audio_encoder_type.dart';
+import 'package:social_media_recorder/screen/social_media_recorder.dart';
+import 'package:voice_message_package/voice_message_package.dart';
 
 class ChatPage extends ConsumerStatefulWidget {
   final UserProfileModel otherUser;
@@ -42,6 +46,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   String? _videoPath;
   String? _audioPath;
   String? _filePath;
+
+  String? _searchQuery;
 
   void _onSendMessage() async {
     final _chatProvider = ref.read(chatProvider);
@@ -86,8 +92,12 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         EasyLoading.dismiss();
       }
 
+      final String? _message = _chatController.text.isEmpty
+          ? null
+          : encryptText(_chatController.text);
+
       ChatItemModel chatItem = ChatItemModel(
-        message: _chatController.text.isEmpty ? null : _chatController.text,
+        message: _message,
         createdAt: _currentTime,
         id: _currentTime.millisecondsSinceEpoch.toString(),
         userId: FirebaseAuth.instance.currentUser!.uid,
@@ -154,9 +164,22 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                 ChatTopBar(
                   otherUser: widget.otherUser,
                   matchId: widget.matchId,
+                  onSearch: (query) {
+                    setState(() {
+                      _searchQuery = query;
+                    });
+                  },
                 ),
                 Expanded(
-                  child: ChatBody(matchId: widget.matchId),
+                  child: ChatBody(
+                    matchId: widget.matchId,
+                    searchQuery: _searchQuery,
+                    onSearchClear: () {
+                      setState(() {
+                        _searchQuery = null;
+                      });
+                    },
+                  ),
                 ),
                 const SizedBox(height: AppConstants.defaultNumericValue / 2),
                 ChatTextFieldAndOthers(
@@ -170,7 +193,15 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                     });
                     FocusScope.of(context).requestFocus(FocusNode());
                   },
-                  onTapVoice: () {},
+                  onTapVoice: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isDismissible: false,
+                      enableDrag: false,
+                      backgroundColor: Colors.transparent,
+                      builder: (_) => VoiceRecorder(matchId: widget.matchId),
+                    );
+                  },
                   onTapTextField: () {
                     setState(() {
                       emojiShowing = false;
@@ -225,26 +256,99 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   }
 }
 
-class ChatBody extends ConsumerWidget {
+class ChatBody extends ConsumerStatefulWidget {
   final String matchId;
+  final String? searchQuery;
+  final VoidCallback onSearchClear;
   const ChatBody({
     Key? key,
     required this.matchId,
+    required this.searchQuery,
+    required this.onSearchClear,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context, ref) {
-    final _chatStreams = ref.watch(chatStreamProviderProvider(matchId));
+  ConsumerState<ChatBody> createState() => _ChatBodyState();
+}
+
+class _ChatBodyState extends ConsumerState<ChatBody> {
+  final _scrollController = ScrollController();
+
+  @override
+  Widget build(BuildContext context) {
+    final _chatStreams = ref.watch(chatStreamProviderProvider(widget.matchId));
 
     return _chatStreams.when(
         data: (data) {
-          return ListView(
-            reverse: true,
-            children: data.map(
-              (e) {
-                return MessageSingleTile(chat: e, matchId: matchId);
-              },
-            ).toList(),
+          return Column(
+            children: [
+              if (widget.searchQuery != null && widget.searchQuery!.isNotEmpty)
+                ListTile(
+                  title: Text(
+                    "Searching for",
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                  leading: const Icon(Icons.search),
+                  minLeadingWidth: 0,
+                  subtitle: Text(
+                    widget.searchQuery!,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: widget.onSearchClear,
+                      ),
+                      IconButton(
+                          onPressed: () {
+                            //Move to a specific chat item
+                            _scrollController.animateTo(
+                              _scrollController.position.minScrollExtent,
+                              duration: const Duration(milliseconds: 1000),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                          icon: const Icon(Icons.arrow_downward)),
+                      IconButton(
+                          onPressed: () {
+                            _scrollController.animateTo(
+                              _scrollController.position.maxScrollExtent,
+                              duration: const Duration(milliseconds: 1000),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                          icon: const Icon(Icons.arrow_upward)),
+                    ],
+                  ),
+                ),
+              if (widget.searchQuery != null && widget.searchQuery!.isNotEmpty)
+                const Divider(height: 0),
+              Expanded(
+                child: ListView.builder(
+                  controller: _scrollController,
+                  reverse: true,
+                  itemCount: data.length,
+                  itemBuilder: (context, index) {
+                    final item = data[index];
+                    final bool isSearching = widget.searchQuery != null &&
+                        widget.searchQuery!.isNotEmpty &&
+                        item.message != null &&
+                        decryptText(item.message!)
+                            .toLowerCase()
+                            .contains(widget.searchQuery!.toLowerCase());
+
+                    return MessageSingleTile(
+                      key: ValueKey(item.id),
+                      chat: item,
+                      matchId: widget.matchId,
+                      isSearching: isSearching,
+                    );
+                  },
+                ),
+              ),
+            ],
           );
         },
         error: (_, __) => const SizedBox(),
@@ -254,11 +358,13 @@ class ChatBody extends ConsumerWidget {
 
 class ChatTopBar extends ConsumerStatefulWidget {
   final UserProfileModel otherUser;
+  final Function(String?) onSearch;
 
   final String matchId;
   const ChatTopBar({
     Key? key,
     required this.otherUser,
+    required this.onSearch,
     required this.matchId,
   }) : super(key: key);
 
@@ -313,18 +419,18 @@ class _ChatTopBarState extends ConsumerState<ChatTopBar> {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CupertinoButton(
-              padding: EdgeInsets.zero,
-              child:
-                  const Icon(CupertinoIcons.phone_solid, color: Colors.white),
-              onPressed: () {},
-            ),
-            CupertinoButton(
-              padding: EdgeInsets.zero,
-              child: const Icon(CupertinoIcons.video_camera_solid,
-                  color: Colors.white),
-              onPressed: () {},
-            ),
+            // CupertinoButton(
+            //   padding: EdgeInsets.zero,
+            //   child:
+            //       const Icon(CupertinoIcons.phone_solid, color: Colors.white),
+            //   onPressed: () {},
+            // ),
+            // CupertinoButton(
+            //   padding: EdgeInsets.zero,
+            //   child: const Icon(CupertinoIcons.video_camera_solid,
+            //       color: Colors.white),
+            //   onPressed: () {},
+            // ),
             CustomPopupMenu(
               child: const CupertinoButton(
                 padding: EdgeInsets.zero,
@@ -370,8 +476,45 @@ class _ChatTopBarState extends ConsumerState<ChatTopBar> {
                         ),
                         MoreMenuTitle(
                           title: 'Search',
-                          onTap: () {
+                          onTap: () async {
                             _moreMenuController.hideMenu();
+                            final String? _query = await showDialog(
+                                context: context,
+                                builder: (context) {
+                                  final _searchController =
+                                      TextEditingController();
+                                  return AlertDialog(
+                                    title: const Text('Search Keyword'),
+                                    content: TextField(
+                                      controller: _searchController,
+                                      autofocus: true,
+                                      onChanged: (_) {
+                                        setState(() {});
+                                      },
+                                      decoration: const InputDecoration(
+                                          hintText: 'Search here...'),
+                                    ),
+                                    actions: [
+                                      OutlinedButton(
+                                        child: const Text('Cancel'),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop(
+                                              _searchController.text.isEmpty
+                                                  ? null
+                                                  : _searchController.text);
+                                        },
+                                        child: const Text("Search"),
+                                      )
+                                    ],
+                                  );
+                                });
+
+                            widget.onSearch(_query);
                           },
                         ),
                         MoreMenuTitle(
@@ -724,10 +867,12 @@ final _emojiPickerConfig = Config(
 class MessageSingleTile extends ConsumerWidget {
   final ChatItemModel chat;
   final String matchId;
+  final bool isSearching;
   const MessageSingleTile({
     Key? key,
     required this.chat,
     required this.matchId,
+    required this.isSearching,
   }) : super(key: key);
 
   @override
@@ -818,7 +963,8 @@ class MessageSingleTile extends ConsumerWidget {
                           ),
                         ),
                       ),
-                    if (chat.image != null) const SizedBox(height: 8),
+                    if (chat.image != null && chat.message != null)
+                      const SizedBox(height: 8),
                     if (chat.video != null)
                       VideoPlayerThumbNail(onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
@@ -826,11 +972,27 @@ class MessageSingleTile extends ConsumerWidget {
                               isNetwork: true, videoUrl: chat.video!),
                         ));
                       }),
-                    if (chat.video != null) const SizedBox(height: 8),
+                    if (chat.video != null && chat.message != null)
+                      const SizedBox(height: 8),
+                    if (chat.audio != null)
+                      VoiceMessage(
+                        audioSrc: chat.audio!,
+                        me: !_isNotMe,
+                        contactBgColor: Colors.white,
+                        meBgColor: AppConfig.primaryColor,
+                        contactFgColor: AppConfig.primaryColor,
+                        contactPlayIconColor: Colors.white,
+                        mePlayIconColor: AppConfig.primaryColor,
+                      ),
+                    if (chat.audio != null && chat.message != null)
+                      const SizedBox(height: 8),
                     if (chat.message != null)
                       Text(
-                        chat.message ?? "",
-                        style: const TextStyle(fontSize: 16),
+                        decryptText(chat.message!),
+                        style: TextStyle(
+                          fontSize: 16,
+                          backgroundColor: isSearching ? Colors.white : null,
+                        ),
                       ),
                     const SizedBox(height: 8),
                     Row(
@@ -863,5 +1025,81 @@ class MessageSingleTile extends ConsumerWidget {
         ],
       );
     }
+  }
+}
+
+class VoiceRecorder extends ConsumerWidget {
+  final String matchId;
+  const VoiceRecorder({Key? key, required this.matchId}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, ref) {
+    return Container(
+      margin: const EdgeInsets.all(AppConstants.defaultNumericValue),
+      // height: MediaQuery.of(context).size.height * 0.2,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppConstants.defaultNumericValue),
+      ),
+      padding: const EdgeInsets.all(AppConstants.defaultNumericValue),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: const Text("Record your voice message"),
+            trailing: IconButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                icon: const Icon(Icons.close)),
+            subtitle: const Text("Press and hold the button to record"),
+          ),
+          const Divider(height: 0),
+          const SizedBox(height: AppConstants.defaultNumericValue),
+          Align(
+            alignment: Alignment.centerRight,
+            child: SocialMediaRecorder(
+              recordIconWhenLockBackGroundColor: AppConfig.primaryColor,
+              recordIconBackGroundColor: AppConfig.primaryColor,
+              recordIcon: const Icon(
+                CupertinoIcons.mic_circle_fill,
+                color: Colors.white,
+                size: 30,
+              ),
+              backGroundColor: AppConfig.primaryColor,
+              radius: BorderRadius.circular(8),
+              sendRequestFunction: (soundFile) async {
+                final _chatProvider = ref.read(chatProvider);
+                final _currentTime = DateTime.now();
+
+                EasyLoading.show(status: 'Sending voice message...');
+
+                final _audioUrl = await _chatProvider.uploadFile(
+                    file: soundFile, matchId: matchId);
+                EasyLoading.dismiss();
+
+                if (_audioUrl == null) {
+                  EasyLoading.showError('Failed to send voice message');
+                } else {
+                  ChatItemModel chatItem = ChatItemModel(
+                    createdAt: _currentTime,
+                    id: _currentTime.millisecondsSinceEpoch.toString(),
+                    userId: FirebaseAuth.instance.currentUser!.uid,
+                    matchId: matchId,
+                    isRead: false,
+                    audio: _audioUrl,
+                  );
+
+                  _chatProvider.createChatItem(matchId, chatItem);
+                }
+                Navigator.of(context).pop();
+              },
+              encode: AudioEncoderType.AAC_LD,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

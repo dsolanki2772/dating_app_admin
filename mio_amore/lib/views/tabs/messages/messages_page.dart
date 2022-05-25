@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/helpers/date_formater.dart';
+import 'package:mio_amore/helpers/encrypt_helper.dart';
 import 'package:mio_amore/models/chat_item_model.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
 import 'package:mio_amore/providers/chat_provider.dart';
@@ -269,7 +270,7 @@ class ConversationTile extends ConsumerWidget {
               if (messageViewModel.lastMessage.video != null)
                 const SizedBox(width: AppConstants.defaultNumericValue / 2),
               Text(
-                messageViewModel.lastMessage.message ?? "",
+                decryptText(messageViewModel.lastMessage.message ?? ""),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
