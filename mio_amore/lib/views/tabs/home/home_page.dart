@@ -279,6 +279,7 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
                   final UserInteractionModel? _otherUserInteraction =
                       await _interactionProvider
                           .getExistingInteraction(_user.id);
+
                   if (_otherUserInteraction != null) {
                     showMatchingDialog(
                         context, ref, _otherUserInteraction.userId);

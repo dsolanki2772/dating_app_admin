@@ -90,8 +90,9 @@ class ChatWallpaperPage extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(
                       AppConstants.defaultNumericValue / 2),
                   border: Border.all(
-                      color: AppConfig.primaryColor.withOpacity(0.5), width: 2),
-                  color: AppConfig.primaryColor.withOpacity(0.3)),
+                      color: AppConstants.primaryColor.withOpacity(0.5),
+                      width: 2),
+                  color: AppConstants.primaryColor.withOpacity(0.3)),
               child: const Center(child: Text("Solid Color")),
             ),
           ),
@@ -111,7 +112,8 @@ class ChatWallpaperPage extends ConsumerWidget {
                 borderRadius:
                     BorderRadius.circular(AppConstants.defaultNumericValue / 2),
                 border: Border.all(
-                    color: AppConfig.primaryColor.withOpacity(0.5), width: 2),
+                    color: AppConstants.primaryColor.withOpacity(0.5),
+                    width: 2),
                 color: Colors.white,
               ),
               child: const Center(child: Text("My Photos")),
@@ -127,7 +129,8 @@ class ChatWallpaperPage extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(
                       AppConstants.defaultNumericValue / 2),
                   border: Border.all(
-                      color: AppConfig.primaryColor.withOpacity(0.5), width: 2),
+                      color: AppConstants.primaryColor.withOpacity(0.5),
+                      width: 2),
                   image: const DecorationImage(
                       image: AssetImage(AppConfig.defaultChatBg),
                       fit: BoxFit.cover)),

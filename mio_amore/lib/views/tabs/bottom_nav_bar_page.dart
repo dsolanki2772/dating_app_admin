@@ -2,13 +2,12 @@ import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/providers/user_profile_provider.dart';
 import 'package:mio_amore/views/others/error_page.dart';
 import 'package:mio_amore/views/others/loading_page.dart';
-import 'package:mio_amore/views/tabs/explore/explore_page.dart';
 import 'package:mio_amore/views/tabs/favourites/favourites_page.dart';
+import 'package:mio_amore/views/tabs/feeds/feeds_page.dart';
 import 'package:mio_amore/views/tabs/home/home_page.dart';
 import 'package:mio_amore/views/tabs/messages/messages_page.dart';
 import 'package:mio_amore/views/tabs/profile/first_time_update_profile_page.dart';
@@ -119,10 +118,10 @@ final List<_BottomNavBarItem> _navItems = [
   ),
   //Explore
   _BottomNavBarItem(
-    title: 'Explore',
+    title: 'Feeds',
     icon: Icons.explore_outlined,
     activeIcon: Icons.explore,
-    page: const ExplorePage(),
+    page: const FeedsPage(),
   ),
   //Favourites
   _BottomNavBarItem(

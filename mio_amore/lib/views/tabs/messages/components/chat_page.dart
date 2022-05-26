@@ -622,18 +622,48 @@ class _ChatTextFieldAndOthersState extends State<ChatTextFieldAndOthers> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (widget.imageUrl != null)
-          Image.file(
-            File(widget.imageUrl!),
-            fit: BoxFit.cover,
-            height: 300,
+          Stack(
+            children: [
+              Image.file(
+                File(widget.imageUrl!),
+                fit: BoxFit.cover,
+                height: 300,
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                child: IconButton(
+                  icon: const Icon(Icons.close),
+                  color: AppConstants.primaryColor,
+                  onPressed: () {
+                    widget.onImageSelected(null);
+                  },
+                ),
+              ),
+            ],
           ),
         if (widget.videoUrl != null)
-          VideoPlayerThumbNail(onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) =>
-                  VideoPlayerPage(isNetwork: false, videoUrl: widget.videoUrl!),
-            ));
-          }),
+          Stack(
+            children: [
+              VideoPlayerThumbNail(onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => VideoPlayerPage(
+                      isNetwork: false, videoUrl: widget.videoUrl!),
+                ));
+              }),
+              Positioned(
+                right: 0,
+                top: 0,
+                child: IconButton(
+                  icon: const Icon(Icons.close),
+                  color: AppConstants.primaryColor,
+                  onPressed: () {
+                    widget.onVideoSelected(null);
+                  },
+                ),
+              ),
+            ],
+          ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.end,
@@ -896,7 +926,7 @@ class MessageSingleTile extends ConsumerWidget {
               AppConstants.defaultNumericValue,
             ),
           ),
-          child: Text(chat.message ?? ""),
+          child: Text(decryptText(chat.message ?? "")),
         )),
       );
     } else {
@@ -979,10 +1009,10 @@ class MessageSingleTile extends ConsumerWidget {
                         audioSrc: chat.audio!,
                         me: !_isNotMe,
                         contactBgColor: Colors.white,
-                        meBgColor: AppConfig.primaryColor,
-                        contactFgColor: AppConfig.primaryColor,
+                        meBgColor: AppConstants.primaryColor,
+                        contactFgColor: AppConstants.primaryColor,
                         contactPlayIconColor: Colors.white,
-                        mePlayIconColor: AppConfig.primaryColor,
+                        mePlayIconColor: AppConstants.primaryColor,
                       ),
                     if (chat.audio != null && chat.message != null)
                       const SizedBox(height: 8),
@@ -1060,14 +1090,14 @@ class VoiceRecorder extends ConsumerWidget {
           Align(
             alignment: Alignment.centerRight,
             child: SocialMediaRecorder(
-              recordIconWhenLockBackGroundColor: AppConfig.primaryColor,
-              recordIconBackGroundColor: AppConfig.primaryColor,
+              recordIconWhenLockBackGroundColor: AppConstants.primaryColor,
+              recordIconBackGroundColor: AppConstants.primaryColor,
               recordIcon: const Icon(
                 CupertinoIcons.mic_circle_fill,
                 color: Colors.white,
                 size: 30,
               ),
-              backGroundColor: AppConfig.primaryColor,
+              backGroundColor: AppConstants.primaryColor,
               radius: BorderRadius.circular(8),
               sendRequestFunction: (soundFile) async {
                 final _chatProvider = ref.read(chatProvider);

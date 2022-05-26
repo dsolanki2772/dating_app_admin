@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mio_amore/helpers/constants.dart';
+import 'package:mio_amore/helpers/encrypt_helper.dart';
 import 'package:mio_amore/models/chat_item_model.dart';
 import 'package:mio_amore/models/match_model.dart';
 
@@ -38,7 +39,7 @@ class MatchProvider {
       final _currentTime = DateTime.now();
       final ChatItemModel _chatItemModel = ChatItemModel(
         id: _currentTime.millisecondsSinceEpoch.toString(),
-        message: "Say Hi!",
+        message: encryptText("Say Hi!"),
         matchId: match.id,
         createdAt: _currentTime,
         isRead: true,
