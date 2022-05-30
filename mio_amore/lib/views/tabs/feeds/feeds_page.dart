@@ -11,6 +11,7 @@ import 'package:mio_amore/models/user_profile_model.dart';
 import 'package:mio_amore/providers/feed_provider.dart';
 import 'package:mio_amore/providers/other_users_provider.dart';
 import 'package:mio_amore/providers/user_profile_provider.dart';
+import 'package:mio_amore/views/ads/banner_ads.dart';
 import 'package:mio_amore/views/custom/custom_app_bar.dart';
 import 'package:mio_amore/views/custom/custom_headline.dart';
 import 'package:mio_amore/views/custom/custom_icon_button.dart';
@@ -57,6 +58,7 @@ class FeedsPage extends ConsumerWidget {
           ),
           const SizedBox(height: AppConstants.defaultNumericValue),
           const Expanded(child: FeedsBody()),
+          const MyBannerAd()
         ],
       ),
     );
@@ -188,37 +190,62 @@ class SingleFeedPost extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              UserCirlePicture(
-                  imageUrl: user.profilePicture,
-                  size: AppConstants.defaultNumericValue * 2.5),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(user.fullName,
-                        style: Theme.of(context).textTheme.subtitle1),
-                    Text(
-                      DateFormatter.toWholeDateTime(feed.createdAt),
-                      textAlign: TextAlign.end,
-                      style: Theme.of(context)
-                          .textTheme
-                          .caption!
-                          .copyWith(fontSize: 10),
-                    ),
-                  ],
+          GestureDetector(
+            onTap: () {
+              // final _machingProvider = ref.watch(matchStreamProvider);
+
+              // String? _matchId;
+              // _machingProvider.whenData((value) {
+              //   final List<String> _otherUserIds = [];
+              //   for (var element in value) {
+              //     final _id =
+              //         element.userIds.where((id) => id != _currentUserId);
+              //     _otherUserIds.addAll(_id);
+              //   }
+              //   _matchUserIds.addAll(_otherUserIds);
+              // });
+
+              //           Navigator.of(context).push(
+              //   CupertinoPageRoute(
+              //     builder: (context) => UserDetailsPage(
+              //       user: user,
+              //       matchId:
+              //     ),
+              //   ),
+              // );
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                UserCirlePicture(
+                    imageUrl: user.profilePicture,
+                    size: AppConstants.defaultNumericValue * 2.5),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(user.fullName,
+                          style: Theme.of(context).textTheme.subtitle1),
+                      Text(
+                        DateFormatter.toWholeDateTime(feed.createdAt),
+                        textAlign: TextAlign.end,
+                        style: Theme.of(context)
+                            .textTheme
+                            .caption!
+                            .copyWith(fontSize: 10),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              if (feed.userId == FirebaseAuth.instance.currentUser!.uid)
-                GestureDetector(
-                  onTap: () {},
-                  child: const Icon(CupertinoIcons.ellipsis_vertical),
-                ),
-            ],
+                if (feed.userId == FirebaseAuth.instance.currentUser!.uid)
+                  GestureDetector(
+                    onTap: () {},
+                    child: const Icon(CupertinoIcons.ellipsis_vertical),
+                  ),
+              ],
+            ),
           ),
           const SizedBox(
             height: 16,

@@ -44,21 +44,13 @@ class _NotificationSettingsState extends ConsumerState<NotificationSettings> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Account Settings'),
+        title: const Text('Notification Settings'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppConstants.defaultNumericValue),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // const SizedBox(height: AppConstants.defaultNumericValue),
-            Text(
-              'Location',
-              style: Theme.of(context)
-                  .textTheme
-                  .headline6!
-                  .copyWith(fontWeight: FontWeight.bold),
-            ),
             const SizedBox(height: AppConstants.defaultNumericValue),
             GestureDetector(
               onTap: () async {
@@ -101,27 +93,6 @@ class _NotificationSettingsState extends ConsumerState<NotificationSettings> {
                 ),
               ),
             ),
-            const SizedBox(height: AppConstants.defaultNumericValue * 2),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    'Distance',
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline6!
-                        .copyWith(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                const SizedBox(width: AppConstants.defaultNumericValue),
-                Text(
-                  '${_distanceInKm.toInt()} km',
-                  style: Theme.of(context).textTheme.headline6!.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: AppConstants.primaryColor),
-                ),
-              ],
-            ),
             const SizedBox(height: AppConstants.defaultNumericValue),
             Slider(
               value: _distanceInKm,
@@ -134,11 +105,6 @@ class _NotificationSettingsState extends ConsumerState<NotificationSettings> {
               },
             ),
             const SizedBox(height: AppConstants.defaultNumericValue * 2),
-            Text("Interested In",
-                style: Theme.of(context)
-                    .textTheme
-                    .headline6!
-                    .copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: AppConstants.defaultNumericValue),
             Wrap(
               alignment: WrapAlignment.center,
@@ -189,13 +155,6 @@ class _NotificationSettingsState extends ConsumerState<NotificationSettings> {
             const SizedBox(height: AppConstants.defaultNumericValue * 2),
             Row(
               children: [
-                Expanded(
-                  child: Text("Age Range",
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline6!
-                          .copyWith(fontWeight: FontWeight.bold)),
-                ),
                 const SizedBox(width: AppConstants.defaultNumericValue),
                 Text(
                   '${_minimumAge.toInt()} - ${_maximumAge.toInt()}',

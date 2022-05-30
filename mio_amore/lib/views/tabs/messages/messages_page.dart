@@ -12,6 +12,7 @@ import 'package:mio_amore/models/user_profile_model.dart';
 import 'package:mio_amore/providers/chat_provider.dart';
 import 'package:mio_amore/providers/match_provider.dart';
 import 'package:mio_amore/providers/other_users_provider.dart';
+import 'package:mio_amore/views/ads/banner_ads.dart';
 import 'package:mio_amore/views/custom/custom_app_bar.dart';
 import 'package:mio_amore/views/custom/custom_headline.dart';
 import 'package:mio_amore/views/custom/custom_icon_button.dart';
@@ -200,6 +201,7 @@ class _MessagesPageState extends ConsumerState<MessagesPage> {
                           },
                         ),
                 ),
+                const MyBannerAd(),
               ],
             ),
           ),

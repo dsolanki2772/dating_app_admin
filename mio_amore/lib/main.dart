@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mio_amore/config/config.dart';
 import 'package:mio_amore/helpers/config_loading.dart';
@@ -16,6 +17,7 @@ import 'package:mio_amore/views/tabs/bottom_nav_bar_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await MobileAds.instance.initialize();
 
   await Hive.initFlutter();
   await Hive.openBox(HiveConstants.hiveBox);
