@@ -1,3 +1,4 @@
+import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -6,7 +7,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mio_amore/helpers/encrypt_helper.dart';
 import 'package:mio_amore/models/match_model.dart';
+import 'package:mio_amore/models/notification_model.dart';
 import 'package:mio_amore/providers/match_provider.dart';
+import 'package:mio_amore/providers/matching_notifiaction_provider.dart';
+import 'package:mio_amore/views/tabs/home/notification_page.dart';
 import 'package:mio_amore/views/tabs/messages/components/chat_page.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:mio_amore/helpers/constants.dart';
@@ -116,12 +120,7 @@ class _HomePageState extends State<HomePage> {
                     error: (_, __) => const SizedBox(),
                     loading: () => const SizedBox());
               }),
-              trailing: CustomIconButton(
-                icon: CupertinoIcons.bell_solid,
-                onPressed: () {},
-                padding: const EdgeInsets.all(
-                    AppConstants.defaultNumericValue / 1.5),
-              ),
+              trailing: const NotificationButton(),
             ),
             Expanded(
               child: Consumer(
@@ -147,6 +146,63 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class NotificationButton extends ConsumerWidget {
+  const NotificationButton({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, ref) {
+    final _matchingNotifications =
+        ref.watch(matchingNotificationsStreamProvider);
+
+    int _count = 0;
+
+    _matchingNotifications.whenData((value) {
+      value.forEach((element) {
+        if (element.isRead == false) {
+          _count++;
+        }
+      });
+    });
+
+    return Stack(
+      children: [
+        CustomIconButton(
+          icon: CupertinoIcons.bell_solid,
+          margin: _count > 0
+              ? const EdgeInsets.only(
+                  right: AppConstants.defaultNumericValue / 3)
+              : null,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const NotificationPage(),
+              ),
+            );
+          },
+          padding: const EdgeInsets.all(AppConstants.defaultNumericValue / 1.5),
+        ),
+        if (_count > 0)
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: Badge(
+              badgeContent: Text(
+                _count.toString(),
+                style: Theme.of(context).textTheme.caption!.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }
@@ -391,6 +447,26 @@ Future<void> showMatchingDialog(
     final _matchResult = await _mathcProvider.createConversation(_matchModel);
 
     if (_matchResult) {
+      final _currentTime = DateTime.now();
+      final _id =
+          _matchModel.id + _currentTime.millisecondsSinceEpoch.toString();
+      final MatchingNotificationModel _notificationModel =
+          MatchingNotificationModel(
+        id: _id,
+        userId: _currentUserProfile!.userId,
+        machedUserId: _otherUserProfile!.userId,
+        matchId: _matchModel.id,
+        title: _currentUserProfile!.fullName,
+        body: "You have a new match",
+        image: _currentUserProfile!.profilePicture,
+        createdAt: _currentTime,
+        isRead: false,
+      );
+
+      final _matchingNotificationProvider =
+          ref.read(matchingNotificationProvider);
+      _matchingNotificationProvider.addNotification(_notificationModel);
+
       return await showDialog(
         context: context,
         builder: (context) {

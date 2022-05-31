@@ -13,6 +13,8 @@ import 'package:mio_amore/views/custom/custom_app_bar.dart';
 import 'package:mio_amore/views/custom/custom_headline.dart';
 import 'package:mio_amore/views/custom/custom_icon_button.dart';
 import 'package:mio_amore/views/others/user_image_card.dart';
+import 'package:mio_amore/views/tabs/home/home_page.dart';
+import 'package:mio_amore/views/tabs/home/notification_page.dart';
 
 class FavouritesPage extends ConsumerWidget {
   const FavouritesPage({Key? key}) : super(key: key);
@@ -47,14 +49,7 @@ class FavouritesPage extends ConsumerWidget {
                 text: 'Favourites',
                 secondPartColor: AppConstants.primaryColor,
               )),
-              trailing: CustomIconButton(
-                icon: CupertinoIcons.bell_solid,
-                onPressed: () {
-                  //TODO: Open Notifications!!
-                },
-                padding: const EdgeInsets.all(
-                    AppConstants.defaultNumericValue / 1.5),
-              ),
+              trailing: const NotificationButton(),
             ),
           ),
           const SizedBox(height: AppConstants.defaultNumericValue),

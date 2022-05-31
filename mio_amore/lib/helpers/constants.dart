@@ -26,6 +26,8 @@ class FirebaseConstants {
   static const String chatCollection = "chat";
   static const String verificationFormsCollection = "verificationForms";
   static const String feedsCollection = "feeds";
+  static const String deviceTokensCollection = "deviceTokens";
+  static const String matchingNotificationsCollection = "matchingNotifications";
 }
 
 class HiveConstants {

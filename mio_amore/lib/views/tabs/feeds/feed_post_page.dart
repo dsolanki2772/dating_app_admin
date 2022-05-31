@@ -8,6 +8,7 @@ import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/models/feed_model.dart';
 import 'package:mio_amore/providers/feed_provider.dart';
 import 'package:mio_amore/providers/user_profile_provider.dart';
+import 'package:mio_amore/views/tabs/home/home_page.dart';
 import 'package:mio_amore/views/tabs/home/notification_page.dart';
 
 class FeedPostPage extends ConsumerStatefulWidget {

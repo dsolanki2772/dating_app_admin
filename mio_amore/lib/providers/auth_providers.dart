@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mio_amore/providers/device_token_provider.dart';
 
 final authStateProvider = StreamProvider<User?>((ref) {
   return FirebaseAuth.instance.authStateChanges();
@@ -12,21 +13,24 @@ final authProvider = Provider<AuthProvider>((ref) {
 });
 
 class AuthProvider {
+  final _deviceTokenProvider = DeviceTokenProvider();
+
   Future<User?> signInWithGoogle() async {
     try {
-      // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      // Obtain the auth details from the request
+
       final GoogleSignInAuthentication? googleAuth =
           await googleUser?.authentication;
-      // Create a new credential
+
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth?.accessToken,
         idToken: googleAuth?.idToken,
       );
-      // Once signed in, return the UserCredential
+
       final _userCred =
           await FirebaseAuth.instance.signInWithCredential(credential);
+
+      await _deviceTokenProvider.saveDeviceToken();
       return _userCred.user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'account-exists-with-different-credential') {
@@ -48,6 +52,7 @@ class AuthProvider {
       );
       final _userCred =
           await FirebaseAuth.instance.signInWithCredential(credential);
+      await _deviceTokenProvider.saveDeviceToken();
       return _userCred.user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-verification-code') {
@@ -60,6 +65,7 @@ class AuthProvider {
   }
 
   Future<void> signOut() async {
+    await _deviceTokenProvider.deleteDeviceToken();
     await FirebaseAuth.instance.signOut();
   }
 }

@@ -1,450 +1,195 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mio_amore/models/match_model.dart';
-import 'package:mio_amore/providers/match_provider.dart';
-import 'package:swipe_cards/swipe_cards.dart';
-
 import 'package:mio_amore/helpers/constants.dart';
-import 'package:mio_amore/models/user_interaction_model.dart';
+import 'package:mio_amore/helpers/date_formater.dart';
+import 'package:mio_amore/models/notification_model.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
-import 'package:mio_amore/providers/interaction_provider.dart';
+import 'package:mio_amore/providers/matching_notifiaction_provider.dart';
 import 'package:mio_amore/providers/other_users_provider.dart';
-import 'package:mio_amore/providers/user_profile_provider.dart';
 import 'package:mio_amore/views/custom/custom_app_bar.dart';
+import 'package:mio_amore/views/custom/custom_headline.dart';
 import 'package:mio_amore/views/custom/custom_icon_button.dart';
-import 'package:mio_amore/views/others/user_card_widget.dart';
-import 'package:mio_amore/views/settings/account_settings.dart';
-import 'package:mio_amore/views/tabs/home/app_drawer.dart';
+import 'package:mio_amore/views/others/user_details_page.dart';
+import 'package:mio_amore/views/tabs/home/home_page.dart';
 
-class NotificationPage extends StatefulWidget {
+class NotificationPage extends StatelessWidget {
   const NotificationPage({Key? key}) : super(key: key);
-
-  @override
-  State<NotificationPage> createState() => _NotificationPageState();
-}
-
-class _NotificationPageState extends State<NotificationPage> {
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
       appBar: AppBar(
+        toolbarHeight: 0,
         backgroundColor: Colors.transparent,
         elevation: 0,
         systemOverlayStyle: SystemUiOverlayStyle.dark,
-        leading: const SizedBox(),
-        toolbarHeight: 0,
-        // actions: [
-
-        // ],
       ),
-      drawer: const AppDrawer(),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(
-            horizontal: AppConstants.defaultNumericValue),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(height: AppConstants.defaultNumericValue),
-            CustomAppBar(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const SizedBox(height: AppConstants.defaultNumericValue),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: AppConstants.defaultNumericValue),
+            child: CustomAppBar(
               leading: CustomIconButton(
-                icon: CupertinoIcons.square_grid_2x2_fill,
-                onPressed: () {
-                  _scaffoldKey.currentState?.openDrawer();
-                },
-                padding: const EdgeInsets.all(
-                    AppConstants.defaultNumericValue / 1.5),
-              ),
-              title: Consumer(builder: (context, ref, _) {
-                final _user = ref.watch(userProfileStreamProvider);
-                return _user.when(
-                    data: (data) {
-                      return data == null
-                          ? const SizedBox()
-                          : GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const AccountSettingsLandingWidget(),
-                                  ),
-                                );
-                              },
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    CupertinoIcons.location_solid,
-                                    color: AppConstants.primaryColor,
-                                    size: 18,
-                                  ),
-                                  const SizedBox(
-                                      width:
-                                          AppConstants.defaultNumericValue / 3),
-                                  Flexible(
-                                    child: Text(
-                                      data.userAccountSettingsModel.location
-                                          .addressText,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .subtitle2!
-                                          .copyWith(
-                                              fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                  // const SizedBox(
-                                  //     width:
-                                  //         AppConstants.defaultNumericValue / 3),
-                                  // Icon(
-                                  //   Icons.keyboard_arrow_down,
-                                  //   color: AppConstants.primaryColor,
-                                  // ),
-                                ],
-                              ),
-                            );
-                    },
-                    error: (_, __) => const SizedBox(),
-                    loading: () => const SizedBox());
-              }),
-              trailing: CustomIconButton(
-                icon: CupertinoIcons.bell_solid,
-                onPressed: () {
-                  //TODO: Open Notifications!!
-                },
-                padding: const EdgeInsets.all(
-                    AppConstants.defaultNumericValue / 1.5),
-              ),
+                  icon: CupertinoIcons.back,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  padding: const EdgeInsets.all(
+                      AppConstants.defaultNumericValue / 1.5)),
+              title: Center(
+                  child: CustomHeadLine(
+                text: 'Notifications',
+                secondPartColor: AppConstants.primaryColor,
+              )),
+              trailing:
+                  const SizedBox(width: AppConstants.defaultNumericValue * 2),
             ),
-            Expanded(
-              child: Consumer(
-                builder: (context, ref, child) {
-                  final _filteredUsers = ref.watch(filteredOtherUsersProvider);
-
-                  return _filteredUsers.when(
-                    data: (data) {
-                      return data.isEmpty
-                          ? const SizedBox()
-                          : FilterInteraction(users: data);
-                    },
-                    error: (_, __) => const Center(
-                      child: Text("Something Went Wrong!"),
-                    ),
-                    loading: () => const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: AppConstants.defaultNumericValue),
+          const Expanded(child: NotificationBody()),
+        ],
       ),
     );
   }
 }
 
-class FilterInteraction extends ConsumerWidget {
-  final List<UserProfileModel> users;
-  const FilterInteraction({
-    Key? key,
-    required this.users,
-  }) : super(key: key);
+class NotificationBody extends ConsumerWidget {
+  const NotificationBody({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _interactionFutureProvider = ref.watch(interactionFutureProvider);
-
-    return _interactionFutureProvider.when(
+    final _notifications = ref.watch(matchingNotificationsStreamProvider);
+    return _notifications.when(
       data: (data) {
-        final List<UserProfileModel> _filteredUsers = [];
+        if (data.isEmpty) {
+          return const Center(child: Text('No notifications'));
+        } else {
+          return ListView.separated(
+            itemBuilder: (context, index) {
+              final _item = data[index];
 
-        for (final user in users) {
-          if (!data.any(
-              (element) => element.intractToUserId.contains(user.userId))) {
-            _filteredUsers.add(user);
-          }
-        }
+              return ListTile(
+                onLongPress: () {
+                  showModalBottomSheet(
+                      context: context,
+                      builder: (context) {
+                        return Container(
+                          padding: const EdgeInsets.all(
+                              AppConstants.defaultNumericValue),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text(
+                                  'Are you sure you want to delete this notification?'),
+                              const SizedBox(
+                                  height: AppConstants.defaultNumericValue),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  TextButton(
+                                    child: const Text(
+                                      'Cancel',
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  const SizedBox(
+                                      width: AppConstants.defaultNumericValue),
+                                  TextButton(
+                                    child: const Text('Delete'),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      ref
+                                          .read(matchingNotificationProvider)
+                                          .deleteNotification(_item.id);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      });
+                },
+                onTap: () {
+                  final _otherUsersProvider = ref.read(otherUsersProvider);
+                  final _matchingNotificationProvider =
+                      ref.read(matchingNotificationProvider);
+                  UserProfileModel? _otherUser;
+                  _otherUsersProvider.whenData((value) {
+                    _otherUser = value
+                        .firstWhere((element) => element.id == _item.userId);
+                  });
 
-        return _filteredUsers.isEmpty
-            ? const Center(child: Text("No User Found!"))
-            : HomeBody(users: _filteredUsers);
-      },
-      error: (_, __) => const Center(
-        child: Text("Something Went Wrong!"),
-      ),
-      loading: () => const Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
-  }
-}
-
-class HomeBody extends ConsumerStatefulWidget {
-  final List<UserProfileModel> users;
-
-  const HomeBody({
-    Key? key,
-    required this.users,
-  }) : super(key: key);
-
-  @override
-  ConsumerState<HomeBody> createState() => _HomeBodyState();
-}
-
-class _HomeBodyState extends ConsumerState<HomeBody> {
-  late MatchEngine _matchEngine;
-  final List<SwipeItem> _swipeItems = [];
-
-  @override
-  void initState() {
-    final _users = widget.users;
-    _users.shuffle();
-
-    for (var user in widget.users) {
-      _swipeItems.add(
-        SwipeItem(
-          content: user,
-          likeAction: () {
-            print("Swapping!! Like");
-          },
-          nopeAction: () {
-            print("Swapping!! Nope");
-          },
-          superlikeAction: () {
-            print("Swapping!! Superlike");
-          },
-        ),
-      );
-    }
-
-    _matchEngine = MatchEngine(swipeItems: _swipeItems);
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _matchEngine.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.7,
-        width: MediaQuery.of(context).size.width * 0.8,
-        child: SwipeCards(
-          upSwipeAllowed: true,
-          matchEngine: _matchEngine,
-          onStackFinished: () {
-            ref.refresh(interactionFutureProvider);
-          },
-          itemBuilder: (context, index) {
-            final _user = _swipeItems[index].content as UserProfileModel;
-
-            final _interactionProvider = ref.read(interactionProvider);
-
-            final String _myUserId = FirebaseAuth.instance.currentUser!.uid;
-            final String _id = _myUserId + _user.id;
-
-            final UserInteractionModel _interaction = UserInteractionModel(
-              id: _id,
-              userId: _myUserId,
-              intractToUserId: _user.id,
-              isSuperLike: false,
-              isLike: false,
-              isDislike: false,
-              createdAt: DateTime.now(),
-            );
-
-            return UserCardWidget(
-              user: _swipeItems[index].content,
-              onTapBolt: () async {
-                _matchEngine.currentItem?.superLike();
-                final _newInteraction = _interaction.copyWith(
-                    isSuperLike: true, createdAt: DateTime.now());
-                final _result = await _interactionProvider
-                    .createInteraction(_newInteraction);
-
-                if (_result) {
-                  final UserInteractionModel? _otherUserInteraction =
-                      await _interactionProvider
-                          .getExistingInteraction(_user.id);
-                  if (_otherUserInteraction != null) {
-                    showMatchingDialog(
-                        context, ref, _otherUserInteraction.userId);
+                  if (_otherUser != null) {
+                    if (!_item.isRead) {
+                      _matchingNotificationProvider
+                          .updateNotification(_item.copyWith(isRead: true));
+                    }
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UserDetailsPage(
+                          user: _otherUser!,
+                          matchId: _item.matchId,
+                        ),
+                      ),
+                    );
                   }
-                }
-              },
-              onTapCross: () async {
-                _matchEngine.currentItem?.nope();
-                final _newInteraction = _interaction.copyWith(
-                    isDislike: true, createdAt: DateTime.now());
-                await _interactionProvider.createInteraction(_newInteraction);
-              },
-              onTapHeart: () async {
-                _matchEngine.currentItem?.like();
-                final _newInteraction = _interaction.copyWith(
-                    isLike: true, createdAt: DateTime.now());
-                final _result = await _interactionProvider
-                    .createInteraction(_newInteraction);
-
-                if (_result) {
-                  final UserInteractionModel? _otherUserInteraction =
-                      await _interactionProvider
-                          .getExistingInteraction(_user.id);
-                  if (_otherUserInteraction != null) {
-                    showMatchingDialog(
-                        context, ref, _otherUserInteraction.userId);
-                  }
-                }
-              },
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class UserCirlePicture extends StatelessWidget {
-  final String? imageUrl;
-  final double? size;
-  const UserCirlePicture({
-    Key? key,
-    required this.imageUrl,
-    this.size,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final _size = size ?? AppConstants.defaultNumericValue * 5;
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius:
-            BorderRadius.circular(AppConstants.defaultNumericValue * 10),
-        border: Border.all(color: AppConstants.primaryColor, width: 2),
-      ),
-      child: ClipRRect(
-        borderRadius:
-            BorderRadius.circular(AppConstants.defaultNumericValue * 10),
-        child: SizedBox(
-          width: _size,
-          height: _size,
-          child: imageUrl == null || imageUrl!.isEmpty
-              ? CircleAvatar(
-                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                  child: Icon(
-                    CupertinoIcons.person_fill,
-                    color: AppConstants.primaryColor,
-                    size: _size * 0.8,
-                  ),
-                )
-              : CachedNetworkImage(
-                  imageUrl: imageUrl!,
-                  placeholder: (context, url) =>
-                      const Center(child: CircularProgressIndicator()),
-                  errorWidget: (context, url, error) =>
-                      const Center(child: Icon(Icons.error)),
-                  fit: BoxFit.cover,
+                },
+                title: Text(_item.title),
+                tileColor: _item.isRead
+                    ? null
+                    : AppConstants.primaryColor.withOpacity(0.2),
+                subtitle: Text(_item.body),
+                trailing: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      DateFormatter.toTime(_item.createdAt),
+                      style: Theme.of(context).textTheme.caption,
+                    ),
+                    Text(
+                      DateFormatter.toYearMonthDay2(_item.createdAt),
+                      style: Theme.of(context).textTheme.caption,
+                    ),
+                  ],
                 ),
-        ),
-      ),
-    );
-  }
-}
-
-Future<void> showMatchingDialog(
-    BuildContext context, WidgetRef ref, String otherUserId) async {
-  final _filteredUsers = ref.watch(filteredOtherUsersProvider);
-  final _userProfile = ref.watch(userProfileStreamProvider);
-  final _mathcProvider = ref.read(matchProvider);
-
-  UserProfileModel? _otherUserProfile;
-  UserProfileModel? _currentUserProfile;
-
-  _filteredUsers.whenData((value) {
-    _otherUserProfile =
-        value.firstWhere((element) => element.userId == otherUserId);
-  });
-
-  _userProfile.whenData((value) {
-    _currentUserProfile = value;
-  });
-
-  if (_otherUserProfile != null && _currentUserProfile != null) {
-    final MatchModel _matchModel = MatchModel(
-      id: _currentUserProfile!.userId + _otherUserProfile!.userId,
-      userIds: [_currentUserProfile!.userId, _otherUserProfile!.userId],
-    );
-
-    final _matchResult = await _mathcProvider.createConversation(_matchModel);
-
-    if (_matchResult) {
-      return await showDialog(
-        context: context,
-        builder: (context) {
-          return SimpleDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius:
-                  BorderRadius.circular(AppConstants.defaultNumericValue),
-            ),
-            insetPadding:
-                const EdgeInsets.all(AppConstants.defaultNumericValue * 2),
-            contentPadding:
-                const EdgeInsets.all(AppConstants.defaultNumericValue * 2),
-            title: const Center(child: Text("Matched")),
-            children: [
-              const SizedBox(height: AppConstants.defaultNumericValue),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  UserCirlePicture(imageUrl: _otherUserProfile?.profilePicture),
-                  const SizedBox(width: AppConstants.defaultNumericValue / 4),
-                  UserCirlePicture(
-                      imageUrl: _currentUserProfile?.profilePicture),
-                ],
-              ),
-              const SizedBox(height: AppConstants.defaultNumericValue),
-              Center(
-                child: Text(
-                    "You are now matched with ${_otherUserProfile!.fullName}"),
-              ),
-              const SizedBox(height: AppConstants.defaultNumericValue),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                      child: OutlinedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text("Not Now"))),
-                  const SizedBox(width: AppConstants.defaultNumericValue),
-                  Expanded(
-                    child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          //TODO: Open Chat Screen
-                        },
-                        child: const Text("Start Chat")),
-                  ),
-                ],
-              ),
-            ],
+                leading: _item.image == null
+                    ? CircleAvatar(
+                        radius: AppConstants.defaultNumericValue * 1.5,
+                        backgroundColor: AppConstants.primaryColor,
+                        child: Text(
+                          _item.title.substring(0, 1),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline6!
+                              .copyWith(color: Colors.white),
+                        ),
+                      )
+                    : UserCirlePicture(
+                        imageUrl: _item.image,
+                        size: AppConstants.defaultNumericValue * 2.5),
+              );
+            },
+            itemCount: data.length,
+            separatorBuilder: (context, index) => const Divider(height: 0),
           );
-        },
-      );
-    }
+        }
+      },
+      error: (_, __) {
+        return const SizedBox();
+      },
+      loading: () {
+        return const SizedBox();
+      },
+    );
   }
 }

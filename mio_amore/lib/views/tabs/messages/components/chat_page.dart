@@ -19,6 +19,7 @@ import 'package:mio_amore/providers/chat_provider.dart';
 import 'package:mio_amore/views/others/photo_view_page.dart';
 import 'package:mio_amore/views/others/user_details_page.dart';
 import 'package:mio_amore/views/others/video_player_page.dart';
+import 'package:mio_amore/views/tabs/home/home_page.dart';
 import 'package:mio_amore/views/tabs/home/notification_page.dart';
 import 'package:mio_amore/views/tabs/messages/components/chat_media_gallery_page.dart';
 import 'package:mio_amore/views/tabs/messages/components/chat_page_background.dart';

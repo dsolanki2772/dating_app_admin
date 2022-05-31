@@ -19,6 +19,7 @@ import 'package:mio_amore/views/custom/custom_icon_button.dart';
 import 'package:mio_amore/views/others/error_page.dart';
 import 'package:mio_amore/views/others/loading_page.dart';
 import 'package:mio_amore/views/tabs/home/home_page.dart';
+import 'package:mio_amore/views/tabs/home/notification_page.dart';
 import 'package:mio_amore/views/tabs/messages/components/chat_page.dart';
 
 class MessageConsumerPage extends ConsumerWidget {
@@ -132,14 +133,7 @@ class _MessagesPageState extends ConsumerState<MessagesPage> {
                   secondPartColor: AppConstants.primaryColor,
                 ),
               ),
-              trailing: CustomIconButton(
-                icon: CupertinoIcons.bell_solid,
-                onPressed: () {
-                  //TODO: Open Notifications!!
-                },
-                padding: const EdgeInsets.all(
-                    AppConstants.defaultNumericValue / 1.5),
-              ),
+              trailing: const NotificationButton(),
             ),
           ),
           Expanded(
