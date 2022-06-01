@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mio_amore/config/config.dart';
 import 'package:mio_amore/helpers/constants.dart';
-import 'package:mio_amore/providers/user_profile_provider.dart';
+import 'package:mio_amore/main.dart';
 import 'package:mio_amore/views/custom/custom_button.dart';
-import 'package:mio_amore/views/custom/custom_headline.dart';
 
 class ErrorPage extends ConsumerWidget {
   const ErrorPage({Key? key}) : super(key: key);
@@ -19,10 +17,12 @@ class ErrorPage extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              CustomHeadLine(
-                  text: AppConfig.appName,
-                  secondPartColor: AppConstants.primaryColor),
-              const SizedBox(height: AppConstants.defaultNumericValue),
+              const Spacer(),
+              Image.asset(
+                AppConstants.logo,
+                width: MediaQuery.of(context).size.width * 0.4,
+              ),
+              const Spacer(),
               Text(
                 "Something went wrong!",
                 textAlign: TextAlign.center,
@@ -34,11 +34,18 @@ class ErrorPage extends ConsumerWidget {
               const SizedBox(height: AppConstants.defaultNumericValue * 2),
               CustomButton(
                 onPressed: () {
-                  ref.refresh(userProfileStreamProvider);
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LandingWidget(),
+                    ),
+                    (route) => false,
+                  );
                 },
                 text: "Try again",
                 icon: Icons.sync,
-              )
+              ),
+              const SizedBox(height: AppConstants.defaultNumericValue * 2),
             ],
           ),
         ),

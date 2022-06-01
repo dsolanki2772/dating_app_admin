@@ -43,9 +43,6 @@ class _HomePageState extends State<HomePage> {
         systemOverlayStyle: SystemUiOverlayStyle.dark,
         leading: const SizedBox(),
         toolbarHeight: 0,
-        // actions: [
-
-        // ],
       ),
       drawer: const AppDrawer(),
       body: Padding(

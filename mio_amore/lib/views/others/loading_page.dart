@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mio_amore/config/config.dart';
 import 'package:mio_amore/helpers/constants.dart';
-import 'package:mio_amore/views/custom/custom_headline.dart';
 
 class LoadingPage extends StatelessWidget {
   const LoadingPage({Key? key}) : super(key: key);
@@ -16,14 +14,17 @@ class LoadingPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              CustomHeadLine(
-                  text: AppConfig.appName,
-                  secondPartColor: AppConstants.primaryColor),
-              const SizedBox(height: AppConstants.defaultNumericValue * 2),
+              const Spacer(),
+              Image.asset(
+                AppConstants.logo,
+                width: MediaQuery.of(context).size.width * 0.4,
+              ),
+              const Spacer(),
               CircularProgressIndicator(
                 valueColor:
                     AlwaysStoppedAnimation<Color>(AppConstants.primaryColor),
               ),
+              const SizedBox(height: AppConstants.defaultNumericValue * 2),
             ],
           ),
         ),

@@ -94,65 +94,65 @@ class AppDrawer extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: AppConstants.defaultNumericValue / 2),
-                  DrawerItem(
-                    onPressed: () {},
-                    title: 'Notifications',
-                    leadingIcon: CupertinoIcons.bell_solid,
-                    trailing: const Icon(
-                      Icons.toggle_off,
-                      color: Colors.white70,
-                    ),
-                  ),
-                  const SizedBox(height: AppConstants.defaultNumericValue / 2),
-                  DrawerItem(
-                    onPressed: () {},
-                    title: 'Security',
-                    leadingIcon: CupertinoIcons.lock_circle,
-                    trailing: const Icon(
-                      Icons.chevron_right,
-                      color: Colors.white70,
-                    ),
-                  ),
-                  const SizedBox(height: AppConstants.defaultNumericValue / 2),
-                  DrawerItem(
-                    onPressed: () {},
-                    title: 'Language',
-                    leadingIcon: CupertinoIcons.globe,
-                    trailing: const Icon(
-                      Icons.chevron_right,
-                      color: Colors.white70,
-                    ),
-                  ),
-                  const SizedBox(height: AppConstants.defaultNumericValue / 2),
-                  DrawerItem(
-                    onPressed: () {},
-                    title: 'Linked Accounts',
-                    leadingIcon: CupertinoIcons.person_solid,
-                    trailing: const Icon(
-                      Icons.chevron_right,
-                      color: Colors.white70,
-                    ),
-                  ),
-                  const SizedBox(height: AppConstants.defaultNumericValue / 2),
-                  DrawerItem(
-                    onPressed: () {},
-                    title: 'Help Center',
-                    leadingIcon: CupertinoIcons.question_circle_fill,
-                    trailing: const Icon(
-                      Icons.chevron_right,
-                      color: Colors.white70,
-                    ),
-                  ),
-                  const SizedBox(height: AppConstants.defaultNumericValue / 2),
-                  DrawerItem(
-                    onPressed: () {},
-                    title: 'About Us',
-                    leadingIcon: CupertinoIcons.info_circle_fill,
-                    trailing: const Icon(
-                      Icons.chevron_right,
-                      color: Colors.white70,
-                    ),
-                  ),
+                  // DrawerItem(
+                  //   onPressed: () {},
+                  //   title: 'Notifications',
+                  //   leadingIcon: CupertinoIcons.bell_solid,
+                  //   trailing: const Icon(
+                  //     Icons.toggle_off,
+                  //     color: Colors.white70,
+                  //   ),
+                  // ),
+                  // const SizedBox(height: AppConstants.defaultNumericValue / 2),
+                  // DrawerItem(
+                  //   onPressed: () {},
+                  //   title: 'Security',
+                  //   leadingIcon: CupertinoIcons.lock_circle,
+                  //   trailing: const Icon(
+                  //     Icons.chevron_right,
+                  //     color: Colors.white70,
+                  //   ),
+                  // ),
+                  // const SizedBox(height: AppConstants.defaultNumericValue / 2),
+                  // DrawerItem(
+                  //   onPressed: () {},
+                  //   title: 'Language',
+                  //   leadingIcon: CupertinoIcons.globe,
+                  //   trailing: const Icon(
+                  //     Icons.chevron_right,
+                  //     color: Colors.white70,
+                  //   ),
+                  // ),
+                  // const SizedBox(height: AppConstants.defaultNumericValue / 2),
+                  // DrawerItem(
+                  //   onPressed: () {},
+                  //   title: 'Linked Accounts',
+                  //   leadingIcon: CupertinoIcons.person_solid,
+                  //   trailing: const Icon(
+                  //     Icons.chevron_right,
+                  //     color: Colors.white70,
+                  //   ),
+                  // ),
+                  // const SizedBox(height: AppConstants.defaultNumericValue / 2),
+                  // DrawerItem(
+                  //   onPressed: () {},
+                  //   title: 'Help Center',
+                  //   leadingIcon: CupertinoIcons.question_circle_fill,
+                  //   trailing: const Icon(
+                  //     Icons.chevron_right,
+                  //     color: Colors.white70,
+                  //   ),
+                  // ),
+                  // const SizedBox(height: AppConstants.defaultNumericValue / 2),
+                  // DrawerItem(
+                  //   onPressed: () {},
+                  //   title: 'About Us',
+                  //   leadingIcon: CupertinoIcons.info_circle_fill,
+                  //   trailing: const Icon(
+                  //     Icons.chevron_right,
+                  //     color: Colors.white70,
+                  //   ),
+                  // ),
                 ],
               ),
             ),

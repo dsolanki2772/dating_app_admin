@@ -1,12 +1,10 @@
 import 'dart:convert';
-
 import 'package:badges/badges.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/helpers/date_formater.dart';
 import 'package:mio_amore/helpers/encrypt_helper.dart';

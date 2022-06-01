@@ -37,7 +37,7 @@
 
 
    <application
-        android:label="mio_amore"
+        android:label="mio amore"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true">

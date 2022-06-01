@@ -12,7 +12,6 @@ import 'package:mio_amore/providers/get_current_location_provider.dart';
 import 'package:mio_amore/views/auth/login_with_phone_page.dart';
 import 'package:mio_amore/views/auth/select_country_page.dart';
 import 'package:mio_amore/views/custom/custom_button.dart';
-import 'package:mio_amore/views/custom/custom_headline.dart';
 import 'package:mio_amore/views/others/error_page.dart';
 import 'package:mio_amore/views/others/loading_page.dart';
 
@@ -22,122 +21,128 @@ class LoginPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(gradient: AppConstants.defaultGradient),
-        padding: const EdgeInsets.all(AppConstants.defaultNumericValue * 2),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Expanded(
-              child: Center(
-                child: CustomHeadLine(
-                    text: AppConfig.appName, secondPartColor: Colors.white),
+      body: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.all(AppConstants.defaultNumericValue * 2),
+          height: MediaQuery.of(context).size.height,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Spacer(),
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.3,
+                  maxHeight: MediaQuery.of(context).size.width * 0.3,
+                ),
+                child: Image.asset(
+                  AppConstants.logo,
+                  fit: BoxFit.contain,
+                ),
               ),
-            ),
-            const SizedBox(height: AppConstants.defaultNumericValue),
-
-            //Google
-            if (isGoogleAuthAvailable)
-              LoginButton(
-                icon: Image.asset(googleLogo,
-                    width: AppConstants.defaultNumericValue * 2),
-                onPressed: () async {
-                  EasyLoading.show(status: 'Logging in...');
-                  await ref.read(authProvider).signInWithGoogle();
-                  EasyLoading.dismiss();
-                },
-                text: "Log in with google",
-              ),
-            if (isGoogleAuthAvailable)
+              const Spacer(),
               const SizedBox(height: AppConstants.defaultNumericValue),
 
-            //Facebook
-            if (isFacebookAuthAvailable)
-              LoginButton(
-                icon: Image.asset(facebookLogo,
-                    width: AppConstants.defaultNumericValue * 2),
-                onPressed: () {
-                  EasyLoading.showInfo('Coming soon...');
-                },
-                text: "Log in with facebook",
-              ),
-            if (isFacebookAuthAvailable)
-              const SizedBox(height: AppConstants.defaultNumericValue),
-
-            //Twitter
-            if (isTwitterAuthAvailable)
-              LoginButton(
-                icon: Image.asset(twitterLogo,
-                    width: AppConstants.defaultNumericValue * 2),
-                onPressed: () {
-                  EasyLoading.showInfo('Coming soon...');
-                },
-                text: "Log in with twitter",
-              ),
-            if (isTwitterAuthAvailable)
-              const SizedBox(height: AppConstants.defaultNumericValue),
-
-            //Apple
-            if (isAppleAuthAvailable)
-              if (Platform.isIOS)
+              //Google
+              if (isGoogleAuthAvailable)
                 LoginButton(
-                  icon: Image.asset(appleLogo,
+                  icon: Image.asset(googleLogo,
+                      width: AppConstants.defaultNumericValue * 2),
+                  onPressed: () async {
+                    EasyLoading.show(status: 'Logging in...');
+                    await ref.read(authProvider).signInWithGoogle();
+                    EasyLoading.dismiss();
+                  },
+                  text: "Log in with google",
+                ),
+              if (isGoogleAuthAvailable)
+                const SizedBox(height: AppConstants.defaultNumericValue),
+
+              //Facebook
+              if (isFacebookAuthAvailable)
+                LoginButton(
+                  icon: Image.asset(facebookLogo,
                       width: AppConstants.defaultNumericValue * 2),
                   onPressed: () {
                     EasyLoading.showInfo('Coming soon...');
                   },
-                  text: "Log in with apple",
+                  text: "Log in with facebook",
                 ),
-            if (isAppleAuthAvailable)
-              if (Platform.isIOS)
+              if (isFacebookAuthAvailable)
                 const SizedBox(height: AppConstants.defaultNumericValue),
 
-            //Phone
-            if (isPhoneAuthAvailable)
-              LoginButton(
-                icon: Icon(
-                  CupertinoIcons.phone_circle_fill,
-                  color: AppConstants.primaryColor,
-                  size: AppConstants.defaultNumericValue * 2,
+              //Twitter
+              if (isTwitterAuthAvailable)
+                LoginButton(
+                  icon: Image.asset(twitterLogo,
+                      width: AppConstants.defaultNumericValue * 2),
+                  onPressed: () {
+                    EasyLoading.showInfo('Coming soon...');
+                  },
+                  text: "Log in with twitter",
                 ),
-                onPressed: () async {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const PhoneLoginLandingWidget(),
-                    ),
-                  );
-                },
-                text: "Log in with phone",
+              if (isTwitterAuthAvailable)
+                const SizedBox(height: AppConstants.defaultNumericValue),
+
+              //Apple
+              if (isAppleAuthAvailable)
+                if (Platform.isIOS)
+                  LoginButton(
+                    icon: Image.asset(appleLogo,
+                        width: AppConstants.defaultNumericValue * 2),
+                    onPressed: () {
+                      EasyLoading.showInfo('Coming soon...');
+                    },
+                    text: "Log in with apple",
+                  ),
+              if (isAppleAuthAvailable)
+                if (Platform.isIOS)
+                  const SizedBox(height: AppConstants.defaultNumericValue),
+
+              //Phone
+              if (isPhoneAuthAvailable)
+                LoginButton(
+                  icon: Icon(
+                    CupertinoIcons.phone_circle_fill,
+                    color: AppConstants.primaryColor,
+                    size: AppConstants.defaultNumericValue * 2,
+                  ),
+                  onPressed: () async {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const PhoneLoginLandingWidget(),
+                      ),
+                    );
+                  },
+                  text: "Log in with phone",
+                ),
+              if (isPhoneAuthAvailable)
+                const SizedBox(height: AppConstants.defaultNumericValue),
+
+              // Agree to terms
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: AppConstants.defaultNumericValue * 2),
+                child: Text(
+                  "By logging in you agree to our Terms of Service and Privacy Policy.",
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.subtitle2!.copyWith(),
+                ),
               ),
-            if (isPhoneAuthAvailable)
               const SizedBox(height: AppConstants.defaultNumericValue),
 
-            // Agree to terms
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: AppConstants.defaultNumericValue * 2),
-              child: Text(
-                "By logging in you agree to our Terms of Service and Privacy Policy.",
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.subtitle2!.copyWith(
-                      color: Colors.white,
-                    ),
-              ),
-            ),
-            const SizedBox(height: AppConstants.defaultNumericValue),
-
-            // //
-            //   TextButton(
-            //     onPressed: () {},
-            //     child: const Text(
-            //       "Trouble logging in?",
-            //       style:
-            //           TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-            //     ),
-            //   ),
-            //   const SizedBox(height: AppConstants.defaultNumericValue),
-          ],
+              // //
+              //   TextButton(
+              //     onPressed: () {},
+              //     child: const Text(
+              //       "Trouble logging in?",
+              //       style:
+              //           TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              //     ),
+              //   ),
+              //   const SizedBox(height: AppConstants.defaultNumericValue),
+            ],
+          ),
         ),
       ),
     );
@@ -199,6 +204,7 @@ class LoginButton extends StatelessWidget {
     return CustomButton(
       onPressed: onPressed,
       isWhite: true,
+      borderColor: AppConstants.primaryColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

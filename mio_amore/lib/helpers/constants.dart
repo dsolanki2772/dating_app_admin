@@ -7,6 +7,8 @@ class AppConstants {
   static Color primaryColor = AppConfig.primaryColor;
   static const double defaultNumericValue = 16.0;
 
+  static const String logo = 'assets/images/logo.png';
+
   static LinearGradient defaultGradient = LinearGradient(
     colors: [
       AppConstants.primaryColor.withOpacity(0.8),
