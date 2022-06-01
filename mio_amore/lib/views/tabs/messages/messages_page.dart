@@ -1,13 +1,17 @@
 import 'dart:convert';
+
+import 'package:badges/badges.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/helpers/date_formater.dart';
 import 'package:mio_amore/helpers/encrypt_helper.dart';
 import 'package:mio_amore/models/chat_item_model.dart';
+import 'package:mio_amore/models/match_model.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
 import 'package:mio_amore/providers/chat_provider.dart';
 import 'package:mio_amore/providers/match_provider.dart';
@@ -19,7 +23,6 @@ import 'package:mio_amore/views/custom/custom_icon_button.dart';
 import 'package:mio_amore/views/others/error_page.dart';
 import 'package:mio_amore/views/others/loading_page.dart';
 import 'package:mio_amore/views/tabs/home/home_page.dart';
-import 'package:mio_amore/views/tabs/home/notification_page.dart';
 import 'package:mio_amore/views/tabs/messages/components/chat_page.dart';
 
 class MessageConsumerPage extends ConsumerWidget {
@@ -31,43 +34,9 @@ class MessageConsumerPage extends ConsumerWidget {
 
     return _matchStreamProvider.when(
         data: (data) {
-          final _otherUserIds = data
-              .map((e) => e.userIds.firstWhere((element) =>
-                  element != FirebaseAuth.instance.currentUser!.uid))
-              .toList();
+          final List<MessageViewModel> _messages = [];
 
-          final _otherUsersProvider = ref.watch(otherUsersProvider);
-          List<UserProfileModel> _matchedUsers = [];
-          _otherUsersProvider.whenData((value) {
-            _matchedUsers = value.where((element) {
-              return _otherUserIds.contains(element.userId);
-            }).toList();
-          });
-
-          List<MessageViewModel> _messages = [];
-
-          for (var match in data) {
-            final _chatProvider =
-                ref.watch(chatStreamProviderProvider(match.id));
-            _chatProvider.whenData((value) {
-              final UserProfileModel _otherUser = _matchedUsers.firstWhere(
-                  (element) =>
-                      element.userId ==
-                      match.userIds.firstWhere((element) =>
-                          element != FirebaseAuth.instance.currentUser!.uid));
-
-              if (value.isNotEmpty) {
-                MessageViewModel _message = MessageViewModel(
-                  matchedUser: _otherUser,
-                  lastMessage: value.first,
-                  lastMessageDate: value.first.createdAt,
-                  matchId: match.id,
-                );
-
-                _messages.add(_message);
-              }
-            });
-          }
+          _messages.addAll(getAllMessages(ref, data));
 
           return MessagesPage(messages: _messages);
         },
@@ -230,17 +199,35 @@ class ConversationTile extends ConsumerWidget {
           },
           title: Row(
             children: [
-              Expanded(
-                child: Text(
-                  messageViewModel.matchedUser.fullName,
-                  style: Theme.of(context).textTheme.subtitle1!.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-              ),
-              const SizedBox(width: AppConstants.defaultNumericValue),
               Text(
-                DateFormatter.toWholeDateTime(messageViewModel.lastMessageDate),
+                messageViewModel.matchedUser.fullName,
+                style: Theme.of(context)
+                    .textTheme
+                    .subtitle1!
+                    .copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(width: AppConstants.defaultNumericValue / 2),
+              if (messageViewModel.unreadCount > 0)
+                Badge(
+                  badgeColor: AppConstants.primaryColor,
+                  badgeContent: Text(
+                    messageViewModel.unreadCount.toString(),
+                    style: Theme.of(context).textTheme.caption!.copyWith(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ),
+            ],
+          ),
+          trailing: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                DateFormatter.toTime(messageViewModel.lastMessageDate),
+                style: Theme.of(context).textTheme.caption!,
+              ),
+              Text(
+                DateFormatter.toYearMonthDay2(messageViewModel.lastMessageDate),
                 style: Theme.of(context).textTheme.caption!,
               ),
             ],
@@ -291,11 +278,13 @@ class MessageViewModel {
   String matchId;
   ChatItemModel lastMessage;
   DateTime lastMessageDate;
+  int unreadCount;
   MessageViewModel({
     required this.matchedUser,
     required this.matchId,
     required this.lastMessage,
     required this.lastMessageDate,
+    required this.unreadCount,
   });
 
   MessageViewModel copyWith({
@@ -303,12 +292,14 @@ class MessageViewModel {
     String? matchId,
     ChatItemModel? lastMessage,
     DateTime? lastMessageDate,
+    int? unreadCount,
   }) {
     return MessageViewModel(
       matchedUser: matchedUser ?? this.matchedUser,
       matchId: matchId ?? this.matchId,
       lastMessage: lastMessage ?? this.lastMessage,
       lastMessageDate: lastMessageDate ?? this.lastMessageDate,
+      unreadCount: unreadCount ?? this.unreadCount,
     );
   }
 
@@ -319,6 +310,7 @@ class MessageViewModel {
     result.addAll({'matchId': matchId});
     result.addAll({'lastMessage': lastMessage.toMap()});
     result.addAll({'lastMessageDate': lastMessageDate.millisecondsSinceEpoch});
+    result.addAll({'unreadCount': unreadCount});
 
     return result;
   }
@@ -330,6 +322,7 @@ class MessageViewModel {
       lastMessage: ChatItemModel.fromMap(map['lastMessage']),
       lastMessageDate:
           DateTime.fromMillisecondsSinceEpoch(map['lastMessageDate']),
+      unreadCount: map['unreadCount']?.toInt() ?? 0,
     );
   }
 
@@ -340,7 +333,7 @@ class MessageViewModel {
 
   @override
   String toString() {
-    return 'MessageViewModel(matchedUser: $matchedUser, matchId: $matchId, lastMessage: $lastMessage, lastMessageDate: $lastMessageDate)';
+    return 'MessageViewModel(matchedUser: $matchedUser, matchId: $matchId, lastMessage: $lastMessage, lastMessageDate: $lastMessageDate, unreadCount: $unreadCount)';
   }
 
   @override
@@ -351,7 +344,8 @@ class MessageViewModel {
         other.matchedUser == matchedUser &&
         other.matchId == matchId &&
         other.lastMessage == lastMessage &&
-        other.lastMessageDate == lastMessageDate;
+        other.lastMessageDate == lastMessageDate &&
+        other.unreadCount == unreadCount;
   }
 
   @override
@@ -359,6 +353,57 @@ class MessageViewModel {
     return matchedUser.hashCode ^
         matchId.hashCode ^
         lastMessage.hashCode ^
-        lastMessageDate.hashCode;
+        lastMessageDate.hashCode ^
+        unreadCount.hashCode;
   }
+}
+
+List<MessageViewModel> getAllMessages(WidgetRef ref, List<MatchModel> data) {
+  final _otherUserIds = data
+      .map((e) => e.userIds.firstWhere(
+          (element) => element != FirebaseAuth.instance.currentUser!.uid))
+      .toList();
+
+  final _otherUsersProvider = ref.watch(otherUsersProvider);
+  List<UserProfileModel> _matchedUsers = [];
+  _otherUsersProvider.whenData((value) {
+    _matchedUsers = value.where((element) {
+      return _otherUserIds.contains(element.userId);
+    }).toList();
+  });
+
+  List<MessageViewModel> _messages = [];
+
+  for (var match in data) {
+    final _chatProvider = ref.watch(chatStreamProviderProvider(match.id));
+    _chatProvider.whenData((value) {
+      final UserProfileModel _otherUser = _matchedUsers.firstWhere((element) =>
+          element.userId ==
+          match.userIds.firstWhere(
+              (element) => element != FirebaseAuth.instance.currentUser!.uid));
+
+      int _unreadCount = 0;
+      for (var message in value) {
+        if (message.userId != FirebaseAuth.instance.currentUser!.uid) {
+          if (message.isRead == false) {
+            _unreadCount++;
+          }
+        }
+      }
+
+      if (value.isNotEmpty) {
+        MessageViewModel _message = MessageViewModel(
+          matchedUser: _otherUser,
+          lastMessage: value.first,
+          lastMessageDate: value.first.createdAt,
+          matchId: match.id,
+          unreadCount: _unreadCount,
+        );
+
+        _messages.add(_message);
+      }
+    });
+  }
+
+  return _messages;
 }

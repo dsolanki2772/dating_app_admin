@@ -31,7 +31,10 @@ class _MyBannerAdState extends State<MyBannerAd> {
       request: const AdRequest(),
       listener: bannerAdListener,
     );
-    myBanner.load();
+
+    if (isAdmobAvailable) {
+      myBanner.load();
+    }
 
     super.initState();
   }

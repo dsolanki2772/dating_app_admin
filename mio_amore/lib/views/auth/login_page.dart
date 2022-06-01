@@ -35,63 +35,85 @@ class LoginPage extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: AppConstants.defaultNumericValue),
-            LoginButton(
-              icon: Image.asset(googleLogo,
-                  width: AppConstants.defaultNumericValue * 2),
-              onPressed: () async {
-                EasyLoading.show(status: 'Logging in...');
-                await ref.read(authProvider).signInWithGoogle();
-                EasyLoading.dismiss();
-              },
-              text: "Log in with google",
-            ),
-            const SizedBox(height: AppConstants.defaultNumericValue),
-            LoginButton(
-              icon: Image.asset(facebookLogo,
-                  width: AppConstants.defaultNumericValue * 2),
-              onPressed: () {
-                EasyLoading.showInfo('Coming soon...');
-              },
-              text: "Log in with facebook",
-            ),
-            const SizedBox(height: AppConstants.defaultNumericValue),
-            LoginButton(
-              icon: Image.asset(twitterLogo,
-                  width: AppConstants.defaultNumericValue * 2),
-              onPressed: () {
-                EasyLoading.showInfo('Coming soon...');
-              },
-              text: "Log in with twitter",
-            ),
-            if (Platform.isIOS)
-              const SizedBox(height: AppConstants.defaultNumericValue),
-            if (Platform.isIOS)
+
+            //Google
+            if (isGoogleAuthAvailable)
               LoginButton(
-                icon: Image.asset(appleLogo,
+                icon: Image.asset(googleLogo,
+                    width: AppConstants.defaultNumericValue * 2),
+                onPressed: () async {
+                  EasyLoading.show(status: 'Logging in...');
+                  await ref.read(authProvider).signInWithGoogle();
+                  EasyLoading.dismiss();
+                },
+                text: "Log in with google",
+              ),
+            if (isGoogleAuthAvailable)
+              const SizedBox(height: AppConstants.defaultNumericValue),
+
+            //Facebook
+            if (isFacebookAuthAvailable)
+              LoginButton(
+                icon: Image.asset(facebookLogo,
                     width: AppConstants.defaultNumericValue * 2),
                 onPressed: () {
                   EasyLoading.showInfo('Coming soon...');
                 },
-                text: "Log in with apple",
+                text: "Log in with facebook",
               ),
-            const SizedBox(height: AppConstants.defaultNumericValue),
-            LoginButton(
-              icon: Icon(
-                CupertinoIcons.phone_circle_fill,
-                color: AppConstants.primaryColor,
-                size: AppConstants.defaultNumericValue * 2,
+            if (isFacebookAuthAvailable)
+              const SizedBox(height: AppConstants.defaultNumericValue),
+
+            //Twitter
+            if (isTwitterAuthAvailable)
+              LoginButton(
+                icon: Image.asset(twitterLogo,
+                    width: AppConstants.defaultNumericValue * 2),
+                onPressed: () {
+                  EasyLoading.showInfo('Coming soon...');
+                },
+                text: "Log in with twitter",
               ),
-              onPressed: () async {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const PhoneLoginLandingWidget(),
-                  ),
-                );
-              },
-              text: "Log in with phone",
-            ),
-            const SizedBox(height: AppConstants.defaultNumericValue),
+            if (isTwitterAuthAvailable)
+              const SizedBox(height: AppConstants.defaultNumericValue),
+
+            //Apple
+            if (isAppleAuthAvailable)
+              if (Platform.isIOS)
+                LoginButton(
+                  icon: Image.asset(appleLogo,
+                      width: AppConstants.defaultNumericValue * 2),
+                  onPressed: () {
+                    EasyLoading.showInfo('Coming soon...');
+                  },
+                  text: "Log in with apple",
+                ),
+            if (isAppleAuthAvailable)
+              if (Platform.isIOS)
+                const SizedBox(height: AppConstants.defaultNumericValue),
+
+            //Phone
+            if (isPhoneAuthAvailable)
+              LoginButton(
+                icon: Icon(
+                  CupertinoIcons.phone_circle_fill,
+                  color: AppConstants.primaryColor,
+                  size: AppConstants.defaultNumericValue * 2,
+                ),
+                onPressed: () async {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PhoneLoginLandingWidget(),
+                    ),
+                  );
+                },
+                text: "Log in with phone",
+              ),
+            if (isPhoneAuthAvailable)
+              const SizedBox(height: AppConstants.defaultNumericValue),
+
+            // Agree to terms
             Padding(
               padding: const EdgeInsets.symmetric(
                   horizontal: AppConstants.defaultNumericValue * 2),
@@ -104,15 +126,17 @@ class LoginPage extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: AppConstants.defaultNumericValue),
-            TextButton(
-              onPressed: () {},
-              child: const Text(
-                "Trouble logging in?",
-                style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(height: AppConstants.defaultNumericValue),
+
+            // //
+            //   TextButton(
+            //     onPressed: () {},
+            //     child: const Text(
+            //       "Trouble logging in?",
+            //       style:
+            //           TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            //     ),
+            //   ),
+            //   const SizedBox(height: AppConstants.defaultNumericValue),
           ],
         ),
       ),

@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mio_amore/helpers/encrypt_helper.dart';
 import 'package:mio_amore/models/match_model.dart';
 import 'package:mio_amore/models/notification_model.dart';
 import 'package:mio_amore/providers/match_provider.dart';
@@ -163,11 +162,11 @@ class NotificationButton extends ConsumerWidget {
     int _count = 0;
 
     _matchingNotifications.whenData((value) {
-      value.forEach((element) {
+      for (var element in value) {
         if (element.isRead == false) {
           _count++;
         }
-      });
+      }
     });
 
     return Stack(
@@ -193,6 +192,7 @@ class NotificationButton extends ConsumerWidget {
             bottom: 0,
             right: 0,
             child: Badge(
+              badgeColor: AppConstants.primaryColor,
               badgeContent: Text(
                 _count.toString(),
                 style: Theme.of(context).textTheme.caption!.copyWith(
@@ -268,15 +268,9 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
       _swipeItems.add(
         SwipeItem(
           content: user,
-          likeAction: () {
-            print("Swapping!! Like");
-          },
-          nopeAction: () {
-            print("Swapping!! Nope");
-          },
-          superlikeAction: () {
-            print("Swapping!! Superlike");
-          },
+          likeAction: () {},
+          nopeAction: () {},
+          superlikeAction: () {},
         ),
       );
     }

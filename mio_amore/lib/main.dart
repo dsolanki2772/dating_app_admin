@@ -1,5 +1,9 @@
+import 'dart:math';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -19,9 +23,24 @@ void main() async {
   await Firebase.initializeApp();
   await MobileAds.instance.initialize();
 
+  FirebaseMessaging.onBackgroundMessage(_handleBackgroundNotification);
+
   await Hive.initFlutter();
   await Hive.openBox(HiveConstants.hiveBox);
   configLoading();
+
+// Awesome Notifications Setup
+  AwesomeNotifications().initialize(
+    null,
+    [
+      NotificationChannel(
+          channelKey: 'basic_notification',
+          channelName: 'Basic notifications',
+          channelDescription: 'All Notifications',
+          defaultColor: AppConstants.primaryColor,
+          ledColor: Colors.white)
+    ],
+  );
 
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -31,6 +50,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+
     return MaterialApp(
       title: AppConfig.appName,
       debugShowCheckedModeBanner: false,
@@ -45,8 +67,44 @@ class MyApp extends StatelessWidget {
             centerTitle: true,
             backgroundColor: AppConstants.primaryColor),
       ),
-      home: const LandingWidget(),
+      home: const SplashScreen(),
     );
+  }
+}
+
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({Key? key}) : super(key: key);
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    FirebaseMessaging.instance.getInitialMessage();
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      showAwesomeNotification(message);
+    });
+    FirebaseMessaging.onMessage.listen((message) {
+      showAwesomeNotification(message);
+    });
+
+    Future.delayed(const Duration(seconds: 2), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const LandingWidget(),
+        ),
+      );
+    });
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const LoadingPage();
   }
 }
 
@@ -85,3 +143,39 @@ final _swatch = {
   800: AppConstants.primaryColor.withOpacity(0.9),
   900: AppConstants.primaryColor.withOpacity(1),
 };
+
+Future<void> _handleBackgroundNotification(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  showAwesomeNotification(message);
+}
+
+void showAwesomeNotification(RemoteMessage message) {
+  if (!AwesomeStringUtils.isNullOrEmpty(message.notification?.title,
+          considerWhiteSpaceAsEmpty: true) ||
+      !AwesomeStringUtils.isNullOrEmpty(message.notification?.body,
+          considerWhiteSpaceAsEmpty: true)) {
+    String? imageUrl;
+    imageUrl ??= message.notification!.android?.imageUrl;
+    imageUrl ??= message.notification!.apple?.imageUrl;
+
+    Map<String, dynamic> notificationAdapter = {
+      NOTIFICATION_CHANNEL_KEY: 'basic_notification',
+      NOTIFICATION_ID: message.data[NOTIFICATION_CONTENT]?[NOTIFICATION_ID] ??
+          message.messageId ??
+          Random().nextInt(2147483647),
+      NOTIFICATION_TITLE: message.data[NOTIFICATION_CONTENT]
+              ?[NOTIFICATION_TITLE] ??
+          message.notification?.title,
+      NOTIFICATION_BODY: message.data[NOTIFICATION_CONTENT]
+              ?[NOTIFICATION_BODY] ??
+          message.notification?.body,
+      NOTIFICATION_LAYOUT:
+          AwesomeStringUtils.isNullOrEmpty(imageUrl) ? 'Default' : 'BigPicture',
+      NOTIFICATION_BIG_PICTURE: imageUrl
+    };
+
+    AwesomeNotifications().createNotificationFromJsonData(notificationAdapter);
+  } else {
+    AwesomeNotifications().createNotificationFromJsonData(message.data);
+  }
+}

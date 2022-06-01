@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:mio_amore/helpers/get_color_from.hex.dart';
 
@@ -5,7 +6,7 @@ class AppConfig {
   AppConfig._();
 
 // Primary Constants
-  static const String appName = "Mio Amore";
+  static const String appName = "mio amore";
   static HexColor primaryColor = HexColor("#EE2F50");
 
 // Chat Constants
@@ -81,6 +82,16 @@ class AppConfig {
     "business",
   ];
 }
+
+// Authentication Modes
+const bool isGoogleAuthAvailable = true;
+const bool isFacebookAuthAvailable = true;
+const bool isPhoneAuthAvailable = true;
+const bool isAppleAuthAvailable = true;
+const bool isTwitterAuthAvailable = true;
+
+// Ads Config
+const bool isAdmobAvailable = false;
 
 class AndroidAdUnits {
   AndroidAdUnits._();

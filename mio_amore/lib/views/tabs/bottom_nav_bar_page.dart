@@ -2,7 +2,9 @@ import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:mio_amore/helpers/constants.dart';
+import 'package:mio_amore/providers/match_provider.dart';
 import 'package:mio_amore/providers/user_profile_provider.dart';
 import 'package:mio_amore/views/others/error_page.dart';
 import 'package:mio_amore/views/others/loading_page.dart';
@@ -79,13 +81,17 @@ class _BottomNavBarPageState extends ConsumerState<BottomNavBarPage> {
                           _currentIndex = index;
                         });
                       },
-                      items: _navItems
-                          .map((e) => BottomNavigationBarItem(
-                                icon: Icon(e.icon),
-                                label: e.title,
-                                activeIcon: Icon(e.activeIcon),
-                              ))
-                          .toList(),
+                      items: _navItems.map((e) {
+                        return BottomNavigationBarItem(
+                          icon: _navItems.indexOf(e) == 3
+                              ? MessageConsumerBottomNavIcon(icon: e.icon)
+                              : Icon(e.icon),
+                          label: e.title,
+                          activeIcon: _navItems.indexOf(e) == 3
+                              ? MessageConsumerBottomNavIcon(icon: e.activeIcon)
+                              : Icon(e.activeIcon),
+                        );
+                      }).toList(),
                     ),
                   ),
                 ),
@@ -145,3 +151,75 @@ final List<_BottomNavBarItem> _navItems = [
     page: const ProfilePage(),
   ),
 ];
+
+class MessageConsumerBottomNavIcon extends ConsumerWidget {
+  final IconData icon;
+  const MessageConsumerBottomNavIcon({
+    Key? key,
+    required this.icon,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final _matchStreamProvider = ref.watch(matchStreamProvider);
+
+    return _matchStreamProvider.when(
+      data: (data) {
+        final List<MessageViewModel> _messages = [];
+
+        _messages.addAll(getAllMessages(ref, data));
+        int _unreadCount = 0;
+        for (var e in _messages) {
+          _unreadCount += e.unreadCount;
+        }
+
+        return MessageIcon(unreadCount: _unreadCount, icon: icon);
+      },
+      error: (_, __) => MessageIcon(unreadCount: 0, icon: icon),
+      loading: () => MessageIcon(unreadCount: 0, icon: icon),
+    );
+  }
+}
+
+class MessageIcon extends StatelessWidget {
+  final int unreadCount;
+  final IconData icon;
+  const MessageIcon({
+    Key? key,
+    required this.unreadCount,
+    required this.icon,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Icon(
+          icon,
+        ),
+        if (unreadCount > 0)
+          Positioned(
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.all(1),
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              constraints: const BoxConstraints(minWidth: 12, minHeight: 12),
+              child: Center(
+                child: Text(
+                  '$unreadCount',
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 7,
+                      fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}

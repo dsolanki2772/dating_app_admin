@@ -14,11 +14,9 @@ import 'package:mio_amore/providers/user_profile_provider.dart';
 import 'package:mio_amore/views/ads/banner_ads.dart';
 import 'package:mio_amore/views/custom/custom_app_bar.dart';
 import 'package:mio_amore/views/custom/custom_headline.dart';
-import 'package:mio_amore/views/custom/custom_icon_button.dart';
 import 'package:mio_amore/views/others/photo_view_page.dart';
 import 'package:mio_amore/views/tabs/feeds/feed_post_page.dart';
 import 'package:mio_amore/views/tabs/home/home_page.dart';
-import 'package:mio_amore/views/tabs/home/notification_page.dart';
 
 class FeedsPage extends ConsumerWidget {
   const FeedsPage({Key? key}) : super(key: key);
