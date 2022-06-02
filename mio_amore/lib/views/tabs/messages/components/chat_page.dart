@@ -16,6 +16,7 @@ import 'package:mio_amore/helpers/media_picker_helper.dart';
 import 'package:mio_amore/models/chat_item_model.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
 import 'package:mio_amore/providers/chat_provider.dart';
+import 'package:mio_amore/providers/other_users_provider.dart';
 import 'package:mio_amore/views/others/photo_view_page.dart';
 import 'package:mio_amore/views/others/user_details_page.dart';
 import 'package:mio_amore/views/others/video_player_page.dart';
@@ -27,11 +28,11 @@ import 'package:social_media_recorder/screen/social_media_recorder.dart';
 import 'package:voice_message_package/voice_message_package.dart';
 
 class ChatPage extends ConsumerStatefulWidget {
-  final UserProfileModel otherUser;
+  final String otherUserId;
   final String matchId;
   const ChatPage({
     Key? key,
-    required this.otherUser,
+    required this.otherUserId,
     required this.matchId,
   }) : super(key: key);
 
@@ -140,6 +141,17 @@ class _ChatPageState extends ConsumerState<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    final _otherUsersProvider = ref.watch(otherUsersProvider);
+    UserProfileModel? _otherUser;
+    _otherUsersProvider.whenData((value) {
+      _otherUser = value
+          .where((element) {
+            return element.userId == widget.otherUserId;
+          })
+          .toList()
+          .first;
+    });
+
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
@@ -161,15 +173,16 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                ChatTopBar(
-                  otherUser: widget.otherUser,
-                  matchId: widget.matchId,
-                  onSearch: (query) {
-                    setState(() {
-                      _searchQuery = query;
-                    });
-                  },
-                ),
+                if (_otherUser != null)
+                  ChatTopBar(
+                    otherUser: _otherUser!,
+                    matchId: widget.matchId,
+                    onSearch: (query) {
+                      setState(() {
+                        _searchQuery = query;
+                      });
+                    },
+                  ),
                 Expanded(
                   child: ChatBody(
                     matchId: widget.matchId,
@@ -543,18 +556,18 @@ class _ChatTopBarState extends ConsumerState<ChatTopBar> {
                         //     });
                         //   },
                         // ),
-                        MoreMenuTitle(
-                          title: 'Report',
-                          onTap: () {
-                            _moreMenuController.hideMenu();
-                          },
-                        ),
-                        MoreMenuTitle(
-                          title: 'Block',
-                          onTap: () {
-                            _moreMenuController.hideMenu();
-                          },
-                        ),
+                        // MoreMenuTitle(
+                        //   title: 'Report',
+                        //   onTap: () {
+                        //     _moreMenuController.hideMenu();
+                        //   },
+                        // ),
+                        // MoreMenuTitle(
+                        //   title: 'Block',
+                        //   onTap: () {
+                        //     _moreMenuController.hideMenu();
+                        //   },
+                        // ),
                       ],
                     ),
                   ),

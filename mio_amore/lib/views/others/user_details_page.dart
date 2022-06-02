@@ -67,7 +67,7 @@ class UserDetailsPage extends ConsumerWidget {
                             context,
                             MaterialPageRoute(
                               builder: (context) => ChatPage(
-                                otherUser: user,
+                                otherUserId: user.userId,
                                 matchId: matchId!,
                               ),
                             ),

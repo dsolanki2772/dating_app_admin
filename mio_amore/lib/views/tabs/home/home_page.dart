@@ -506,7 +506,7 @@ Future<void> showMatchingDialog(
                             MaterialPageRoute(
                               builder: (context) => ChatPage(
                                 matchId: _matchModel.id,
-                                otherUser: _otherUserProfile!,
+                                otherUserId: _otherUserProfile!.userId,
                               ),
                             ),
                           );

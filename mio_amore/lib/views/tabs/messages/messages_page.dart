@@ -189,7 +189,7 @@ class ConversationTile extends ConsumerWidget {
               context,
               CupertinoPageRoute(
                 builder: (context) => ChatPage(
-                  otherUser: messageViewModel.matchedUser,
+                  otherUserId: messageViewModel.matchedUser.userId,
                   matchId: messageViewModel.matchId,
                 ),
               ),

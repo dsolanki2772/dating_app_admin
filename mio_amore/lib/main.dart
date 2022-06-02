@@ -1,5 +1,4 @@
-import 'dart:math';
-import 'package:awesome_notifications/awesome_notifications.dart';
+// import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +17,8 @@ import 'package:mio_amore/views/auth/login_page.dart';
 import 'package:mio_amore/views/others/error_page.dart';
 import 'package:mio_amore/views/others/loading_page.dart';
 import 'package:mio_amore/views/tabs/bottom_nav_bar_page.dart';
+import 'package:mio_amore/views/tabs/home/notification_page.dart';
+import 'package:mio_amore/views/tabs/messages/components/chat_page.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -32,18 +33,18 @@ void main() async {
   await Hive.openBox(HiveConstants.hiveBox);
   configLoading();
 
-// Awesome Notifications Setup
-  AwesomeNotifications().initialize(
-    null,
-    [
-      NotificationChannel(
-          channelKey: 'basic_notification',
-          channelName: 'Basic notifications',
-          channelDescription: 'All Notifications',
-          defaultColor: AppConstants.primaryColor,
-          ledColor: Colors.white)
-    ],
-  );
+// // Awesome Notifications Setup
+//   await AwesomeNotifications().initialize(
+//     null,
+//     [
+//       NotificationChannel(
+//           channelKey: 'basic_notification',
+//           channelName: 'Basic notifications',
+//           channelDescription: 'All Notifications',
+//           defaultColor: AppConstants.primaryColor,
+//           ledColor: Colors.white)
+//     ],
+//   );
 
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -85,14 +86,6 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    FirebaseMessaging.instance.getInitialMessage();
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      showAwesomeNotification(message);
-    });
-    FirebaseMessaging.onMessage.listen((message) {
-      showAwesomeNotification(message);
-    });
-
     Future.delayed(const Duration(seconds: 2), () {
       FlutterNativeSplash.remove();
       Navigator.pushReplacement(
@@ -112,11 +105,60 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 }
 
-class LandingWidget extends ConsumerWidget {
+class LandingWidget extends ConsumerStatefulWidget {
   const LandingWidget({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LandingWidget> createState() => _LandingWidgetState();
+}
+
+class _LandingWidgetState extends ConsumerState<LandingWidget> {
+  @override
+  void initState() {
+    _setupInteractedMessage();
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      showAwesomeNotification(message);
+    });
+    FirebaseMessaging.onMessage.listen((message) {
+      showAwesomeNotification(message);
+    });
+    super.initState();
+  }
+
+  Future<void> _setupInteractedMessage() async {
+    RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
+
+    if (initialMessage != null) {
+      _handleMessage(initialMessage);
+    }
+
+    FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+  }
+
+  void _handleMessage(RemoteMessage message) {
+    if (message.data['type'] == 'message') {
+      final _otherUserId = message.data["userId"]!;
+      final _matchId = message.data["matchId"]!;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              ChatPage(matchId: _matchId, otherUserId: _otherUserId),
+        ),
+      );
+    } else if (message.data['type'] == 'notification') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const NotificationPage(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final _authStateProvider = ref.watch(authStateProvider);
 
     return _authStateProvider.when(
@@ -154,32 +196,36 @@ Future<void> _handleBackgroundNotification(RemoteMessage message) async {
 }
 
 void showAwesomeNotification(RemoteMessage message) {
-  if (!AwesomeStringUtils.isNullOrEmpty(message.notification?.title,
-          considerWhiteSpaceAsEmpty: true) ||
-      !AwesomeStringUtils.isNullOrEmpty(message.notification?.body,
-          considerWhiteSpaceAsEmpty: true)) {
-    String? imageUrl;
-    imageUrl ??= message.notification!.android?.imageUrl;
-    imageUrl ??= message.notification!.apple?.imageUrl;
+  // if (!AwesomeStringUtils.isNullOrEmpty(message.notification?.title,
+  //         considerWhiteSpaceAsEmpty: true) ||
+  //     !AwesomeStringUtils.isNullOrEmpty(message.notification?.body,
+  //         considerWhiteSpaceAsEmpty: true)) {
+  //   String? imageUrl;
+  //   imageUrl ??= message.notification!.android?.imageUrl;
+  //   imageUrl ??= message.notification!.apple?.imageUrl;
 
-    Map<String, dynamic> notificationAdapter = {
-      NOTIFICATION_CHANNEL_KEY: 'basic_notification',
-      NOTIFICATION_ID: message.data[NOTIFICATION_CONTENT]?[NOTIFICATION_ID] ??
-          message.messageId ??
-          Random().nextInt(2147483647),
-      NOTIFICATION_TITLE: message.data[NOTIFICATION_CONTENT]
-              ?[NOTIFICATION_TITLE] ??
-          message.notification?.title,
-      NOTIFICATION_BODY: message.data[NOTIFICATION_CONTENT]
-              ?[NOTIFICATION_BODY] ??
-          message.notification?.body,
-      NOTIFICATION_LAYOUT:
-          AwesomeStringUtils.isNullOrEmpty(imageUrl) ? 'Default' : 'BigPicture',
-      NOTIFICATION_BIG_PICTURE: imageUrl
-    };
+  //   Map<String, dynamic> notificationAdapter = {
+  //     NOTIFICATION_CHANNEL_KEY: 'basic_notification',
+  //     NOTIFICATION_ID: message.data[NOTIFICATION_CONTENT]?[NOTIFICATION_ID] ??
+  //         message.messageId ??
+  //         Random().nextInt(2147483647),
+  //     NOTIFICATION_TITLE: message.data[NOTIFICATION_CONTENT]
+  //             ?[NOTIFICATION_TITLE] ??
+  //         message.notification?.title,
+  //     NOTIFICATION_BODY: message.data[NOTIFICATION_CONTENT]
+  //             ?[NOTIFICATION_BODY] ??
+  //         message.notification?.body,
+  //     NOTIFICATION_LAYOUT:
+  //         AwesomeStringUtils.isNullOrEmpty(imageUrl) ? 'Default' : 'BigPicture',
+  //     NOTIFICATION_BIG_PICTURE: imageUrl
+  //   };
 
-    AwesomeNotifications().createNotificationFromJsonData(notificationAdapter);
-  } else {
-    AwesomeNotifications().createNotificationFromJsonData(message.data);
-  }
+  //   AwesomeNotifications().createNotificationFromJsonData(notificationAdapter);
+  // } else {
+  //   AwesomeNotifications().createNotificationFromJsonData(message.data);
+  // }
+
+  print("Notification type: ${message.data["type"]}");
+  print("Other User Id" + message.data["userId"]);
+  print("MatchId" + message.data["matchId"]);
 }

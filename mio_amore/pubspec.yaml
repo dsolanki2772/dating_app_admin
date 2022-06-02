@@ -63,7 +63,7 @@ dependencies:
   sign_in_with_apple: ^4.0.0
   package_info_plus: ^1.4.2
   just_audio: ^0.9.20
-  awesome_notifications: ^0.6.21
+  # awesome_notifications: ^0.6.21
   easy_localization: ^3.0.0
   flutter_facebook_auth: ^4.3.0
   device_info_plus: ^3.2.3
