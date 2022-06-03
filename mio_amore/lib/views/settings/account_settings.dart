@@ -105,21 +105,25 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                     AppConstants.defaultNumericValue,
                   ),
                 ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.location_on,
-                      color: AppConstants.primaryColor,
-                    ),
-                    const SizedBox(width: AppConstants.defaultNumericValue / 2),
-                    Text(
-                      _userLocation.addressText,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge!
-                          .copyWith(fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.location_on,
+                        color: AppConstants.primaryColor,
+                      ),
+                      const SizedBox(
+                          width: AppConstants.defaultNumericValue / 2),
+                      Text(
+                        _userLocation.addressText,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyLarge!
+                            .copyWith(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

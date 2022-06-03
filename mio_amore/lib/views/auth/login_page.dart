@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +12,8 @@ import 'package:mio_amore/providers/country_codes_provider.dart';
 import 'package:mio_amore/providers/get_current_location_provider.dart';
 import 'package:mio_amore/views/auth/login_with_phone_page.dart';
 import 'package:mio_amore/views/auth/select_country_page.dart';
+import 'package:mio_amore/views/company/privacy_policy.dart';
+import 'package:mio_amore/views/company/terms_and_conditions.dart';
 import 'package:mio_amore/views/custom/custom_button.dart';
 import 'package:mio_amore/views/others/error_page.dart';
 import 'package:mio_amore/views/others/loading_page.dart';
@@ -62,8 +65,10 @@ class LoginPage extends ConsumerWidget {
                 LoginButton(
                   icon: Image.asset(facebookLogo,
                       width: AppConstants.defaultNumericValue * 2),
-                  onPressed: () {
-                    EasyLoading.showInfo('Coming soon...');
+                  onPressed: () async {
+                    EasyLoading.show(status: 'Logging in...');
+                    await ref.read(authProvider).signInWithFacebook();
+                    EasyLoading.dismiss();
                   },
                   text: "Log in with facebook",
                 ),
@@ -123,10 +128,56 @@ class LoginPage extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(
                     horizontal: AppConstants.defaultNumericValue * 2),
-                child: Text(
-                  "By logging in you agree to our Terms of Service and Privacy Policy.",
+                // child: Text(
+                //   "By logging in you agree to our Terms of Service and Privacy Policy.",
+                //   textAlign: TextAlign.center,
+                //   style: Theme.of(context).textTheme.subtitle2!.copyWith(),
+                // ),
+                child: Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: "By logging in you agree to our ",
+                        style:
+                            Theme.of(context).textTheme.subtitle2!.copyWith(),
+                      ),
+                      TextSpan(
+                        text: "Terms of Service",
+                        style: Theme.of(context).textTheme.subtitle2!.copyWith(
+                              color: AppConstants.primaryColor,
+                            ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const TermsAndConditions(),
+                                    fullscreenDialog: true));
+                          },
+                      ),
+                      TextSpan(
+                        text: " and ",
+                        style:
+                            Theme.of(context).textTheme.subtitle2!.copyWith(),
+                      ),
+                      TextSpan(
+                        text: "Privacy Policy",
+                        style: Theme.of(context).textTheme.subtitle2!.copyWith(
+                              color: AppConstants.primaryColor,
+                            ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const PrivacyPolicy(),
+                                    fullscreenDialog: true));
+                          },
+                      ),
+                    ],
+                  ),
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.subtitle2!.copyWith(),
                 ),
               ),
               const SizedBox(height: AppConstants.defaultNumericValue),

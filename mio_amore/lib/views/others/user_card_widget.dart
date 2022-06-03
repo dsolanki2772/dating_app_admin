@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:mio_amore/config/config.dart';
 
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
@@ -317,44 +318,80 @@ class UserLikeActions extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: onTapCross,
-            child: Container(
-              padding:
-                  const EdgeInsets.all(AppConstants.defaultNumericValue / 2),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
-                border: Border.all(
-                    color: const Color.fromARGB(255, 246, 40, 25), width: 2),
-              ),
-              child: const Icon(Icons.clear,
-                  color: Color.fromARGB(255, 246, 45, 30)),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(
+                      AppConstants.defaultNumericValue / 2),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(100),
+                    border: Border.all(
+                        color: AppConfig.dislikeButtonColor, width: 2),
+                  ),
+                  child: const Icon(Icons.clear,
+                      color: AppConfig.dislikeButtonColor),
+                ),
+                if (AppConfig.showInteractionButtonText)
+                  const SizedBox(height: AppConstants.defaultNumericValue / 3),
+                if (AppConfig.showInteractionButtonText)
+                  Text(AppConfig.dislikeButtonText,
+                      style: Theme.of(context).textTheme.caption!.copyWith(
+                          color: AppConfig.dislikeButtonColor,
+                          fontWeight: FontWeight.bold)),
+              ],
             ),
           ),
           GestureDetector(
             onTap: onTapBolt,
-            child: Container(
-              padding:
-                  const EdgeInsets.all(AppConstants.defaultNumericValue / 2),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
-                border: Border.all(
-                    color: const Color.fromARGB(255, 40, 205, 251), width: 2),
-              ),
-              child: const Icon(Icons.bolt,
-                  color: Color.fromARGB(255, 40, 205, 251), size: 32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(
+                      AppConstants.defaultNumericValue / 2),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(100),
+                    border: Border.all(
+                        color: AppConfig.superLikeButtonColor, width: 2),
+                  ),
+                  child: const Icon(Icons.bolt,
+                      color: AppConfig.superLikeButtonColor, size: 32),
+                ),
+                if (AppConfig.showInteractionButtonText)
+                  const SizedBox(height: AppConstants.defaultNumericValue / 3),
+                if (AppConfig.showInteractionButtonText)
+                  Text(AppConfig.superLikeButtonText,
+                      style: Theme.of(context).textTheme.caption!.copyWith(
+                          color: AppConfig.superLikeButtonColor,
+                          fontWeight: FontWeight.bold)),
+              ],
             ),
           ),
           GestureDetector(
             onTap: onTapHeart,
-            child: Container(
-              padding:
-                  const EdgeInsets.all(AppConstants.defaultNumericValue / 2),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
-                border: Border.all(
-                    color: const Color.fromARGB(255, 120, 243, 124), width: 2),
-              ),
-              child: const Icon(Icons.favorite,
-                  color: Color.fromARGB(255, 121, 250, 125)),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(
+                      AppConstants.defaultNumericValue / 2),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(100),
+                    border:
+                        Border.all(color: AppConfig.likeButtonColor, width: 2),
+                  ),
+                  child: const Icon(Icons.favorite,
+                      color: AppConfig.likeButtonColor),
+                ),
+                if (AppConfig.showInteractionButtonText)
+                  const SizedBox(height: AppConstants.defaultNumericValue / 3),
+                if (AppConfig.showInteractionButtonText)
+                  Text(AppConfig.likeButtonText,
+                      style: Theme.of(context).textTheme.caption!.copyWith(
+                          color: AppConfig.likeButtonColor,
+                          fontWeight: FontWeight.bold)),
+              ],
             ),
           ),
         ],

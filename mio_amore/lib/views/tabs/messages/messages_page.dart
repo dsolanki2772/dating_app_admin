@@ -31,15 +31,16 @@ class MessageConsumerPage extends ConsumerWidget {
     final _matchStreamProvider = ref.watch(matchStreamProvider);
 
     return _matchStreamProvider.when(
-        data: (data) {
-          final List<MessageViewModel> _messages = [];
+      data: (data) {
+        final List<MessageViewModel> _messages = [];
 
-          _messages.addAll(getAllMessages(ref, data));
+        _messages.addAll(getAllMessages(ref, data));
 
-          return MessagesPage(messages: _messages);
-        },
-        error: (_, __) => const ErrorPage(),
-        loading: () => const LoadingPage());
+        return MessagesPage(messages: _messages);
+      },
+      error: (_, __) => const ErrorPage(),
+      loading: () => const LoadingPage(),
+    );
   }
 }
 
@@ -89,6 +90,7 @@ class _MessagesPageState extends ConsumerState<MessagesPage> {
                 onPressed: () {
                   setState(() {
                     _isSearchBarVisible = !_isSearchBarVisible;
+                    _searchController.clear();
                   });
                 },
                 padding: const EdgeInsets.all(

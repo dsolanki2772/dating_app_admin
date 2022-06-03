@@ -37,6 +37,17 @@ class AppConfig {
     Colors.white,
   ];
 
+// User Interaction Buttons Settings
+
+  static const Color dislikeButtonColor = Color.fromARGB(255, 246, 40, 25);
+  static const Color superLikeButtonColor = Color.fromARGB(255, 40, 205, 251);
+  static const Color likeButtonColor = Color.fromARGB(255, 120, 243, 124);
+
+  static const bool showInteractionButtonText = true;
+  static const String likeButtonText = "Like";
+  static const String superLikeButtonText = "Super Like";
+  static const String dislikeButtonText = "Dislike";
+
 // Gender Settings
 
   static const bool allowTransGender = false;
@@ -88,6 +99,21 @@ const bool isFacebookAuthAvailable = true;
 const bool isPhoneAuthAvailable = true;
 const bool isAppleAuthAvailable = true;
 const bool isTwitterAuthAvailable = true;
+
+// Company Pages Setup
+
+//Must Have These Two
+const String termsAndConditionsUrl = "https://incevio.com/page/terms-of-use";
+const String privacyPolicyUrl = "https://incevio.com/page/privacy-policy";
+
+//These are optional
+const bool isCompanyHasFAQ = true;
+const bool isCompanyHasAbout = true;
+const bool isCompanyHasContact = true;
+
+const String faqUrl = "https://incevio.com/faqs";
+const String contactUsUrl = "https://incevio.com/contact";
+const String aboutUsUrl = "https://incevio.com/page/about-us";
 
 // Ads Config
 const bool isAdmobAvailable = true;

@@ -2,12 +2,19 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mio_amore/config/config.dart';
 
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/providers/auth_providers.dart';
 import 'package:mio_amore/providers/user_profile_provider.dart';
+import 'package:mio_amore/views/company/about_us.dart';
+import 'package:mio_amore/views/company/contact_us.dart';
+import 'package:mio_amore/views/company/faq_page.dart';
+import 'package:mio_amore/views/company/privacy_policy.dart';
+import 'package:mio_amore/views/company/terms_and_conditions.dart';
 import 'package:mio_amore/views/custom/custom_icon_button.dart';
 import 'package:mio_amore/views/settings/account_settings.dart';
+import 'package:mio_amore/views/tabs/profile/profile_page.dart';
 
 class AppDrawer extends ConsumerWidget {
   const AppDrawer({
@@ -41,6 +48,13 @@ class AppDrawer extends ConsumerWidget {
                             ListTile(
                               contentPadding: EdgeInsets.zero,
                               minLeadingWidth: 0,
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const ProfilePage()),
+                                );
+                              },
                               title: Text(
                                 data.fullName,
                                 maxLines: 2,
@@ -143,16 +157,94 @@ class AppDrawer extends ConsumerWidget {
                   //     color: Colors.white70,
                   //   ),
                   // ),
-                  // const SizedBox(height: AppConstants.defaultNumericValue / 2),
-                  // DrawerItem(
-                  //   onPressed: () {},
-                  //   title: 'About Us',
-                  //   leadingIcon: CupertinoIcons.info_circle_fill,
-                  //   trailing: const Icon(
-                  //     Icons.chevron_right,
-                  //     color: Colors.white70,
-                  //   ),
-                  // ),
+                  DrawerItem(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const TermsAndConditions(),
+                              fullscreenDialog: true));
+                    },
+                    title: 'Terms And Conditions',
+                    leadingIcon: CupertinoIcons.doc_text,
+                    trailing: const Icon(
+                      Icons.chevron_right,
+                      color: Colors.white70,
+                    ),
+                  ),
+                  const SizedBox(height: AppConstants.defaultNumericValue / 2),
+                  DrawerItem(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const PrivacyPolicy(),
+                              fullscreenDialog: true));
+                    },
+                    title: 'Privacy Policy',
+                    leadingIcon: CupertinoIcons.doc_text,
+                    trailing: const Icon(
+                      Icons.chevron_right,
+                      color: Colors.white70,
+                    ),
+                  ),
+                  if (isCompanyHasFAQ)
+                    const SizedBox(
+                        height: AppConstants.defaultNumericValue / 2),
+                  if (isCompanyHasFAQ)
+                    DrawerItem(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const FaqPage(),
+                                fullscreenDialog: true));
+                      },
+                      title: 'FAQ',
+                      leadingIcon: CupertinoIcons.question_circle,
+                      trailing: const Icon(
+                        Icons.chevron_right,
+                        color: Colors.white70,
+                      ),
+                    ),
+                  if (isCompanyHasContact)
+                    const SizedBox(
+                        height: AppConstants.defaultNumericValue / 2),
+                  if (isCompanyHasContact)
+                    DrawerItem(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const ContactUs(),
+                                fullscreenDialog: true));
+                      },
+                      title: 'Contact Us',
+                      leadingIcon: CupertinoIcons.phone_circle,
+                      trailing: const Icon(
+                        Icons.chevron_right,
+                        color: Colors.white70,
+                      ),
+                    ),
+                  if (isCompanyHasAbout)
+                    const SizedBox(
+                        height: AppConstants.defaultNumericValue / 2),
+                  if (isCompanyHasAbout)
+                    DrawerItem(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const AboutUs(),
+                                fullscreenDialog: true));
+                      },
+                      title: 'About Us',
+                      leadingIcon: CupertinoIcons.info_circle,
+                      trailing: const Icon(
+                        Icons.chevron_right,
+                        color: Colors.white70,
+                      ),
+                    ),
                 ],
               ),
             ),

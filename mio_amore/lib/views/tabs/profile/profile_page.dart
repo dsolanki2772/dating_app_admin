@@ -35,8 +35,13 @@ class ProfilePage extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(
                     horizontal: AppConstants.defaultNumericValue),
                 child: CustomAppBar(
-                  leading: const SizedBox(
-                      width: AppConstants.defaultNumericValue * 2),
+                  leading: CustomIconButton(
+                      icon: CupertinoIcons.back,
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      padding: const EdgeInsets.all(
+                          AppConstants.defaultNumericValue / 1.5)),
                   title: const Center(
                     child: CustomHeadLine(
                       text: 'Profile',

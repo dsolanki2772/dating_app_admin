@@ -13,8 +13,8 @@ import 'package:mio_amore/views/custom/custom_icon_button.dart';
 import 'package:mio_amore/views/others/user_image_card.dart';
 import 'package:mio_amore/views/tabs/home/home_page.dart';
 
-class FavouritesPage extends ConsumerWidget {
-  const FavouritesPage({Key? key}) : super(key: key);
+class MatchesPage extends ConsumerWidget {
+  const MatchesPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, ref) {
@@ -43,7 +43,7 @@ class FavouritesPage extends ConsumerWidget {
               ),
               title: Center(
                   child: CustomHeadLine(
-                text: 'Favourites',
+                text: 'Matches',
                 secondPartColor: AppConstants.primaryColor,
               )),
               trailing: const NotificationButton(),

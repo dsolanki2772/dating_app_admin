@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mio_amore/models/match_model.dart';
 import 'package:mio_amore/models/notification_model.dart';
 import 'package:mio_amore/providers/match_provider.dart';
-import 'package:mio_amore/providers/matching_notifiaction_provider.dart';
+import 'package:mio_amore/providers/notifiaction_provider.dart';
 import 'package:mio_amore/views/tabs/home/notification_page.dart';
 import 'package:mio_amore/views/tabs/messages/components/chat_page.dart';
 import 'package:swipe_cards/swipe_cards.dart';
@@ -153,8 +153,7 @@ class NotificationButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    final _matchingNotifications =
-        ref.watch(matchingNotificationsStreamProvider);
+    final _matchingNotifications = ref.watch(notificationsStreamProvider);
 
     int _count = 0;
 
@@ -283,6 +282,38 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
     super.dispose();
   }
 
+  void createInteractionNotification({
+    required String title,
+    required String body,
+    required String receiverId,
+  }) async {
+    final _userProfile = ref.read(userProfileStreamProvider);
+
+    UserProfileModel? _currentUserProfile;
+
+    _userProfile.whenData((value) {
+      _currentUserProfile = value;
+    });
+
+    final _currentTime = DateTime.now();
+    final _id = _currentTime.millisecondsSinceEpoch.toString();
+    final NotificationModel _notificationModel = NotificationModel(
+      id: _id,
+      userId: _currentUserProfile!.userId,
+      receiverId: receiverId,
+      title: title,
+      body: body,
+      image: _currentUserProfile!.profilePicture,
+      createdAt: _currentTime,
+      isRead: false,
+      isMatchingNotification: false,
+      isInteractionNotification: true,
+    );
+
+    final _matchingNotificationProvider = ref.read(notificationProvider);
+    _matchingNotificationProvider.addNotification(_notificationModel);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -330,6 +361,12 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
                   if (_otherUserInteraction != null) {
                     showMatchingDialog(
                         context, ref, _otherUserInteraction.userId);
+                  } else {
+                    createInteractionNotification(
+                      title: "You have a new Interaction!",
+                      body: "Someone has super liked you!",
+                      receiverId: _user.id,
+                    );
                   }
                 }
               },
@@ -353,6 +390,12 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
                   if (_otherUserInteraction != null) {
                     showMatchingDialog(
                         context, ref, _otherUserInteraction.userId);
+                  } else {
+                    createInteractionNotification(
+                      title: "You have a new Interaction!",
+                      body: "Someone has liked you!",
+                      receiverId: _user.id,
+                    );
                   }
                 }
               },
@@ -441,21 +484,21 @@ Future<void> showMatchingDialog(
       final _currentTime = DateTime.now();
       final _id =
           _matchModel.id + _currentTime.millisecondsSinceEpoch.toString();
-      final MatchingNotificationModel _notificationModel =
-          MatchingNotificationModel(
+      final NotificationModel _notificationModel = NotificationModel(
         id: _id,
         userId: _currentUserProfile!.userId,
-        machedUserId: _otherUserProfile!.userId,
+        receiverId: _otherUserProfile!.userId,
         matchId: _matchModel.id,
         title: _currentUserProfile!.fullName,
         body: "You have a new match",
         image: _currentUserProfile!.profilePicture,
         createdAt: _currentTime,
         isRead: false,
+        isMatchingNotification: true,
+        isInteractionNotification: false,
       );
 
-      final _matchingNotificationProvider =
-          ref.read(matchingNotificationProvider);
+      final _matchingNotificationProvider = ref.read(notificationProvider);
       _matchingNotificationProvider.addNotification(_notificationModel);
 
       return await showDialog(

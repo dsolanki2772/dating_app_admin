@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mio_amore/providers/device_token_provider.dart';
@@ -32,6 +33,31 @@ class AuthProvider {
 
       await _deviceTokenProvider.saveDeviceToken();
       return _userCred.user;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'account-exists-with-different-credential') {
+        EasyLoading.showError(
+            'An account already exists with the same email address but different sign-in credentials. Sign in using a provider associated with this email address.');
+      }
+    } catch (e) {
+      EasyLoading.showError('Something went wrong.');
+    }
+    return null;
+  }
+
+  Future<User?> signInWithFacebook() async {
+    try {
+      final LoginResult _result = await FacebookAuth.instance.login();
+      if (_result.status == LoginStatus.success) {
+        final OAuthCredential credential =
+            FacebookAuthProvider.credential(_result.accessToken!.token);
+
+        final _userCred =
+            await FirebaseAuth.instance.signInWithCredential(credential);
+        await _deviceTokenProvider.saveDeviceToken();
+
+        return _userCred.user;
+      }
+      return null;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'account-exists-with-different-credential') {
         EasyLoading.showError(

@@ -38,6 +38,15 @@ class InteractionProvider {
     }
   }
 
+  Future<bool> deleteInteraction(String interactionId) async {
+    try {
+      await _interactionCollection.doc(interactionId).delete();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future<UserInteractionModel?> getExistingInteraction(
       String otherUserId) async {
     final _interactionCollection = FirebaseFirestore.instance

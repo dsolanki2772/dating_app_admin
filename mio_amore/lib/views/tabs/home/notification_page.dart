@@ -4,13 +4,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/helpers/date_formater.dart';
+import 'package:mio_amore/models/notification_model.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
-import 'package:mio_amore/providers/matching_notifiaction_provider.dart';
+import 'package:mio_amore/providers/notifiaction_provider.dart';
 import 'package:mio_amore/providers/other_users_provider.dart';
 import 'package:mio_amore/views/custom/custom_app_bar.dart';
 import 'package:mio_amore/views/custom/custom_headline.dart';
 import 'package:mio_amore/views/custom/custom_icon_button.dart';
 import 'package:mio_amore/views/others/user_details_page.dart';
+import 'package:mio_amore/views/tabs/bottom_nav_bar_page.dart';
 import 'package:mio_amore/views/tabs/home/home_page.dart';
 
 class NotificationPage extends StatelessWidget {
@@ -61,7 +63,84 @@ class NotificationBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _notifications = ref.watch(matchingNotificationsStreamProvider);
+    void deleteNotification(NotificationModel item) {
+      showModalBottomSheet(
+          context: context,
+          builder: (context) {
+            return Container(
+              padding: const EdgeInsets.all(AppConstants.defaultNumericValue),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                      'Are you sure you want to delete this notification?'),
+                  const SizedBox(height: AppConstants.defaultNumericValue),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                      const SizedBox(width: AppConstants.defaultNumericValue),
+                      TextButton(
+                        child: const Text('Delete'),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          ref
+                              .read(notificationProvider)
+                              .deleteNotification(item.id);
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          });
+    }
+
+    void onTapNotification(WidgetRef ref, NotificationModel item) {
+      final _notificationProvider = ref.read(notificationProvider);
+      if (item.isMatchingNotification) {
+        final _otherUsersProvider = ref.read(otherUsersProvider);
+
+        UserProfileModel? _otherUser;
+        _otherUsersProvider.whenData((value) {
+          _otherUser = value.firstWhere((element) => element.id == item.userId);
+        });
+
+        if (_otherUser != null) {
+          if (!item.isRead) {
+            _notificationProvider
+                .updateNotification(item.copyWith(isRead: true));
+          }
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => UserDetailsPage(
+                user: _otherUser!,
+                matchId: item.matchId,
+              ),
+            ),
+          );
+        }
+      }
+
+      if (item.isInteractionNotification) {
+        if (!item.isRead) {
+          _notificationProvider.updateNotification(item.copyWith(isRead: true));
+        }
+        Navigator.pop(context);
+      }
+    }
+
+    final _notifications = ref.watch(notificationsStreamProvider);
     return _notifications.when(
       data: (data) {
         if (data.isEmpty) {
@@ -69,78 +148,14 @@ class NotificationBody extends ConsumerWidget {
         } else {
           return ListView.separated(
             itemBuilder: (context, index) {
-              final _item = data[index];
+              NotificationModel _item = data[index];
 
               return ListTile(
                 onLongPress: () {
-                  showModalBottomSheet(
-                      context: context,
-                      builder: (context) {
-                        return Container(
-                          padding: const EdgeInsets.all(
-                              AppConstants.defaultNumericValue),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Text(
-                                  'Are you sure you want to delete this notification?'),
-                              const SizedBox(
-                                  height: AppConstants.defaultNumericValue),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  TextButton(
-                                    child: const Text(
-                                      'Cancel',
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                  const SizedBox(
-                                      width: AppConstants.defaultNumericValue),
-                                  TextButton(
-                                    child: const Text('Delete'),
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                      ref
-                                          .read(matchingNotificationProvider)
-                                          .deleteNotification(_item.id);
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        );
-                      });
+                  deleteNotification(_item);
                 },
                 onTap: () {
-                  final _otherUsersProvider = ref.read(otherUsersProvider);
-                  final _matchingNotificationProvider =
-                      ref.read(matchingNotificationProvider);
-                  UserProfileModel? _otherUser;
-                  _otherUsersProvider.whenData((value) {
-                    _otherUser = value
-                        .firstWhere((element) => element.id == _item.userId);
-                  });
-
-                  if (_otherUser != null) {
-                    if (!_item.isRead) {
-                      _matchingNotificationProvider
-                          .updateNotification(_item.copyWith(isRead: true));
-                    }
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => UserDetailsPage(
-                          user: _otherUser!,
-                          matchId: _item.matchId,
-                        ),
-                      ),
-                    );
-                  }
+                  onTapNotification(ref, _item);
                 },
                 title: Text(_item.title),
                 tileColor: _item.isRead
@@ -183,7 +198,7 @@ class NotificationBody extends ConsumerWidget {
           );
         }
       },
-      error: (_, __) {
+      error: (e, st) {
         return const SizedBox();
       },
       loading: () {

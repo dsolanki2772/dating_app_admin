@@ -21,34 +21,36 @@ class ChatPageBackground extends ConsumerWidget {
     final ChatWallpaperModel? _chatWallpaperModel =
         _chatWallpaperProvider.getWallpaper();
 
-    return Container(
-      decoration: _chatWallpaperModel == null
-          ? const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(AppConfig.defaultChatBg),
-                fit: BoxFit.cover,
-              ),
-            )
-          : _chatWallpaperModel.imagePath != null
-              ? BoxDecoration(
-                  image: DecorationImage(
-                    image: FileImage(File(_chatWallpaperModel.imagePath!)),
-                    fit: BoxFit.cover,
-                    onError: (_, __) =>
-                        const AssetImage(AppConfig.defaultChatBg),
-                  ),
-                )
-              : _chatWallpaperModel.solidColor != null
-                  ? BoxDecoration(
-                      color: _chatWallpaperModel.solidColor,
-                    )
-                  : const BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(AppConfig.defaultChatBg),
-                        fit: BoxFit.cover,
-                      ),
+    return Scaffold(
+      body: Container(
+        decoration: _chatWallpaperModel == null
+            ? const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(AppConfig.defaultChatBg),
+                  fit: BoxFit.cover,
+                ),
+              )
+            : _chatWallpaperModel.imagePath != null
+                ? BoxDecoration(
+                    image: DecorationImage(
+                      image: FileImage(File(_chatWallpaperModel.imagePath!)),
+                      fit: BoxFit.cover,
+                      onError: (_, __) =>
+                          const AssetImage(AppConfig.defaultChatBg),
                     ),
-      child: child,
+                  )
+                : _chatWallpaperModel.solidColor != null
+                    ? BoxDecoration(
+                        color: _chatWallpaperModel.solidColor,
+                      )
+                    : const BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(AppConfig.defaultChatBg),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+        child: child,
+      ),
     );
   }
 }

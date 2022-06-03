@@ -4,36 +4,34 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/models/notification_model.dart';
 
-final matchingNotificationsStreamProvider =
-    StreamProvider<List<MatchingNotificationModel>>((ref) {
+final notificationsStreamProvider =
+    StreamProvider<List<NotificationModel>>((ref) {
   const _matchingNotificationCollection =
-      FirebaseConstants.matchingNotificationsCollection;
+      FirebaseConstants.notificationsCollection;
 
   final _currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
   return FirebaseFirestore.instance
       .collection(_matchingNotificationCollection)
-      .where("machedUserId", isEqualTo: _currentUserId)
+      .where("receiverId", isEqualTo: _currentUserId)
       .orderBy("createdAt", descending: true)
       .snapshots()
       .map((snapshot) {
     return snapshot.docs
-        .map((doc) => MatchingNotificationModel.fromMap(doc.data()))
+        .map((doc) => NotificationModel.fromMap(doc.data()))
         .toList();
   });
 });
 
-final matchingNotificationProvider =
-    Provider<MatchingNotificationProvider>((ref) {
-  return MatchingNotificationProvider();
+final notificationProvider = Provider<NotificationProvider>((ref) {
+  return NotificationProvider();
 });
 
-class MatchingNotificationProvider {
+class NotificationProvider {
   final _matchingNotificationCollection =
-      FirebaseConstants.matchingNotificationsCollection;
+      FirebaseConstants.notificationsCollection;
 
-  Future<bool> addNotification(
-      MatchingNotificationModel notificationModel) async {
+  Future<bool> addNotification(NotificationModel notificationModel) async {
     try {
       await FirebaseFirestore.instance
           .collection(_matchingNotificationCollection)
@@ -47,8 +45,7 @@ class MatchingNotificationProvider {
   }
 
   //Update notification
-  Future<bool> updateNotification(
-      MatchingNotificationModel notificationModel) async {
+  Future<bool> updateNotification(NotificationModel notificationModel) async {
     try {
       await FirebaseFirestore.instance
           .collection(_matchingNotificationCollection)

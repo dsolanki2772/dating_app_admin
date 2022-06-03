@@ -11,6 +11,7 @@ import 'package:mio_amore/views/others/loading_page.dart';
 import 'package:mio_amore/views/tabs/favourites/favourites_page.dart';
 import 'package:mio_amore/views/tabs/feeds/feeds_page.dart';
 import 'package:mio_amore/views/tabs/home/home_page.dart';
+import 'package:mio_amore/views/tabs/interactions/interactions_page.dart';
 import 'package:mio_amore/views/tabs/messages/messages_page.dart';
 import 'package:mio_amore/views/tabs/profile/first_time_update_profile_page.dart';
 import 'package:mio_amore/views/tabs/profile/profile_page.dart';
@@ -131,10 +132,10 @@ final List<_BottomNavBarItem> _navItems = [
   ),
   //Favourites
   _BottomNavBarItem(
-    title: 'Favourite',
+    title: 'Matches',
     icon: CupertinoIcons.heart,
     activeIcon: CupertinoIcons.heart_solid,
-    page: const FavouritesPage(),
+    page: const MatchesPage(),
   ),
   //Messages
   _BottomNavBarItem(
@@ -145,10 +146,10 @@ final List<_BottomNavBarItem> _navItems = [
   ),
   //Proile
   _BottomNavBarItem(
-    title: 'Profile',
-    icon: CupertinoIcons.person_circle,
-    activeIcon: CupertinoIcons.person_circle_fill,
-    page: const ProfilePage(),
+    title: 'Interactions',
+    icon: CupertinoIcons.cube_box,
+    activeIcon: CupertinoIcons.cube_box_fill,
+    page: const InteractionsPage(),
   ),
 ];
 
