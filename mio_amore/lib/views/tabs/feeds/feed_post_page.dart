@@ -35,8 +35,6 @@ class _FeedPostPageState extends ConsumerState<FeedPostPage> {
   void _onPost() async {
     EasyLoading.show(status: 'Posting...');
 
-    final _feedProvider = ref.read(feedProvider);
-
     final _currentTime = DateTime.now();
     final _currentUserId = FirebaseAuth.instance.currentUser!.uid;
     final _feedId =
@@ -59,7 +57,7 @@ class _FeedPostPageState extends ConsumerState<FeedPostPage> {
       likes: [],
     );
 
-    final _result = await _feedProvider.addFeed(_feedModel);
+    final _result = await addFeed(_feedModel);
 
     if (_result) {
       EasyLoading.showSuccess('Posted');

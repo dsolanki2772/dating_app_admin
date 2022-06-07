@@ -2,7 +2,6 @@ import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/providers/match_provider.dart';
 import 'package:mio_amore/providers/user_profile_provider.dart';
@@ -14,7 +13,6 @@ import 'package:mio_amore/views/tabs/home/home_page.dart';
 import 'package:mio_amore/views/tabs/interactions/interactions_page.dart';
 import 'package:mio_amore/views/tabs/messages/messages_page.dart';
 import 'package:mio_amore/views/tabs/profile/first_time_update_profile_page.dart';
-import 'package:mio_amore/views/tabs/profile/profile_page.dart';
 
 class BottomNavBarPage extends ConsumerStatefulWidget {
   const BottomNavBarPage({Key? key}) : super(key: key);
@@ -135,7 +133,7 @@ final List<_BottomNavBarItem> _navItems = [
     title: 'Matches',
     icon: CupertinoIcons.heart,
     activeIcon: CupertinoIcons.heart_solid,
-    page: const MatchesPage(),
+    page: const MatchesConsumerPage(),
   ),
   //Messages
   _BottomNavBarItem(

@@ -37,40 +37,34 @@ final getFeedsProvider = FutureProvider<List<FeedModel>>((ref) async {
   return feeds;
 });
 
-final feedProvider = Provider<FeedProvider>((ref) {
-  return FeedProvider();
-});
+final _feedsCollection =
+    FirebaseFirestore.instance.collection(FirebaseConstants.feedsCollection);
 
-class FeedProvider {
-  final _feedsCollection =
-      FirebaseFirestore.instance.collection(FirebaseConstants.feedsCollection);
+Future<bool> addFeed(FeedModel feedModel) async {
+  try {
+    await _feedsCollection.doc(feedModel.id).set(feedModel.toMap());
 
-  Future<bool> addFeed(FeedModel feedModel) async {
-    try {
-      await _feedsCollection.doc(feedModel.id).set(feedModel.toMap());
-
-      return true;
-    } catch (e) {
-      return false;
-    }
+    return true;
+  } catch (e) {
+    return false;
   }
+}
 
-  Future<bool> updateFeed(FeedModel feedModel) async {
-    try {
-      await _feedsCollection.doc(feedModel.id).update(feedModel.toMap());
-      return true;
-    } catch (e) {
-      return false;
-    }
+Future<bool> updateFeed(FeedModel feedModel) async {
+  try {
+    await _feedsCollection.doc(feedModel.id).update(feedModel.toMap());
+    return true;
+  } catch (e) {
+    return false;
   }
+}
 
-  Future<bool> deleteFeed(String id) async {
-    try {
-      await _feedsCollection.doc(id).delete();
-      return true;
-    } catch (e) {
-      return false;
-    }
+Future<bool> deleteFeed(String id) async {
+  try {
+    await _feedsCollection.doc(id).delete();
+    return true;
+  } catch (e) {
+    return false;
   }
 }
 

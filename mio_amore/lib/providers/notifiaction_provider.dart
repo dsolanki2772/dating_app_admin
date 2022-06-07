@@ -23,51 +23,45 @@ final notificationsStreamProvider =
   });
 });
 
-final notificationProvider = Provider<NotificationProvider>((ref) {
-  return NotificationProvider();
-});
+const _matchingNotificationCollection =
+    FirebaseConstants.notificationsCollection;
 
-class NotificationProvider {
-  final _matchingNotificationCollection =
-      FirebaseConstants.notificationsCollection;
+Future<bool> addNotification(NotificationModel notificationModel) async {
+  try {
+    await FirebaseFirestore.instance
+        .collection(_matchingNotificationCollection)
+        .doc(notificationModel.id)
+        .set(notificationModel.toMap());
 
-  Future<bool> addNotification(NotificationModel notificationModel) async {
-    try {
-      await FirebaseFirestore.instance
-          .collection(_matchingNotificationCollection)
-          .doc(notificationModel.id)
-          .set(notificationModel.toMap());
-
-      return true;
-    } catch (e) {
-      return false;
-    }
+    return true;
+  } catch (e) {
+    return false;
   }
+}
 
-  //Update notification
-  Future<bool> updateNotification(NotificationModel notificationModel) async {
-    try {
-      await FirebaseFirestore.instance
-          .collection(_matchingNotificationCollection)
-          .doc(notificationModel.id)
-          .update(notificationModel.toMap());
+//Update notification
+Future<bool> updateNotification(NotificationModel notificationModel) async {
+  try {
+    await FirebaseFirestore.instance
+        .collection(_matchingNotificationCollection)
+        .doc(notificationModel.id)
+        .update(notificationModel.toMap());
 
-      return true;
-    } catch (e) {
-      return false;
-    }
+    return true;
+  } catch (e) {
+    return false;
   }
+}
 
-  Future<bool> deleteNotification(String notificationId) async {
-    try {
-      await FirebaseFirestore.instance
-          .collection(_matchingNotificationCollection)
-          .doc(notificationId)
-          .delete();
+Future<bool> deleteNotification(String notificationId) async {
+  try {
+    await FirebaseFirestore.instance
+        .collection(_matchingNotificationCollection)
+        .doc(notificationId)
+        .delete();
 
-      return true;
-    } catch (e) {
-      return false;
-    }
+    return true;
+  } catch (e) {
+    return false;
   }
 }

@@ -1,13 +1,20 @@
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mio_amore/helpers/constants.dart';
+import 'package:mio_amore/models/match_model.dart';
+import 'package:mio_amore/models/notification_model.dart';
 import 'package:mio_amore/models/user_interaction_model.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
 import 'package:mio_amore/providers/interaction_provider.dart';
+import 'package:mio_amore/providers/match_provider.dart';
+import 'package:mio_amore/providers/notifiaction_provider.dart';
+import 'package:mio_amore/providers/user_profile_provider.dart';
 import 'package:mio_amore/views/custom/custom_button.dart';
 import 'package:mio_amore/views/custom/custom_icon_button.dart';
 import 'package:mio_amore/views/others/photo_view_page.dart';
@@ -26,7 +33,123 @@ class UserDetailsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    final _interactionProvider = ref.read(interactionProvider);
+    void createInteractionNotification(
+        {required String title,
+        required String body,
+        required String receiverId,
+        required UserProfileModel currentUser}) async {
+      final _currentTime = DateTime.now();
+      final _id = _currentTime.millisecondsSinceEpoch.toString();
+      final NotificationModel _notificationModel = NotificationModel(
+        id: _id,
+        userId: currentUser.userId,
+        receiverId: receiverId,
+        title: title,
+        body: body,
+        image: currentUser.profilePicture,
+        createdAt: _currentTime,
+        isRead: false,
+        isMatchingNotification: false,
+        isInteractionNotification: true,
+      );
+
+      await addNotification(_notificationModel);
+    }
+
+    Future<void> showMatchingDialog(
+        {required BuildContext context,
+        required UserProfileModel currentUser,
+        required UserProfileModel otherUser}) async {
+      final MatchModel _matchModel = MatchModel(
+        id: currentUser.userId + otherUser.userId,
+        userIds: [currentUser.userId, otherUser.userId],
+      );
+
+      final _matchResult = await createConversation(_matchModel);
+
+      if (_matchResult) {
+        final _currentTime = DateTime.now();
+        final _id =
+            _matchModel.id + _currentTime.millisecondsSinceEpoch.toString();
+        final NotificationModel _notificationModel = NotificationModel(
+          id: _id,
+          userId: currentUser.userId,
+          receiverId: otherUser.userId,
+          matchId: _matchModel.id,
+          title: currentUser.fullName,
+          body: "You have a new match",
+          image: currentUser.profilePicture,
+          createdAt: _currentTime,
+          isRead: false,
+          isMatchingNotification: true,
+          isInteractionNotification: false,
+        );
+
+        await addNotification(_notificationModel);
+
+        return await showDialog(
+          context: context,
+          builder: (context) {
+            return SimpleDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius:
+                    BorderRadius.circular(AppConstants.defaultNumericValue),
+              ),
+              insetPadding:
+                  const EdgeInsets.all(AppConstants.defaultNumericValue * 2),
+              contentPadding:
+                  const EdgeInsets.all(AppConstants.defaultNumericValue * 2),
+              title: const Center(child: Text("Matched")),
+              children: [
+                const SizedBox(height: AppConstants.defaultNumericValue),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    UserCirlePicture(imageUrl: otherUser.profilePicture),
+                    const SizedBox(width: AppConstants.defaultNumericValue / 4),
+                    UserCirlePicture(imageUrl: currentUser.profilePicture),
+                  ],
+                ),
+                const SizedBox(height: AppConstants.defaultNumericValue),
+                Center(
+                  child: Text("You are now matched with ${otherUser.fullName}"),
+                ),
+                const SizedBox(height: AppConstants.defaultNumericValue),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                        child: OutlinedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text("Not Now"))),
+                    const SizedBox(width: AppConstants.defaultNumericValue),
+                    Expanded(
+                      child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => ChatPage(
+                                  matchId: _matchModel.id,
+                                  otherUserId: otherUser.userId,
+                                ),
+                              ),
+                            );
+                          },
+                          child: const Text("Start Chat")),
+                    ),
+                  ],
+                ),
+              ],
+            );
+          },
+        );
+      }
+    }
+
+    final _currentUserProfile = ref.watch(userProfileStreamProvider);
 
     final String _myUserId = FirebaseAuth.instance.currentUser!.uid;
     final String _id = _myUserId + user.id;
@@ -41,10 +164,15 @@ class UserDetailsPage extends ConsumerWidget {
       createdAt: DateTime.now(),
     );
 
+    UserProfileModel? _currentUserProfileModel;
+    _currentUserProfile.whenData((userProfile) {
+      _currentUserProfileModel = userProfile;
+    });
+
     return Scaffold(
       body: Stack(
         children: [
-          DetailsBody(user: user),
+          DetailsBody(user: user, matchId: matchId),
           if (matchId != null)
             Positioned(
               bottom: 0,
@@ -97,8 +225,7 @@ class UserDetailsPage extends ConsumerWidget {
                       onTapCross: () async {
                         final _newInteraction = _interaction.copyWith(
                             isDislike: true, createdAt: DateTime.now());
-                        await _interactionProvider
-                            .createInteraction(_newInteraction);
+                        await createInteraction(_newInteraction);
 
                         Navigator.pop(context);
                         ref.refresh(interactionFutureProvider);
@@ -106,18 +233,24 @@ class UserDetailsPage extends ConsumerWidget {
                       onTapBolt: () async {
                         final _newInteraction = _interaction.copyWith(
                             isSuperLike: true, createdAt: DateTime.now());
-                        final _result = await _interactionProvider
-                            .createInteraction(_newInteraction);
+                        final _result =
+                            await createInteraction(_newInteraction);
 
-                        if (_result) {
+                        if (_result && _currentUserProfileModel != null) {
                           final UserInteractionModel? _otherUserInteraction =
-                              await _interactionProvider
-                                  .getExistingInteraction(user.id);
+                              await getExistingInteraction(user.id);
                           if (_otherUserInteraction != null) {
                             await showMatchingDialog(
-                                context, ref, _otherUserInteraction.userId);
+                                context: context,
+                                currentUser: _currentUserProfileModel!,
+                                otherUser: user);
                             Navigator.pop(context);
                           } else {
+                            createInteractionNotification(
+                                title: "You have a new Interaction!",
+                                body: "Someone has super liked you!",
+                                receiverId: user.userId,
+                                currentUser: _currentUserProfileModel!);
                             Navigator.pop(context);
                           }
                         }
@@ -127,18 +260,24 @@ class UserDetailsPage extends ConsumerWidget {
                       onTapHeart: () async {
                         final _newInteraction = _interaction.copyWith(
                             isLike: true, createdAt: DateTime.now());
-                        final _result = await _interactionProvider
-                            .createInteraction(_newInteraction);
+                        final _result =
+                            await createInteraction(_newInteraction);
 
-                        if (_result) {
+                        if (_result && _currentUserProfileModel != null) {
                           final UserInteractionModel? _otherUserInteraction =
-                              await _interactionProvider
-                                  .getExistingInteraction(user.id);
+                              await getExistingInteraction(user.id);
                           if (_otherUserInteraction != null) {
                             await showMatchingDialog(
-                                context, ref, _otherUserInteraction.userId);
+                                context: context,
+                                currentUser: _currentUserProfileModel!,
+                                otherUser: user);
                             Navigator.pop(context);
                           } else {
+                            createInteractionNotification(
+                                title: "You have a new Interaction!",
+                                body: "Someone has liked you!",
+                                receiverId: user.userId,
+                                currentUser: _currentUserProfileModel!);
                             Navigator.pop(context);
                           }
                         }
@@ -156,13 +295,54 @@ class UserDetailsPage extends ConsumerWidget {
   }
 }
 
-class DetailsBody extends StatelessWidget {
+class DetailsBody extends StatefulWidget {
   const DetailsBody({
     Key? key,
     required this.user,
+    required this.matchId,
   }) : super(key: key);
 
   final UserProfileModel user;
+  final String? matchId;
+
+  @override
+  State<DetailsBody> createState() => _DetailsBodyState();
+}
+
+class _DetailsBodyState extends State<DetailsBody> {
+  final CustomPopupMenuController _moreMenuController =
+      CustomPopupMenuController();
+
+  void _onTapUnmatch() async {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Unmatch"),
+            content: const Text("Are you sure you want to unmatch?"),
+            actions: [
+              TextButton(
+                child: const Text("Cancel"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: const Text("Unmatch"),
+                onPressed: () async {
+                  EasyLoading.show(status: "Unmatching...");
+                  final _currentUserId = FirebaseAuth.instance.currentUser!.uid;
+                  await unMatchUser(
+                      widget.matchId!, widget.user.userId, _currentUserId);
+                  EasyLoading.dismiss();
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -179,44 +359,44 @@ class DetailsBody extends StatelessWidget {
                   SizedBox(
                     height: AppConstants.defaultNumericValue * 28,
                     width: MediaQuery.of(context).size.width,
-                    child:
-                        (user.profilePicture == null && user.mediaFiles.isEmpty)
-                            ? const Center(
-                                child: Icon(CupertinoIcons.photo),
-                              )
-                            : GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => PhotoViewPage(
-                                        images: [
-                                          user.profilePicture != null
-                                              ? user.profilePicture!
-                                              : user.mediaFiles.isNotEmpty
-                                                  ? user.mediaFiles.first
-                                                  : ''
-                                        ],
-                                        title: "Photos",
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: CachedNetworkImage(
-                                  imageUrl: user.profilePicture != null
-                                      ? user.profilePicture!
-                                      : user.mediaFiles.isNotEmpty
-                                          ? user.mediaFiles.first
-                                          : '',
-                                  fit: BoxFit.cover,
-                                  placeholder: (context, url) => const Center(
-                                      child: CupertinoActivityIndicator()),
-                                  errorWidget: (context, url, error) {
-                                    return const Center(
-                                        child: Icon(CupertinoIcons.photo));
-                                  },
+                    child: (widget.user.profilePicture == null &&
+                            widget.user.mediaFiles.isEmpty)
+                        ? const Center(
+                            child: Icon(CupertinoIcons.photo),
+                          )
+                        : GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PhotoViewPage(
+                                    images: [
+                                      widget.user.profilePicture != null
+                                          ? widget.user.profilePicture!
+                                          : widget.user.mediaFiles.isNotEmpty
+                                              ? widget.user.mediaFiles.first
+                                              : ''
+                                    ],
+                                    title: "Photos",
+                                  ),
                                 ),
-                              ),
+                              );
+                            },
+                            child: CachedNetworkImage(
+                              imageUrl: widget.user.profilePicture != null
+                                  ? widget.user.profilePicture!
+                                  : widget.user.mediaFiles.isNotEmpty
+                                      ? widget.user.mediaFiles.first
+                                      : '',
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => const Center(
+                                  child: CupertinoActivityIndicator()),
+                              errorWidget: (context, url, error) {
+                                return const Center(
+                                    child: Icon(CupertinoIcons.photo));
+                              },
+                            ),
+                          ),
                   ),
                   Container(
                       height: 2,
@@ -242,22 +422,60 @@ class DetailsBody extends StatelessWidget {
                         padding: const EdgeInsets.all(
                             AppConstants.defaultNumericValue / 1.5),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // _AddToFavButton(user: user),
-                          const SizedBox(
-                              width: AppConstants.defaultNumericValue / 2),
-                          CustomIconButton(
-                            icon: CupertinoIcons.bell_fill,
-                            color: Colors.white,
-                            onPressed: () {},
-                            padding: const EdgeInsets.all(
-                                AppConstants.defaultNumericValue / 1.5),
-                          ),
-                        ],
-                      ),
+                      widget.matchId == null
+                          ? const SizedBox()
+                          : CustomPopupMenu(
+                              child: const CupertinoButton(
+                                padding: EdgeInsets.zero,
+                                child: Icon(CupertinoIcons.ellipsis_vertical,
+                                    color: Colors.white),
+                                onPressed: null,
+                              ),
+                              menuBuilder: () => ClipRRect(
+                                borderRadius: BorderRadius.circular(
+                                    AppConstants.defaultNumericValue / 2),
+                                child: Container(
+                                  decoration:
+                                      const BoxDecoration(color: Colors.white),
+                                  child: IntrinsicWidth(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: [
+                                        MoreMenuTitle(
+                                          title: 'Unmatch',
+                                          onTap: () async {
+                                            _moreMenuController.hideMenu();
+                                            _onTapUnmatch();
+                                          },
+                                        ),
+                                        MoreMenuTitle(
+                                          title: 'Report',
+                                          onTap: () {
+                                            //TODO: Report User
+                                            _moreMenuController.hideMenu();
+                                          },
+                                        ),
+                                        MoreMenuTitle(
+                                          title: 'Block',
+                                          onTap: () {
+                                            //TODO: Block User
+                                            _moreMenuController.hideMenu();
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              pressType: PressType.singleClick,
+                              verticalMargin: 0,
+                              controller: _moreMenuController,
+                              showArrow: true,
+                              arrowColor: Colors.white,
+                              barrierColor:
+                                  AppConstants.primaryColor.withOpacity(0.1),
+                            ),
                     ],
                   ),
                 ),
@@ -299,7 +517,7 @@ class DetailsBody extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Flexible(
-                                child: Text(user.fullName,
+                                child: Text(widget.user.fullName,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                     style: Theme.of(context)
@@ -309,7 +527,7 @@ class DetailsBody extends StatelessWidget {
                               ),
                               const SizedBox(
                                   width: AppConstants.defaultNumericValue / 4),
-                              if (user.isVerified)
+                              if (widget.user.isVerified)
                                 const Icon(Icons.verified_user,
                                     color: CupertinoColors.activeGreen),
                             ],
@@ -326,8 +544,8 @@ class DetailsBody extends StatelessWidget {
                                   width: AppConstants.defaultNumericValue / 4),
                               Flexible(
                                 child: Text(
-                                    user.userAccountSettingsModel.location
-                                        .addressText,
+                                    widget.user.userAccountSettingsModel
+                                        .location.addressText,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: Theme.of(context)
@@ -354,7 +572,7 @@ class DetailsBody extends StatelessWidget {
                         gradient: AppConstants.defaultGradient,
                       ),
                       child: Text(
-                          "${DateTime.now().difference(user.birthDay).inDays ~/ 365} Years",
+                          "${DateTime.now().difference(widget.user.birthDay).inDays ~/ 365} Years",
                           style: Theme.of(context)
                               .textTheme
                               .subtitle1!
@@ -381,9 +599,10 @@ class DetailsBody extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(
                     horizontal: AppConstants.defaultNumericValue),
-                child: Text(user.about == null || user.about!.isEmpty
-                    ? "Not Available"
-                    : user.about!),
+                child: Text(
+                    widget.user.about == null || widget.user.about!.isEmpty
+                        ? "Not Available"
+                        : widget.user.about!),
               ),
               const SizedBox(height: AppConstants.defaultNumericValue),
               Padding(
@@ -401,13 +620,13 @@ class DetailsBody extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(
                     horizontal: AppConstants.defaultNumericValue),
-                child: user.interests.isEmpty
+                child: widget.user.interests.isEmpty
                     ? const Text("Not Found!")
                     : Wrap(
                         spacing: AppConstants.defaultNumericValue / 2,
                         runSpacing: AppConstants.defaultNumericValue / 2,
                         alignment: WrapAlignment.start,
-                        children: user.interests.map((interest) {
+                        children: widget.user.interests.map((interest) {
                           return Container(
                             decoration: BoxDecoration(
                               borderRadius: const BorderRadius.all(
@@ -437,7 +656,7 @@ class DetailsBody extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: AppConstants.defaultNumericValue / 2),
-              user.mediaFiles.isEmpty
+              widget.user.mediaFiles.isEmpty
                   ? const SizedBox(
                       height: 200,
                       child: Center(
@@ -461,16 +680,16 @@ class DetailsBody extends StatelessWidget {
                         crossAxisSpacing: AppConstants.defaultNumericValue,
                         mainAxisSpacing: AppConstants.defaultNumericValue,
                       ),
-                      children: user.mediaFiles.map((e) {
+                      children: widget.user.mediaFiles.map((e) {
                         return GestureDetector(
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => PhotoViewPage(
-                                  images: user.mediaFiles,
+                                  images: widget.user.mediaFiles,
                                   title: "Photos",
-                                  index: user.mediaFiles.indexOf(e),
+                                  index: widget.user.mediaFiles.indexOf(e),
                                 ),
                               ),
                             );

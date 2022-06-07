@@ -21,46 +21,39 @@ final interactionFutureProvider =
   });
 });
 
-final interactionProvider = Provider<InteractionProvider>((ref) {
-  return InteractionProvider();
-});
+final _interactionCollection = FirebaseFirestore.instance
+    .collection(FirebaseConstants.userInteractionCollection);
 
-class InteractionProvider {
+Future<bool> createInteraction(UserInteractionModel interaction) async {
+  try {
+    await _interactionCollection.doc(interaction.id).set(interaction.toMap());
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+Future<bool> deleteInteraction(String interactionId) async {
+  try {
+    await _interactionCollection.doc(interactionId).delete();
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+Future<UserInteractionModel?> getExistingInteraction(String otherUserId) async {
   final _interactionCollection = FirebaseFirestore.instance
       .collection(FirebaseConstants.userInteractionCollection);
 
-  Future<bool> createInteraction(UserInteractionModel interaction) async {
-    try {
-      await _interactionCollection.doc(interaction.id).set(interaction.toMap());
-      return true;
-    } catch (e) {
-      return false;
+  return await _interactionCollection
+      .where("id",
+          isEqualTo: otherUserId + FirebaseAuth.instance.currentUser!.uid)
+      .get()
+      .then((snapshot) {
+    if (snapshot.docs.isEmpty) {
+      return null;
     }
-  }
-
-  Future<bool> deleteInteraction(String interactionId) async {
-    try {
-      await _interactionCollection.doc(interactionId).delete();
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  Future<UserInteractionModel?> getExistingInteraction(
-      String otherUserId) async {
-    final _interactionCollection = FirebaseFirestore.instance
-        .collection(FirebaseConstants.userInteractionCollection);
-
-    return await _interactionCollection
-        .where("id",
-            isEqualTo: otherUserId + FirebaseAuth.instance.currentUser!.uid)
-        .get()
-        .then((snapshot) {
-      if (snapshot.docs.isEmpty) {
-        return null;
-      }
-      return UserInteractionModel.fromMap(snapshot.docs.first.data());
-    });
-  }
+    return UserInteractionModel.fromMap(snapshot.docs.first.data());
+  });
 }

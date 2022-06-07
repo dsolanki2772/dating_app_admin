@@ -556,18 +556,20 @@ class _ChatTopBarState extends ConsumerState<ChatTopBar> {
                         //     });
                         //   },
                         // ),
-                        // MoreMenuTitle(
-                        //   title: 'Report',
-                        //   onTap: () {
-                        //     _moreMenuController.hideMenu();
-                        //   },
-                        // ),
-                        // MoreMenuTitle(
-                        //   title: 'Block',
-                        //   onTap: () {
-                        //     _moreMenuController.hideMenu();
-                        //   },
-                        // ),
+                        MoreMenuTitle(
+                          title: 'Report',
+                          onTap: () {
+                            //TODO: Report User
+                            _moreMenuController.hideMenu();
+                          },
+                        ),
+                        MoreMenuTitle(
+                          title: 'Block',
+                          onTap: () {
+                            //TODO: Block User
+                            _moreMenuController.hideMenu();
+                          },
+                        ),
                       ],
                     ),
                   ),

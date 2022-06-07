@@ -3,6 +3,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mio_amore/providers/feed_provider.dart';
+import 'package:mio_amore/views/tabs/feeds/feeds_page.dart';
 import 'package:mio_amore/views/tabs/profile/edit_profile_page.dart';
 import 'package:intl/intl.dart';
 import 'package:mio_amore/helpers/constants.dart';
@@ -286,54 +288,66 @@ class ProfileBottomPart extends StatefulWidget {
 }
 
 class _ProfileBottomPartState extends State<ProfileBottomPart> {
-  final List<String> _tabs = ['About', 'Gallery'];
+  final List<String> _tabs = ['About', 'Gallery', "Feeds"];
   int _selectedTabIndex = 0;
   @override
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      color: Theme.of(context).scaffoldBackgroundColor,
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(AppConstants.defaultNumericValue),
+          bottomRight: Radius.circular(AppConstants.defaultNumericValue),
+        ),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(
                 horizontal: AppConstants.defaultNumericValue * 2),
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+            child: Wrap(
+                alignment: WrapAlignment.start,
+                spacing: AppConstants.defaultNumericValue,
+                runSpacing: AppConstants.defaultNumericValue,
                 children: _tabs.map((e) {
-                  return Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _selectedTabIndex = _tabs.indexOf(e);
-                          });
-                        },
-                        child: Text(
-                          e,
-                          style:
-                              Theme.of(context).textTheme.headline6!.copyWith(
-                                    color: _selectedTabIndex == _tabs.indexOf(e)
-                                        ? AppConstants.primaryColor
-                                        : Colors.black54,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                        ),
-                      ),
-                      const SizedBox(
-                          width: AppConstants.defaultNumericValue * 2),
-                    ],
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedTabIndex = _tabs.indexOf(e);
+                      });
+                    },
+                    child: Text(
+                      e,
+                      style: Theme.of(context).textTheme.headline6!.copyWith(
+                            color: _selectedTabIndex == _tabs.indexOf(e)
+                                ? AppConstants.primaryColor
+                                : Colors.black54,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
                   );
                 }).toList()),
           ),
           const SizedBox(height: AppConstants.defaultNumericValue),
-          _selectedTabIndex == 0
-              ? UserAboutView(data: widget.data)
-              : UserGalleryView(data: widget.data),
+          getProfileBodyView(_selectedTabIndex, widget.data),
         ],
       ),
     );
+  }
+}
+
+Widget getProfileBodyView(int index, UserProfileModel data) {
+  switch (index) {
+    case 0:
+      return UserAboutView(data: data);
+    case 1:
+      return UserGalleryView(data: data);
+    case 2:
+      return UserFeedsView(user: data);
+    default:
+      return UserAboutView(data: data);
   }
 }
 
@@ -448,5 +462,47 @@ class UserGalleryView extends StatelessWidget {
               );
             }).toList(),
           );
+  }
+}
+
+class UserFeedsView extends ConsumerWidget {
+  final UserProfileModel user;
+  const UserFeedsView({
+    Key? key,
+    required this.user,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final _feedList = ref.watch(getFeedsProvider);
+    return _feedList.when(
+      data: (data) {
+        final _myFeeds =
+            data.where((element) => element.userId == user.userId).toList();
+
+        if (_myFeeds.isEmpty) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.5,
+            child: const Center(child: Text('No Feeds Yet')),
+          );
+        } else {
+          return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                final _feed = _myFeeds[index];
+
+                return SingleFeedPost(feed: _feed, user: user);
+              },
+              itemCount: _myFeeds.length);
+        }
+      },
+      error: (_, __) => SizedBox(
+        height: MediaQuery.of(context).size.height * 0.5,
+      ),
+      loading: () => SizedBox(
+        height: MediaQuery.of(context).size.height * 0.5,
+      ),
+    );
   }
 }

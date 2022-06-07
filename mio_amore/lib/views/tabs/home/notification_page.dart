@@ -12,7 +12,6 @@ import 'package:mio_amore/views/custom/custom_app_bar.dart';
 import 'package:mio_amore/views/custom/custom_headline.dart';
 import 'package:mio_amore/views/custom/custom_icon_button.dart';
 import 'package:mio_amore/views/others/user_details_page.dart';
-import 'package:mio_amore/views/tabs/bottom_nav_bar_page.dart';
 import 'package:mio_amore/views/tabs/home/home_page.dart';
 
 class NotificationPage extends StatelessWidget {
@@ -92,9 +91,7 @@ class NotificationBody extends ConsumerWidget {
                         child: const Text('Delete'),
                         onPressed: () {
                           Navigator.pop(context);
-                          ref
-                              .read(notificationProvider)
-                              .deleteNotification(item.id);
+                          deleteNotification(item);
                         },
                       ),
                     ],
@@ -106,7 +103,6 @@ class NotificationBody extends ConsumerWidget {
     }
 
     void onTapNotification(WidgetRef ref, NotificationModel item) {
-      final _notificationProvider = ref.read(notificationProvider);
       if (item.isMatchingNotification) {
         final _otherUsersProvider = ref.read(otherUsersProvider);
 
@@ -117,8 +113,7 @@ class NotificationBody extends ConsumerWidget {
 
         if (_otherUser != null) {
           if (!item.isRead) {
-            _notificationProvider
-                .updateNotification(item.copyWith(isRead: true));
+            updateNotification(item.copyWith(isRead: true));
           }
           Navigator.push(
             context,
@@ -134,7 +129,7 @@ class NotificationBody extends ConsumerWidget {
 
       if (item.isInteractionNotification) {
         if (!item.isRead) {
-          _notificationProvider.updateNotification(item.copyWith(isRead: true));
+          updateNotification(item.copyWith(isRead: true));
         }
         Navigator.pop(context);
       }

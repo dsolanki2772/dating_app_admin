@@ -10,16 +10,80 @@ import 'package:mio_amore/providers/other_users_provider.dart';
 import 'package:mio_amore/views/custom/custom_app_bar.dart';
 import 'package:mio_amore/views/custom/custom_headline.dart';
 import 'package:mio_amore/views/custom/custom_icon_button.dart';
+import 'package:mio_amore/views/others/error_page.dart';
+import 'package:mio_amore/views/others/loading_page.dart';
 import 'package:mio_amore/views/others/user_image_card.dart';
 import 'package:mio_amore/views/tabs/home/home_page.dart';
 
-class MatchesPage extends ConsumerWidget {
-  const MatchesPage({Key? key}) : super(key: key);
+class MatchesConsumerPage extends ConsumerWidget {
+  const MatchesConsumerPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, ref) {
     final _matchedUsersProvider = ref.watch(matchStreamProvider);
     final _otherUsersProvider = ref.watch(otherUsersProvider);
+
+    return _otherUsersProvider.when(
+      data: (data) {
+        if (data.isEmpty) {
+          return const Center(
+            child: Text(
+              'No users found',
+              textAlign: TextAlign.center,
+            ),
+          );
+        } else {
+          return _matchedUsersProvider.when(
+            data: (matches) {
+              final List<MatchedUsersView> _matchedViews = [];
+
+              for (final user in data) {
+                if (matches
+                    .any((element) => element.userIds.contains(user.id))) {
+                  _matchedViews.add(MatchedUsersView(
+                      user: user,
+                      matchId: matches
+                          .firstWhere(
+                              (element) => element.userIds.contains(user.id))
+                          .id));
+                }
+              }
+
+              return MatchesPage(matchesView: _matchedViews);
+            },
+            error: (_, __) => const ErrorPage(),
+            loading: () => const LoadingPage(),
+          );
+        }
+      },
+      error: (_, __) => const ErrorPage(),
+      loading: () => const LoadingPage(),
+    );
+  }
+}
+
+class MatchesPage extends ConsumerStatefulWidget {
+  final List<MatchedUsersView> matchesView;
+  const MatchesPage({
+    Key? key,
+    required this.matchesView,
+  }) : super(key: key);
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _MatchBodyState();
+}
+
+class _MatchBodyState extends ConsumerState<MatchesPage> {
+  bool _isSearchBarVisible = false;
+  final _searchController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    final _searchedUsers = widget.matchesView.where((element) {
+      return element.user.fullName
+          .toLowerCase()
+          .contains(_searchController.text.toLowerCase());
+    }).toList();
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 0,
@@ -37,7 +101,12 @@ class MatchesPage extends ConsumerWidget {
             child: CustomAppBar(
               leading: CustomIconButton(
                 icon: CupertinoIcons.search,
-                onPressed: () {},
+                onPressed: () {
+                  setState(() {
+                    _isSearchBarVisible = !_isSearchBarVisible;
+                    _searchController.clear();
+                  });
+                },
                 padding: const EdgeInsets.all(
                     AppConstants.defaultNumericValue / 1.5),
               ),
@@ -51,80 +120,81 @@ class MatchesPage extends ConsumerWidget {
           ),
           const SizedBox(height: AppConstants.defaultNumericValue),
           Expanded(
-            child: _otherUsersProvider.when(
-              data: (data) {
-                if (data.isEmpty) {
-                  return const Center(
-                    child: Text(
-                      'No users found',
-                      textAlign: TextAlign.center,
-                    ),
-                  );
-                } else {
-                  return _matchedUsersProvider.when(
-                      data: (matches) {
-                        final List<MatchedUsersView> _matchedViews = [];
-
-                        for (final user in data) {
-                          if (matches.any(
-                              (element) => element.userIds.contains(user.id))) {
-                            _matchedViews.add(MatchedUsersView(
-                                user: user,
-                                matchId: matches
-                                    .firstWhere((element) =>
-                                        element.userIds.contains(user.id))
-                                    .id));
-                          }
-                        }
-                        if (_matchedViews.isEmpty) {
-                          return const Center(
-                            child: Text(
-                              'No users found',
-                              textAlign: TextAlign.center,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: AppConstants.defaultNumericValue),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    transitionBuilder:
+                        (Widget child, Animation<double> animation) {
+                      return SizeTransition(
+                          sizeFactor: animation, child: child);
+                    },
+                    child: _isSearchBarVisible
+                        ? Container(
+                            key: const Key('searchBar'),
+                            padding: const EdgeInsets.all(
+                                AppConstants.defaultNumericValue / 3),
+                            decoration: BoxDecoration(
+                              color: AppConstants.primaryColor.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(
+                                AppConstants.defaultNumericValue,
+                              ),
                             ),
-                          );
-                        } else {
-                          return GridView(
-                            padding: const EdgeInsets.only(
-                              left: AppConstants.defaultNumericValue,
-                              right: AppConstants.defaultNumericValue,
-                              bottom: AppConstants.defaultNumericValue,
+                            child: TextField(
+                              controller: _searchController,
+                              autofocus: true,
+                              onChanged: (_) {
+                                setState(() {});
+                              },
+                              decoration: InputDecoration(
+                                hintText: 'Search here...',
+                                border: InputBorder.none,
+                                prefixIcon: Icon(
+                                  CupertinoIcons.search,
+                                  color: AppConstants.primaryColor,
+                                ),
+                              ),
                             ),
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              childAspectRatio: 0.75,
-                              crossAxisSpacing:
-                                  AppConstants.defaultNumericValue,
-                              mainAxisSpacing: AppConstants.defaultNumericValue,
-                            ),
-                            children: _matchedViews.map((match) {
-                              return UserImageCard(
-                                  user: match.user, matchId: match.matchId);
-                            }).toList(),
-                          );
-                        }
-                      },
-                      error: (_, __) => const Center(
-                            child: Text(
-                              "Something Went Wrong!",
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                      loading: () => const Center(
-                            child: CircularProgressIndicator(),
-                          ));
-                }
-              },
-              error: (_, __) => const Center(
-                child: Text(
-                  "Something Went Wrong!",
-                  textAlign: TextAlign.center,
+                          )
+                        : const SizedBox(key: Key('noSearchBar')),
+                  ),
                 ),
-              ),
-              loading: () => const Center(
-                child: CircularProgressIndicator(),
-              ),
+                _isSearchBarVisible
+                    ? const SizedBox(height: AppConstants.defaultNumericValue)
+                    : const SizedBox(height: 0),
+                _searchedUsers.isEmpty
+                    ? const Expanded(
+                        child: Center(
+                          child: Text(
+                            'No users found',
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      )
+                    : Expanded(
+                        child: GridView(
+                          padding: const EdgeInsets.only(
+                            left: AppConstants.defaultNumericValue,
+                            right: AppConstants.defaultNumericValue,
+                            bottom: AppConstants.defaultNumericValue,
+                          ),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.75,
+                            crossAxisSpacing: AppConstants.defaultNumericValue,
+                            mainAxisSpacing: AppConstants.defaultNumericValue,
+                          ),
+                          children: _searchedUsers.map((match) {
+                            return UserImageCard(
+                                user: match.user, matchId: match.matchId);
+                          }).toList(),
+                        ),
+                      ),
+              ],
             ),
           ),
         ],

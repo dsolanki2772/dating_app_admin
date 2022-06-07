@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,8 +16,10 @@ import 'package:mio_amore/views/ads/banner_ads.dart';
 import 'package:mio_amore/views/custom/custom_app_bar.dart';
 import 'package:mio_amore/views/custom/custom_headline.dart';
 import 'package:mio_amore/views/others/photo_view_page.dart';
+import 'package:mio_amore/views/tabs/feeds/edit_feed_page.dart';
 import 'package:mio_amore/views/tabs/feeds/feed_post_page.dart';
 import 'package:mio_amore/views/tabs/home/home_page.dart';
+import 'package:mio_amore/views/tabs/messages/components/chat_page.dart';
 
 class FeedsPage extends ConsumerWidget {
   const FeedsPage({Key? key}) : super(key: key);
@@ -57,16 +60,11 @@ class FeedsPage extends ConsumerWidget {
   }
 }
 
-class FeedsBody extends ConsumerStatefulWidget {
+class FeedsBody extends ConsumerWidget {
   const FeedsBody({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _FeedsBodyState();
-}
-
-class _FeedsBodyState extends ConsumerState<FeedsBody> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
     final _feedList = ref.watch(getFeedsProvider);
     return ListView(
       children: [
@@ -164,7 +162,7 @@ class CreateNewPostSection extends ConsumerWidget {
   }
 }
 
-class SingleFeedPost extends ConsumerWidget {
+class SingleFeedPost extends StatefulWidget {
   final FeedModel feed;
   final UserProfileModel user;
   const SingleFeedPost({
@@ -174,7 +172,15 @@ class SingleFeedPost extends ConsumerWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  State<SingleFeedPost> createState() => _SingleFeedPostState();
+}
+
+class _SingleFeedPostState extends State<SingleFeedPost> {
+  final CustomPopupMenuController _moreMenuController =
+      CustomPopupMenuController();
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       color: Colors.white,
@@ -184,33 +190,13 @@ class SingleFeedPost extends ConsumerWidget {
         children: [
           GestureDetector(
             onTap: () {
-              // final _machingProvider = ref.watch(matchStreamProvider);
-
-              // String? _matchId;
-              // _machingProvider.whenData((value) {
-              //   final List<String> _otherUserIds = [];
-              //   for (var element in value) {
-              //     final _id =
-              //         element.userIds.where((id) => id != _currentUserId);
-              //     _otherUserIds.addAll(_id);
-              //   }
-              //   _matchUserIds.addAll(_otherUserIds);
-              // });
-
-              //           Navigator.of(context).push(
-              //   CupertinoPageRoute(
-              //     builder: (context) => UserDetailsPage(
-              //       user: user,
-              //       matchId:
-              //     ),
-              //   ),
-              // );
+              //TODO: open profile page
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 UserCirlePicture(
-                    imageUrl: user.profilePicture,
+                    imageUrl: widget.user.profilePicture,
                     size: AppConstants.defaultNumericValue * 2.5),
                 const SizedBox(width: 8),
                 Expanded(
@@ -218,10 +204,10 @@ class SingleFeedPost extends ConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(user.fullName,
+                      Text(widget.user.fullName,
                           style: Theme.of(context).textTheme.subtitle1),
                       Text(
-                        DateFormatter.toWholeDateTime(feed.createdAt),
+                        DateFormatter.toWholeDateTime(widget.feed.createdAt),
                         textAlign: TextAlign.end,
                         style: Theme.of(context)
                             .textTheme
@@ -231,10 +217,82 @@ class SingleFeedPost extends ConsumerWidget {
                     ],
                   ),
                 ),
-                if (feed.userId == FirebaseAuth.instance.currentUser!.uid)
-                  GestureDetector(
-                    onTap: () {},
-                    child: const Icon(CupertinoIcons.ellipsis_vertical),
+                if (widget.feed.userId ==
+                    FirebaseAuth.instance.currentUser!.uid)
+                  CustomPopupMenu(
+                    child: GestureDetector(
+                      child: const Icon(CupertinoIcons.ellipsis_vertical),
+                    ),
+                    menuBuilder: () => ClipRRect(
+                      borderRadius: BorderRadius.circular(
+                          AppConstants.defaultNumericValue / 2),
+                      child: Container(
+                        decoration: const BoxDecoration(color: Colors.white),
+                        child: IntrinsicWidth(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              MoreMenuTitle(
+                                title: 'Edit',
+                                onTap: () async {
+                                  _moreMenuController.hideMenu();
+                                  Navigator.push(
+                                    context,
+                                    CupertinoPageRoute(
+                                        builder: (context) =>
+                                            EditFeedPage(feed: widget.feed)),
+                                  );
+                                },
+                              ),
+                              MoreMenuTitle(
+                                title: 'Delete',
+                                onTap: () {
+                                  _moreMenuController.hideMenu();
+
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title: const Text("Delete Feed"),
+                                          content: const Text(
+                                              "Are you sure you want to delete this feed?"),
+                                          actions: [
+                                            TextButton(
+                                              child: const Text("Cancel"),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                            Consumer(
+                                              builder: (context, ref, child) {
+                                                return TextButton(
+                                                  child: const Text("Delete"),
+                                                  onPressed: () async {
+                                                    await deleteFeed(
+                                                        widget.feed.id);
+                                                    ref.refresh(
+                                                        getFeedsProvider);
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                );
+                                              },
+                                            )
+                                          ],
+                                        );
+                                      });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    pressType: PressType.singleClick,
+                    verticalMargin: 0,
+                    controller: _moreMenuController,
+                    showArrow: true,
+                    arrowColor: Colors.white,
+                    barrierColor: AppConstants.primaryColor.withOpacity(0.1),
                   ),
               ],
             ),
@@ -242,21 +300,23 @@ class SingleFeedPost extends ConsumerWidget {
           const SizedBox(
             height: 16,
           ),
-          if (feed.caption != null) PostText(postText: feed.caption!),
+          if (widget.feed.caption != null)
+            PostText(postText: widget.feed.caption!),
           const SizedBox(
             height: 8,
           ),
-          if (feed.images.isNotEmpty)
+          if (widget.feed.images.isNotEmpty)
             GestureDetector(
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => PhotoViewPage(images: feed.images),
+                    builder: (context) =>
+                        PhotoViewPage(images: widget.feed.images),
                   ),
                 );
               },
-              child: PostImages(post: feed),
+              child: PostImages(post: widget.feed),
             ),
           const SizedBox(height: 8),
         ],

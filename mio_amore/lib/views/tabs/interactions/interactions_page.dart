@@ -1,21 +1,18 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/models/user_interaction_model.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
 import 'package:mio_amore/providers/interaction_provider.dart';
+import 'package:mio_amore/providers/match_provider.dart';
 import 'package:mio_amore/providers/other_users_provider.dart';
 import 'package:mio_amore/views/custom/custom_app_bar.dart';
 import 'package:mio_amore/views/custom/custom_headline.dart';
 import 'package:mio_amore/views/custom/custom_icon_button.dart';
-import 'package:mio_amore/views/others/error_page.dart';
-import 'package:mio_amore/views/others/loading_page.dart';
+
 import 'package:mio_amore/views/others/user_image_card.dart';
 
 class InteractionsPage extends ConsumerStatefulWidget {
@@ -49,10 +46,7 @@ class _InteractionsPageState extends ConsumerState<InteractionsPage> {
                 child: const Text('Delete'),
                 onPressed: () async {
                   Navigator.of(context).pop();
-                  await ref
-                      .read(interactionProvider)
-                      .deleteInteraction(id)
-                      .then((value) {
+                  await deleteInteraction(id).then((value) {
                     ref.refresh(interactionFutureProvider);
                   });
                 },
@@ -119,21 +113,35 @@ class _InteractionsPageState extends ConsumerState<InteractionsPage> {
             Expanded(
               child: _interactions.when(
                 data: (data) {
-                  final _otherUsersProvider = ref.read(otherUsersProvider);
+                  final _otherUsersProvider = ref.watch(otherUsersProvider);
+                  final _matchedUsersProvider = ref.watch(matchStreamProvider);
+
+                  final List<UserProfileModel> _usersWithoutMatched = [];
+
+                  _otherUsersProvider.whenData((value) {
+                    _matchedUsersProvider.whenData((matchedUsers) {
+                      for (var user in value) {
+                        if (!matchedUsers.any(
+                            (element) => element.userIds.contains(user.id))) {
+                          _usersWithoutMatched.add(user);
+                        }
+                      }
+                    });
+                  });
 
                   final List<UserProfileModel> _searchedUsers = [];
+
+                  for (var value in _usersWithoutMatched) {
+                    if (value.fullName
+                        .toLowerCase()
+                        .contains(_searchController.text.toLowerCase())) {
+                      _searchedUsers.add(value);
+                    }
+                  }
 
                   final List<UserInteractionViewModel> _likedUsers = [];
                   final List<UserInteractionViewModel> _superLikedUsers = [];
                   final List<UserInteractionViewModel> _dislikedUsers = [];
-
-                  _otherUsersProvider.whenData((value) {
-                    _searchedUsers.addAll(value.where((user) {
-                      return user.fullName
-                          .toLowerCase()
-                          .contains(_searchController.text.toLowerCase());
-                    }).toList());
-                  });
 
                   for (var user in _searchedUsers) {
                     if (data.any((element) =>
