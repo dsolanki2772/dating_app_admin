@@ -31,12 +31,12 @@ class _SetUserLocationState extends ConsumerState<SetUserLocation> {
     _searchController.addListener(() async {
       if (_searchController.text.isNotEmpty &&
           _searchController.text.length > 2) {
-        final _results =
+        final results =
             await getLocationPrediction(_searchController.text.trim());
-        if (_results != null) {
+        if (results != null) {
           setState(() {
             _predictions.clear();
-            _predictions.addAll(_results);
+            _predictions.addAll(results);
           });
         }
       } else {
@@ -48,18 +48,18 @@ class _SetUserLocationState extends ConsumerState<SetUserLocation> {
 
   @override
   Widget build(BuildContext context) {
-    final _currentLocationProviderProvider =
+    final currentLocationProviderProvider =
         ref.watch(getCurrentLocationProviderProvider);
 
-    final _countryCodesProvider = ref.watch(countryCodesProvider);
+    final countryCodesData = ref.watch(countryCodesProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text("Set Location"),
       ),
-      body: _countryCodesProvider.when(
+      body: countryCodesData.when(
           data: (data) {
-            return _currentLocationProviderProvider.when(
+            return currentLocationProviderProvider.when(
                 data: (location) {
                   return SingleChildScrollView(
                     child: Column(
@@ -135,24 +135,24 @@ class _SetUserLocationState extends ConsumerState<SetUserLocation> {
                                           EasyLoading.show(
                                               status: "Please wait...");
 
-                                          _LocationComponents? _location =
-                                              await getLocationFromPlaceID(
-                                                  e.placeId!);
+                                          await getLocationFromPlaceID(
+                                                  e.placeId!)
+                                              .then((value) {
+                                            if (value != null) {
+                                              final userLocation = UserLocation(
+                                                addressText: e.description!,
+                                                latitude: value.lat,
+                                                longitude: value.long,
+                                              );
+                                              EasyLoading.dismiss();
 
-                                          if (_location != null) {
-                                            final _userLocation = UserLocation(
-                                              addressText: e.description!,
-                                              latitude: _location.lat,
-                                              longitude: _location.long,
-                                            );
-                                            EasyLoading.dismiss();
-
-                                            Navigator.of(context)
-                                                .pop(_userLocation);
-                                          } else {
-                                            EasyLoading.dismiss();
-                                            Navigator.of(context).pop();
-                                          }
+                                              Navigator.of(context)
+                                                  .pop(userLocation);
+                                            } else {
+                                              EasyLoading.dismiss();
+                                              Navigator.of(context).pop();
+                                            }
+                                          });
                                         },
                                         title: Text(e.description!),
                                       ),
@@ -179,11 +179,11 @@ class _SetUserLocationState extends ConsumerState<SetUserLocation> {
   }
 }
 
-Future<_LocationComponents?> getLocationFromPlaceID(String placeId) async {
-  final _url = Uri.parse(
+Future<LocationComponents?> getLocationFromPlaceID(String placeId) async {
+  final url = Uri.parse(
       "https://maps.googleapis.com/maps/api/place/details/json?placeid=$placeId&key=${AppConfig.locationApiKey}");
 
-  var response = await http.get(_url, headers: {"Accept": "application/json"});
+  var response = await http.get(url, headers: {"Accept": "application/json"});
 
   if (response.statusCode == 200) {
     var data = json.decode(response.body);
@@ -191,11 +191,11 @@ Future<_LocationComponents?> getLocationFromPlaceID(String placeId) async {
     if (data["status"] != "OK") {
       return null;
     } else {
-      double? _lat = data["result"]["geometry"]["location"]["lat"];
-      double? _long = data["result"]["geometry"]["location"]["lng"];
+      double? lat = data["result"]["geometry"]["location"]["lat"];
+      double? long = data["result"]["geometry"]["location"]["lng"];
 
-      if (_lat != null && _long != null) {
-        return _LocationComponents(lat: _lat, long: _long);
+      if (lat != null && long != null) {
+        return LocationComponents(lat: lat, long: long);
       }
     }
   } else {
@@ -204,10 +204,10 @@ Future<_LocationComponents?> getLocationFromPlaceID(String placeId) async {
   return null;
 }
 
-class _LocationComponents {
+class LocationComponents {
   double lat;
   double long;
-  _LocationComponents({
+  LocationComponents({
     required this.lat,
     required this.long,
   });

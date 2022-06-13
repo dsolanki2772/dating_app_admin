@@ -28,11 +28,11 @@ class AuthProvider {
         idToken: googleAuth?.idToken,
       );
 
-      final _userCred =
+      final userCred =
           await FirebaseAuth.instance.signInWithCredential(credential);
 
       await _deviceTokenProvider.saveDeviceToken();
-      return _userCred.user;
+      return userCred.user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'account-exists-with-different-credential') {
         EasyLoading.showError(
@@ -46,16 +46,16 @@ class AuthProvider {
 
   Future<User?> signInWithFacebook() async {
     try {
-      final LoginResult _result = await FacebookAuth.instance.login();
-      if (_result.status == LoginStatus.success) {
+      final LoginResult result = await FacebookAuth.instance.login();
+      if (result.status == LoginStatus.success) {
         final OAuthCredential credential =
-            FacebookAuthProvider.credential(_result.accessToken!.token);
+            FacebookAuthProvider.credential(result.accessToken!.token);
 
-        final _userCred =
+        final userCred =
             await FirebaseAuth.instance.signInWithCredential(credential);
         await _deviceTokenProvider.saveDeviceToken();
 
-        return _userCred.user;
+        return userCred.user;
       }
       return null;
     } on FirebaseAuthException catch (e) {
@@ -76,10 +76,10 @@ class AuthProvider {
         verificationId: verificationId,
         smsCode: smsCode,
       );
-      final _userCred =
+      final userCred =
           await FirebaseAuth.instance.signInWithCredential(credential);
       await _deviceTokenProvider.saveDeviceToken();
-      return _userCred.user;
+      return userCred.user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-verification-code') {
         EasyLoading.showError('Invalid code.');

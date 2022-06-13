@@ -28,15 +28,15 @@ class MessageConsumerPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _matchStreamProvider = ref.watch(matchStreamProvider);
+    final matches = ref.watch(matchStreamProvider);
 
-    return _matchStreamProvider.when(
+    return matches.when(
       data: (data) {
-        final List<MessageViewModel> _messages = [];
+        final List<MessageViewModel> messages = [];
 
-        _messages.addAll(getAllMessages(ref, data));
+        messages.addAll(getAllMessages(ref, data));
 
-        return MessagesPage(messages: _messages);
+        return MessagesPage(messages: messages);
       },
       error: (_, __) => const ErrorPage(),
       loading: () => const LoadingPage(),
@@ -60,13 +60,13 @@ class _MessagesPageState extends ConsumerState<MessagesPage> {
   final _searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    final _searchedMessages = widget.messages.where((element) {
+    final searchedMessages = widget.messages.where((element) {
       return element.matchedUser.fullName
           .toLowerCase()
           .contains(_searchController.text.toLowerCase());
     }).toList();
 
-    _searchedMessages.sort((a, b) {
+    searchedMessages.sort((a, b) {
       return b.lastMessageDate.compareTo(a.lastMessageDate);
     });
 
@@ -154,13 +154,13 @@ class _MessagesPageState extends ConsumerState<MessagesPage> {
                     ? const SizedBox(height: AppConstants.defaultNumericValue)
                     : const SizedBox(height: 0),
                 Expanded(
-                  child: _searchedMessages.isEmpty
+                  child: searchedMessages.isEmpty
                       ? const Center(child: Text('No messages found'))
                       : ListView.builder(
-                          itemCount: _searchedMessages.length,
+                          itemCount: searchedMessages.length,
                           itemBuilder: (context, index) {
-                            final _message = _searchedMessages[index];
-                            return ConversationTile(messageViewModel: _message);
+                            final message = searchedMessages[index];
+                            return ConversationTile(messageViewModel: message);
                           },
                         ),
                 ),
@@ -359,51 +359,51 @@ class MessageViewModel {
 }
 
 List<MessageViewModel> getAllMessages(WidgetRef ref, List<MatchModel> data) {
-  final _otherUserIds = data
+  final otherUserIds = data
       .map((e) => e.userIds.firstWhere(
           (element) => element != FirebaseAuth.instance.currentUser!.uid))
       .toList();
 
-  final _otherUsersProvider = ref.watch(otherUsersProvider);
-  List<UserProfileModel> _matchedUsers = [];
-  _otherUsersProvider.whenData((value) {
-    _matchedUsers = value.where((element) {
-      return _otherUserIds.contains(element.userId);
+  final otherUsers = ref.watch(otherUsersProvider);
+  List<UserProfileModel> matchedUsers = [];
+  otherUsers.whenData((value) {
+    matchedUsers = value.where((element) {
+      return otherUserIds.contains(element.userId);
     }).toList();
   });
 
-  List<MessageViewModel> _messages = [];
+  List<MessageViewModel> messages = [];
 
   for (var match in data) {
-    final _chatProvider = ref.watch(chatStreamProviderProvider(match.id));
-    _chatProvider.whenData((value) {
-      final UserProfileModel _otherUser = _matchedUsers.firstWhere((element) =>
+    final chatProvider = ref.watch(chatStreamProviderProvider(match.id));
+    chatProvider.whenData((value) {
+      final UserProfileModel otherUser = matchedUsers.firstWhere((element) =>
           element.userId ==
           match.userIds.firstWhere(
               (element) => element != FirebaseAuth.instance.currentUser!.uid));
 
-      int _unreadCount = 0;
+      int unreadCount = 0;
       for (var message in value) {
         if (message.userId != FirebaseAuth.instance.currentUser!.uid) {
           if (message.isRead == false) {
-            _unreadCount++;
+            unreadCount++;
           }
         }
       }
 
       if (value.isNotEmpty) {
-        MessageViewModel _message = MessageViewModel(
-          matchedUser: _otherUser,
+        MessageViewModel message = MessageViewModel(
+          matchedUser: otherUser,
           lastMessage: value.first,
           lastMessageDate: value.first.createdAt,
           matchId: match.id,
-          unreadCount: _unreadCount,
+          unreadCount: unreadCount,
         );
 
-        _messages.add(_message);
+        messages.add(message);
       }
     });
   }
 
-  return _messages;
+  return messages;
 }

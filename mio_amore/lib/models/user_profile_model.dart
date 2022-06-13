@@ -1,7 +1,5 @@
 import 'dart:convert';
-
 import 'package:collection/collection.dart';
-
 import 'package:mio_amore/models/user_account_settings_model.dart';
 
 class UserProfileModel {

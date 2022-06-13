@@ -138,13 +138,13 @@ class _LandingWidgetState extends ConsumerState<LandingWidget> {
 
   void _handleMessage(RemoteMessage message) {
     if (message.data['type'] == 'message') {
-      final _otherUserId = message.data["userId"]!;
-      final _matchId = message.data["matchId"]!;
+      final otherUserId = message.data["userId"]!;
+      final matchId = message.data["matchId"]!;
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) =>
-              ChatPage(matchId: _matchId, otherUserId: _otherUserId),
+              ChatPage(matchId: matchId, otherUserId: otherUserId),
         ),
       );
     } else if (message.data['type'] == 'notification') {
@@ -159,9 +159,9 @@ class _LandingWidgetState extends ConsumerState<LandingWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final _authStateProvider = ref.watch(authStateProvider);
+    final authState = ref.watch(authStateProvider);
 
-    return _authStateProvider.when(
+    return authState.when(
         data: (data) {
           if (data != null) {
             return const BottomNavBarPage();
@@ -226,6 +226,6 @@ void showAwesomeNotification(RemoteMessage message) {
   // }
 
   print("Notification type: ${message.data["type"]}");
-  print("Other User Id" + message.data["userId"]);
-  print("MatchId" + message.data["matchId"]);
+  print("Other User Id ${message.data["userId"]}");
+  print("MatchId ${message.data["matchId"]}");
 }

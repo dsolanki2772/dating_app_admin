@@ -54,14 +54,14 @@ class _LanguageSelectionState extends ConsumerState<LanguageSelection> {
             const SizedBox(height: AppConstants.defaultNumericValue),
             GestureDetector(
               onTap: () async {
-                final _newLocation = await Navigator.push(
+                final newLocation = await Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => const SetUserLocation()));
 
-                if (_newLocation != null) {
+                if (newLocation != null) {
                   setState(() {
-                    _userLocation = _newLocation;
+                    _userLocation = newLocation;
                   });
                 }
               },
@@ -146,7 +146,7 @@ class _LanguageSelectionState extends ConsumerState<LanguageSelection> {
             const SizedBox(height: AppConstants.defaultNumericValue * 2),
             CustomButton(
               onPressed: () async {
-                final UserAccountSettingsModel _userAccountSettingsModel =
+                final UserAccountSettingsModel userAccountSettingsModel =
                     UserAccountSettingsModel(
                   distanceInKm: _distanceInKm.toInt().toDouble(),
                   interestedIn: _interestedIn,
@@ -155,16 +155,18 @@ class _LanguageSelectionState extends ConsumerState<LanguageSelection> {
                   location: _userLocation,
                 );
 
-                final _userProfileModel = widget.user.copyWith(
-                  userAccountSettingsModel: _userAccountSettingsModel,
+                final userProfileModel = widget.user.copyWith(
+                  userAccountSettingsModel: userAccountSettingsModel,
                 );
                 EasyLoading.show(status: 'Updating...');
 
                 await ref
                     .read(userProfileProvider)
-                    .updateUserProfile(_userProfileModel);
-                EasyLoading.dismiss();
-                Navigator.pop(context);
+                    .updateUserProfile(userProfileModel)
+                    .then((value) {
+                  EasyLoading.dismiss();
+                  Navigator.pop(context);
+                });
               },
               text: 'Apply',
             ),

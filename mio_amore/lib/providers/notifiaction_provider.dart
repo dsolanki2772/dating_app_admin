@@ -6,14 +6,14 @@ import 'package:mio_amore/models/notification_model.dart';
 
 final notificationsStreamProvider =
     StreamProvider<List<NotificationModel>>((ref) {
-  const _matchingNotificationCollection =
+  const matchingNotificationCollection =
       FirebaseConstants.notificationsCollection;
 
-  final _currentUserId = FirebaseAuth.instance.currentUser!.uid;
+  final currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
   return FirebaseFirestore.instance
-      .collection(_matchingNotificationCollection)
-      .where("receiverId", isEqualTo: _currentUserId)
+      .collection(matchingNotificationCollection)
+      .where("receiverId", isEqualTo: currentUserId)
       .orderBy("createdAt", descending: true)
       .snapshots()
       .map((snapshot) {

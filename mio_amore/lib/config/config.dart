@@ -97,8 +97,8 @@ class AppConfig {
 const bool isGoogleAuthAvailable = true;
 const bool isFacebookAuthAvailable = true;
 const bool isPhoneAuthAvailable = true;
-const bool isAppleAuthAvailable = true;
-const bool isTwitterAuthAvailable = true;
+// const bool isAppleAuthAvailable = false;
+// const bool isTwitterAuthAvailable = false;
 
 // Company Pages Setup
 

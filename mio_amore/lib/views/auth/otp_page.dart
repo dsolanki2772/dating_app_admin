@@ -174,21 +174,22 @@ class _OtpPageState extends ConsumerState<OtpPage> {
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
                         EasyLoading.show(status: "Verifying OTP");
-                        final _user = await ref
+                        await ref
                             .read(authProvider)
                             .signInWithPhoneNumber(
-                                _otpController.text.trim(), _verificationId);
-
-                        if (_user != null) {
-                          EasyLoading.showSuccess("Login Successful");
-                          Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => const LandingWidget()),
-                              (route) => false);
-                        } else {
-                          EasyLoading.showError("Something went wrong!");
-                        }
+                                _otpController.text.trim(), _verificationId)
+                            .then((value) {
+                          if (value != null) {
+                            EasyLoading.showSuccess("Login Successful");
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const LandingWidget()),
+                                (route) => false);
+                          } else {
+                            EasyLoading.showError("Something went wrong!");
+                          }
+                        });
                       }
                     },
                     text: "Verify"),
@@ -202,5 +203,5 @@ class _OtpPageState extends ConsumerState<OtpPage> {
 }
 
 String getFormattedCountryCode(CountryCode country) {
-  return country.code + " " + country.dialCode + " ";
+  return "${country.code} ${country.dialCode} ";
 }

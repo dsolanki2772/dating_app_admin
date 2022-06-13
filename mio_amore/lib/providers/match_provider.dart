@@ -8,10 +8,10 @@ import 'package:mio_amore/models/match_model.dart';
 import 'package:mio_amore/providers/interaction_provider.dart';
 
 final matchStreamProvider = StreamProvider<List<MatchModel>>((ref) {
-  final _matchCollection =
+  final matchCollection =
       FirebaseFirestore.instance.collection(FirebaseConstants.matchCollection);
 
-  return _matchCollection
+  return matchCollection
       .where("userIds", arrayContains: FirebaseAuth.instance.currentUser!.uid)
       .snapshots()
       .map((event) {
@@ -28,21 +28,21 @@ Future<bool> createConversation(MatchModel match) async {
   try {
     await _matchCollection.doc(match.id).set(match.toMap());
 
-    final _chatCollection = FirebaseFirestore.instance
+    final chatCollection = FirebaseFirestore.instance
         .collection(FirebaseConstants.matchCollection)
         .doc(match.id)
         .collection(FirebaseConstants.chatCollection);
-    final _currentTime = DateTime.now();
-    final ChatItemModel _chatItemModel = ChatItemModel(
-      id: _currentTime.millisecondsSinceEpoch.toString(),
+    final currentTime = DateTime.now();
+    final ChatItemModel chatItemModel = ChatItemModel(
+      id: currentTime.millisecondsSinceEpoch.toString(),
       message: encryptText("Say Hi!"),
       matchId: match.id,
-      createdAt: _currentTime,
+      createdAt: currentTime,
       isRead: true,
     );
-    await _chatCollection
-        .doc(_currentTime.millisecondsSinceEpoch.toString())
-        .set(_chatItemModel.toMap());
+    await chatCollection
+        .doc(currentTime.millisecondsSinceEpoch.toString())
+        .set(chatItemModel.toMap());
 
     return true;
   } catch (e) {
@@ -51,12 +51,12 @@ Future<bool> createConversation(MatchModel match) async {
 }
 
 Future<bool> unMatchUser(String matchId, String userId1, String userId2) async {
-  final _interactionId1 = userId1 + userId2;
-  final _interactionId2 = userId2 + userId1;
+  final interactionId1 = userId1 + userId2;
+  final interactionId2 = userId2 + userId1;
   try {
     await _matchCollection.doc(matchId).delete();
-    await deleteInteraction(_interactionId1);
-    await deleteInteraction(_interactionId2);
+    await deleteInteraction(interactionId1);
+    await deleteInteraction(interactionId2);
 
     return true;
   } catch (e) {

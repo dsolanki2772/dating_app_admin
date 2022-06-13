@@ -17,17 +17,17 @@ class ChatMediaGalleryConsumerPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _chatStreams = ref.watch(chatStreamProviderProvider(matchId));
+    final chatStreams = ref.watch(chatStreamProviderProvider(matchId));
 
-    return _chatStreams.when(
+    return chatStreams.when(
         data: (data) {
-          final List<ChatItemModel> _chatsWithImagesOrVideos = [];
+          final List<ChatItemModel> chatsWithImagesOrVideos = [];
           for (var chat in data) {
             if (chat.image != null || chat.video != null) {
-              _chatsWithImagesOrVideos.add(chat);
+              chatsWithImagesOrVideos.add(chat);
             }
           }
-          return ChatMediaGalleryPage(chats: _chatsWithImagesOrVideos);
+          return ChatMediaGalleryPage(chats: chatsWithImagesOrVideos);
         },
         error: (_, __) => const ErrorPage(),
         loading: () => const LoadingPage());
@@ -49,9 +49,9 @@ class _ChatMediaGalleryPageState extends State<ChatMediaGalleryPage> {
   @override
   Widget build(BuildContext context) {
     widget.chats.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-    List<ChatItemModel> _chatsWithImages =
+    List<ChatItemModel> chatsWithImages =
         widget.chats.where((chat) => chat.image != null).toList();
-    List<ChatItemModel> _chatsWithVideos =
+    List<ChatItemModel> chatsWithVideos =
         widget.chats.where((chat) => chat.video != null).toList();
 
     //Tab View with images and videos
@@ -69,10 +69,10 @@ class _ChatMediaGalleryPageState extends State<ChatMediaGalleryPage> {
         ),
         body: TabBarView(
           children: [
-            _chatsWithImages.isEmpty
+            chatsWithImages.isEmpty
                 ? const Center(child: Text('No images'))
                 : GridView.builder(
-                    itemCount: _chatsWithImages.length,
+                    itemCount: chatsWithImages.length,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
@@ -85,7 +85,7 @@ class _ChatMediaGalleryPageState extends State<ChatMediaGalleryPage> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => PhotoViewPage(
-                                      images: _chatsWithImages
+                                      images: chatsWithImages
                                           .map((e) => e.image!)
                                           .toList(),
                                       index: index,
@@ -93,14 +93,14 @@ class _ChatMediaGalleryPageState extends State<ChatMediaGalleryPage> {
                           );
                         },
                         child: CachedNetworkImage(
-                            imageUrl: _chatsWithImages[index].image!),
+                            imageUrl: chatsWithImages[index].image!),
                       );
                     },
                   ),
-            _chatsWithVideos.isEmpty
+            chatsWithVideos.isEmpty
                 ? const Center(child: Text('No videos'))
                 : GridView.builder(
-                    itemCount: _chatsWithVideos.length,
+                    itemCount: chatsWithVideos.length,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
@@ -116,7 +116,7 @@ class _ChatMediaGalleryPageState extends State<ChatMediaGalleryPage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => VideoPlayerPage(
-                                  videoUrl: _chatsWithVideos[index].video!,
+                                  videoUrl: chatsWithVideos[index].video!,
                                   isNetwork: true),
                             ),
                           );

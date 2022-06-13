@@ -23,12 +23,12 @@ class AppDrawer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    final _userProfileProvider = ref.watch(userProfileStreamProvider);
+    final userProfileProvider = ref.watch(userProfileStreamProvider);
     return Drawer(
       backgroundColor: AppConstants.primaryColor,
       child: Column(
         children: [
-          _userProfileProvider.when(
+          userProfileProvider.when(
               data: (data) {
                 return data == null
                     ? const SizedBox()
@@ -71,13 +71,13 @@ class AppDrawer extends ConsumerWidget {
                                 style: const TextStyle(color: Colors.white70),
                               ),
                               leading: CircleAvatar(
-                                child: data.profilePicture == null
-                                    ? const Icon(Icons.person,
-                                        color: Colors.white54)
-                                    : null,
                                 backgroundImage: data.profilePicture != null
                                     ? CachedNetworkImageProvider(
                                         data.profilePicture!)
+                                    : null,
+                                child: data.profilePicture == null
+                                    ? const Icon(Icons.person,
+                                        color: Colors.white54)
                                     : null,
                               ),
                             ),

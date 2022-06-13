@@ -26,6 +26,58 @@ class UserImageCard extends StatelessWidget {
                     UserDetailsPage(user: user, matchId: matchId)));
       },
       child: GridTile(
+        footer: Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: AppConstants.defaultNumericValue / 2,
+            horizontal: AppConstants.defaultNumericValue,
+          ),
+          child: ClipRRect(
+            borderRadius:
+                BorderRadius.circular(AppConstants.defaultNumericValue / 2),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+              child: Container(
+                width: double.infinity,
+                padding:
+                    const EdgeInsets.all(AppConstants.defaultNumericValue / 2),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(
+                      AppConstants.defaultNumericValue / 2),
+                  color: Colors.black38,
+                ),
+                child: Center(
+                  child: Text(
+                    '${user.fullName.split(" ").first} ${DateTime.now().difference(user.birthDay).inDays ~/ 365}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        header: matchId != null
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Icon(CupertinoIcons.heart_solid,
+                        color: CupertinoColors.destructiveRed,
+                        size: AppConstants.defaultNumericValue * 1.5),
+                  ),
+                  if (user.isVerified)
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Icon(Icons.verified_user,
+                          color: CupertinoColors.activeGreen,
+                          size: AppConstants.defaultNumericValue * 1.5),
+                    ),
+                ],
+              )
+            : null,
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -68,61 +120,6 @@ class UserImageCard extends StatelessWidget {
                           ),
           ),
         ),
-        footer: Padding(
-          padding: const EdgeInsets.symmetric(
-            vertical: AppConstants.defaultNumericValue / 2,
-            horizontal: AppConstants.defaultNumericValue,
-          ),
-          child: ClipRRect(
-            borderRadius:
-                BorderRadius.circular(AppConstants.defaultNumericValue / 2),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-              child: Container(
-                width: double.infinity,
-                padding:
-                    const EdgeInsets.all(AppConstants.defaultNumericValue / 2),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(
-                      AppConstants.defaultNumericValue / 2),
-                  color: Colors.black38,
-                ),
-                child: Center(
-                  child: Text(
-                    user.fullName.split(" ").first +
-                        ' ' +
-                        (DateTime.now().difference(user.birthDay).inDays ~/ 365)
-                            .toString(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-        header: matchId != null
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Icon(CupertinoIcons.heart_solid,
-                        color: CupertinoColors.destructiveRed,
-                        size: AppConstants.defaultNumericValue * 1.5),
-                  ),
-                  if (user.isVerified)
-                    const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Icon(Icons.verified_user,
-                          color: CupertinoColors.activeGreen,
-                          size: AppConstants.defaultNumericValue * 1.5),
-                    ),
-                ],
-              )
-            : null,
       ),
     );
   }

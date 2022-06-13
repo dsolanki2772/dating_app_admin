@@ -14,48 +14,48 @@ String getLocationApiString(double lat, double long) {
 final getCurrentLocationProviderProvider =
     FutureProvider<UserLocation?>((ref) async {
   try {
-    final Position _position = await _determineCurrentPosition();
+    final Position position = await _determineCurrentPosition();
 
-    final _api = Uri.parse(
-        getLocationApiString(_position.latitude, _position.longitude));
+    final api =
+        Uri.parse(getLocationApiString(position.latitude, position.longitude));
 
-    final _response = await http.get(_api);
+    final response = await http.get(api);
 
-    if (_response.statusCode == 200) {
-      final LocationResultModel _resultModel =
-          LocationResultModel.fromJson(_response.body);
+    if (response.statusCode == 200) {
+      final LocationResultModel resultModel =
+          LocationResultModel.fromJson(response.body);
 
-      if (_resultModel.status == "OK" && _resultModel.results.isNotEmpty) {
-        final Result _addressResult = _resultModel.results.first;
+      if (resultModel.status == "OK" && resultModel.results.isNotEmpty) {
+        final Result addressResult = resultModel.results.first;
 
-        String? _country;
-        String? _administrativeAreaLevel1;
-        String? _administrativeAreaLevel2;
+        String? country;
+        String? administrativeAreaLevel1;
+        String? administrativeAreaLevel2;
 
-        if (_addressResult.addressComponents != null) {
-          for (var component in _addressResult.addressComponents!) {
+        if (addressResult.addressComponents != null) {
+          for (var component in addressResult.addressComponents!) {
             if (component.types.contains("country")) {
-              _country = component.longName;
+              country = component.longName;
             } else if (component.types
                 .contains("administrative_area_level_1")) {
-              _administrativeAreaLevel1 = component.longName;
+              administrativeAreaLevel1 = component.longName;
             } else if (component.types
                 .contains("administrative_area_level_2")) {
-              _administrativeAreaLevel2 = component.longName;
+              administrativeAreaLevel2 = component.longName;
             }
           }
 
-          final String _formattedAddress = getFormattedAddress(
-              _country, _administrativeAreaLevel1, _administrativeAreaLevel2);
+          final String formattedAddress = getFormattedAddress(
+              country, administrativeAreaLevel1, administrativeAreaLevel2);
 
-          final UserLocation _userLocation = UserLocation(
-              latitude: _position.latitude,
-              longitude: _position.longitude,
-              addressText: _formattedAddress);
+          final UserLocation userLocation = UserLocation(
+              latitude: position.latitude,
+              longitude: position.longitude,
+              addressText: formattedAddress);
 
-          debugPrint(_formattedAddress);
+          debugPrint(formattedAddress);
 
-          return _userLocation;
+          return userLocation;
         }
         return null;
       } else {
@@ -112,17 +112,17 @@ Future<Position> _determineCurrentPosition() async {
 
 String getFormattedAddress(String? country, String? administrativeAreaLevel1,
     String? administrativeAreaLevel2) {
-  String _formattedAddress = "";
+  String formattedAddress = "";
 
   if (administrativeAreaLevel2 != null) {
-    _formattedAddress += administrativeAreaLevel2 + ", ";
+    formattedAddress += "$administrativeAreaLevel2, ";
   }
   if (administrativeAreaLevel1 != null) {
-    _formattedAddress += administrativeAreaLevel1 + ", ";
+    formattedAddress += "$administrativeAreaLevel1, ";
   }
   if (country != null) {
-    _formattedAddress += country;
+    formattedAddress += country;
   }
 
-  return _formattedAddress;
+  return formattedAddress;
 }

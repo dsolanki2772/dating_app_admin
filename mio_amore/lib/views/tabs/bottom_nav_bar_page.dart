@@ -25,9 +25,9 @@ class _BottomNavBarPageState extends ConsumerState<BottomNavBarPage> {
   int _currentIndex = 0;
   @override
   Widget build(BuildContext context) {
-    final _isUserAddedProvider = ref.watch(isUserAddedProvider);
+    final isUserAdded = ref.watch(isUserAddedProvider);
 
-    return _isUserAddedProvider.when(
+    return isUserAdded.when(
       loading: () => const LoadingPage(),
       error: (e, _) => const ErrorPage(),
       data: (data) {
@@ -160,19 +160,19 @@ class MessageConsumerBottomNavIcon extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _matchStreamProvider = ref.watch(matchStreamProvider);
+    final matchStream = ref.watch(matchStreamProvider);
 
-    return _matchStreamProvider.when(
+    return matchStream.when(
       data: (data) {
-        final List<MessageViewModel> _messages = [];
+        final List<MessageViewModel> messages = [];
 
-        _messages.addAll(getAllMessages(ref, data));
-        int _unreadCount = 0;
-        for (var e in _messages) {
-          _unreadCount += e.unreadCount;
+        messages.addAll(getAllMessages(ref, data));
+        int unreadCount = 0;
+        for (var e in messages) {
+          unreadCount += e.unreadCount;
         }
 
-        return MessageIcon(unreadCount: _unreadCount, icon: icon);
+        return MessageIcon(unreadCount: unreadCount, icon: icon);
       },
       error: (_, __) => MessageIcon(unreadCount: 0, icon: icon),
       loading: () => MessageIcon(unreadCount: 0, icon: icon),

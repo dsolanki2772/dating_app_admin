@@ -21,7 +21,7 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _buttonTextStyle = Theme.of(context).textTheme.button!.copyWith(
+    final buttonTextStyle = Theme.of(context).textTheme.button!.copyWith(
           color: isWhite ? Colors.black : Colors.white,
         );
     return InkWell(
@@ -53,7 +53,7 @@ class CustomButton extends StatelessWidget {
                 ? Text(
                     "Button",
                     textAlign: TextAlign.center,
-                    style: _buttonTextStyle,
+                    style: buttonTextStyle,
                   )
                 : text != null && icon != null
                     ? Row(
@@ -69,7 +69,7 @@ class CustomButton extends StatelessWidget {
                           Text(
                             text!,
                             textAlign: TextAlign.center,
-                            style: _buttonTextStyle,
+                            style: buttonTextStyle,
                           ),
                           const SizedBox(
                               width: AppConstants.defaultNumericValue),
@@ -79,7 +79,7 @@ class CustomButton extends StatelessWidget {
                         ? Text(
                             text!,
                             textAlign: TextAlign.center,
-                            style: _buttonTextStyle,
+                            style: buttonTextStyle,
                           )
                         : Icon(
                             icon!,

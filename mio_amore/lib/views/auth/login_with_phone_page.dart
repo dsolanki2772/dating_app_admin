@@ -129,5 +129,5 @@ class _LoginWithPhoneNumberPageState
 }
 
 String getFormattedCountryCode(CountryCode country) {
-  return country.code + " " + country.dialCode + " ";
+  return "${country.code} ${country.dialCode} ";
 }

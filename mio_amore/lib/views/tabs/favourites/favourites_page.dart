@@ -20,10 +20,10 @@ class MatchesConsumerPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    final _matchedUsersProvider = ref.watch(matchStreamProvider);
-    final _otherUsersProvider = ref.watch(otherUsersProvider);
+    final matchedUsersProvider = ref.watch(matchStreamProvider);
+    final otherUsers = ref.watch(otherUsersProvider);
 
-    return _otherUsersProvider.when(
+    return otherUsers.when(
       data: (data) {
         if (data.isEmpty) {
           return const Center(
@@ -33,14 +33,14 @@ class MatchesConsumerPage extends ConsumerWidget {
             ),
           );
         } else {
-          return _matchedUsersProvider.when(
+          return matchedUsersProvider.when(
             data: (matches) {
-              final List<MatchedUsersView> _matchedViews = [];
+              final List<MatchedUsersView> matchedViews = [];
 
               for (final user in data) {
                 if (matches
                     .any((element) => element.userIds.contains(user.id))) {
-                  _matchedViews.add(MatchedUsersView(
+                  matchedViews.add(MatchedUsersView(
                       user: user,
                       matchId: matches
                           .firstWhere(
@@ -49,7 +49,7 @@ class MatchesConsumerPage extends ConsumerWidget {
                 }
               }
 
-              return MatchesPage(matchesView: _matchedViews);
+              return MatchesPage(matchesView: matchedViews);
             },
             error: (_, __) => const ErrorPage(),
             loading: () => const LoadingPage(),
@@ -79,7 +79,7 @@ class _MatchBodyState extends ConsumerState<MatchesPage> {
 
   @override
   Widget build(BuildContext context) {
-    final _searchedUsers = widget.matchesView.where((element) {
+    final searchedUsers = widget.matchesView.where((element) {
       return element.user.fullName
           .toLowerCase()
           .contains(_searchController.text.toLowerCase());
@@ -165,7 +165,7 @@ class _MatchBodyState extends ConsumerState<MatchesPage> {
                 _isSearchBarVisible
                     ? const SizedBox(height: AppConstants.defaultNumericValue)
                     : const SizedBox(height: 0),
-                _searchedUsers.isEmpty
+                searchedUsers.isEmpty
                     ? const Expanded(
                         child: Center(
                           child: Text(
@@ -188,7 +188,7 @@ class _MatchBodyState extends ConsumerState<MatchesPage> {
                             crossAxisSpacing: AppConstants.defaultNumericValue,
                             mainAxisSpacing: AppConstants.defaultNumericValue,
                           ),
-                          children: _searchedUsers.map((match) {
+                          children: searchedUsers.map((match) {
                             return UserImageCard(
                                 user: match.user, matchId: match.matchId);
                           }).toList(),

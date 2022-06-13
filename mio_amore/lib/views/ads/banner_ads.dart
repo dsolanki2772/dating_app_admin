@@ -44,9 +44,9 @@ class _MyBannerAdState extends State<MyBannerAd> {
     return isLoaded
         ? Container(
             alignment: Alignment.center,
-            child: AdWidget(ad: myBanner),
             width: myBanner.size.width.toDouble(),
             height: myBanner.size.height.toDouble(),
+            child: AdWidget(ad: myBanner),
           )
         : const SizedBox();
   }

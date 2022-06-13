@@ -62,8 +62,8 @@ class _HomePageState extends State<HomePage> {
                     AppConstants.defaultNumericValue / 1.5),
               ),
               title: Consumer(builder: (context, ref, _) {
-                final _user = ref.watch(userProfileStreamProvider);
-                return _user.when(
+                final user = ref.watch(userProfileStreamProvider);
+                return user.when(
                     data: (data) {
                       return data == null
                           ? const SizedBox()
@@ -121,9 +121,9 @@ class _HomePageState extends State<HomePage> {
             Expanded(
               child: Consumer(
                 builder: (context, ref, child) {
-                  final _filteredUsers = ref.watch(filteredOtherUsersProvider);
+                  final filteredUsers = ref.watch(filteredOtherUsersProvider);
 
-                  return _filteredUsers.when(
+                  return filteredUsers.when(
                     data: (data) {
                       return data.isEmpty
                           ? const SizedBox()
@@ -153,14 +153,14 @@ class NotificationButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    final _matchingNotifications = ref.watch(notificationsStreamProvider);
+    final matchingNotifications = ref.watch(notificationsStreamProvider);
 
-    int _count = 0;
+    int count = 0;
 
-    _matchingNotifications.whenData((value) {
+    matchingNotifications.whenData((value) {
       for (var element in value) {
         if (element.isRead == false) {
-          _count++;
+          count++;
         }
       }
     });
@@ -169,7 +169,7 @@ class NotificationButton extends ConsumerWidget {
       children: [
         CustomIconButton(
           icon: CupertinoIcons.bell_solid,
-          margin: _count > 0
+          margin: count > 0
               ? const EdgeInsets.only(
                   right: AppConstants.defaultNumericValue / 3)
               : null,
@@ -183,14 +183,14 @@ class NotificationButton extends ConsumerWidget {
           },
           padding: const EdgeInsets.all(AppConstants.defaultNumericValue / 1.5),
         ),
-        if (_count > 0)
+        if (count > 0)
           Positioned(
             bottom: 0,
             right: 0,
             child: Badge(
               badgeColor: AppConstants.primaryColor,
               badgeContent: Text(
-                _count.toString(),
+                count.toString(),
                 style: Theme.of(context).textTheme.caption!.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -212,22 +212,22 @@ class FilterInteraction extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _interactionFutureProvider = ref.watch(interactionFutureProvider);
+    final interactionProvider = ref.watch(interactionFutureProvider);
 
-    return _interactionFutureProvider.when(
+    return interactionProvider.when(
       data: (data) {
-        final List<UserProfileModel> _filteredUsers = [];
+        final List<UserProfileModel> filteredUsers = [];
 
         for (final user in users) {
           if (!data.any(
               (element) => element.intractToUserId.contains(user.userId))) {
-            _filteredUsers.add(user);
+            filteredUsers.add(user);
           }
         }
 
-        return _filteredUsers.isEmpty
+        return filteredUsers.isEmpty
             ? const Center(child: Text("No User Found!"))
-            : HomeBody(users: _filteredUsers);
+            : HomeBody(users: filteredUsers);
       },
       error: (_, __) => const Center(
         child: Text("Something Went Wrong!"),
@@ -256,8 +256,8 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
 
   @override
   void initState() {
-    final _users = widget.users;
-    _users.shuffle();
+    final users = widget.users;
+    users.shuffle();
 
     for (var user in widget.users) {
       _swipeItems.add(
@@ -286,54 +286,53 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
       required String body,
       required String receiverId,
       required UserProfileModel currentUser}) async {
-    final _currentTime = DateTime.now();
-    final _id = _currentTime.millisecondsSinceEpoch.toString();
-    final NotificationModel _notificationModel = NotificationModel(
-      id: _id,
+    final currentTime = DateTime.now();
+    final id = currentTime.millisecondsSinceEpoch.toString();
+    final NotificationModel notificationModel = NotificationModel(
+      id: id,
       userId: currentUser.userId,
       receiverId: receiverId,
       title: title,
       body: body,
       image: currentUser.profilePicture,
-      createdAt: _currentTime,
+      createdAt: currentTime,
       isRead: false,
       isMatchingNotification: false,
       isInteractionNotification: true,
     );
 
-    await addNotification(_notificationModel);
+    await addNotification(notificationModel);
   }
 
   Future<void> showMatchingDialog(
       {required BuildContext context,
       required UserProfileModel currentUser,
       required UserProfileModel otherUser}) async {
-    final MatchModel _matchModel = MatchModel(
+    final MatchModel matchModel = MatchModel(
       id: currentUser.userId + otherUser.userId,
       userIds: [currentUser.userId, otherUser.userId],
     );
 
-    final _matchResult = await createConversation(_matchModel);
+    final matchResult = await createConversation(matchModel);
 
-    if (_matchResult) {
-      final _currentTime = DateTime.now();
-      final _id =
-          _matchModel.id + _currentTime.millisecondsSinceEpoch.toString();
-      final NotificationModel _notificationModel = NotificationModel(
-        id: _id,
+    if (matchResult) {
+      final currentTime = DateTime.now();
+      final id = matchModel.id + currentTime.millisecondsSinceEpoch.toString();
+      final NotificationModel notificationModel = NotificationModel(
+        id: id,
         userId: currentUser.userId,
         receiverId: otherUser.userId,
-        matchId: _matchModel.id,
+        matchId: matchModel.id,
         title: currentUser.fullName,
         body: "You have a new match",
         image: currentUser.profilePicture,
-        createdAt: _currentTime,
+        createdAt: currentTime,
         isRead: false,
         isMatchingNotification: true,
         isInteractionNotification: false,
       );
 
-      await addNotification(_notificationModel);
+      await addNotification(notificationModel);
 
       return await showDialog(
         context: context,
@@ -380,7 +379,7 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => ChatPage(
-                                matchId: _matchModel.id,
+                                matchId: matchModel.id,
                                 otherUserId: otherUser.userId,
                               ),
                             ),
@@ -399,9 +398,9 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
 
   @override
   Widget build(BuildContext context) {
-    final _currentUserProfile = ref.watch(userProfileStreamProvider);
+    final currentUserProfile = ref.watch(userProfileStreamProvider);
 
-    return _currentUserProfile.when(
+    return currentUserProfile.when(
         data: (data) {
           if (data == null) {
             return const SizedBox();
@@ -417,18 +416,17 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
                     ref.refresh(interactionFutureProvider);
                   },
                   itemBuilder: (context, index) {
-                    final _user =
-                        _swipeItems[index].content as UserProfileModel;
+                    final user = _swipeItems[index].content as UserProfileModel;
 
-                    final String _myUserId =
+                    final String myUserId =
                         FirebaseAuth.instance.currentUser!.uid;
-                    final String _id = _myUserId + _user.id;
+                    final String id = myUserId + user.id;
 
-                    final UserInteractionModel _interaction =
+                    final UserInteractionModel interaction =
                         UserInteractionModel(
-                      id: _id,
-                      userId: _myUserId,
-                      intractToUserId: _user.id,
+                      id: id,
+                      userId: myUserId,
+                      intractToUserId: user.id,
                       isSuperLike: false,
                       isLike: false,
                       isDislike: false,
@@ -439,55 +437,53 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
                       user: _swipeItems[index].content,
                       onTapBolt: () async {
                         _matchEngine.currentItem?.superLike();
-                        final _newInteraction = _interaction.copyWith(
+                        final newInteraction = interaction.copyWith(
                             isSuperLike: true, createdAt: DateTime.now());
-                        final _result =
-                            await createInteraction(_newInteraction);
+                        final result = await createInteraction(newInteraction);
 
-                        if (_result) {
-                          final UserInteractionModel? _otherUserInteraction =
-                              await getExistingInteraction(_user.id);
+                        if (result) {
+                          final UserInteractionModel? otherUserInteraction =
+                              await getExistingInteraction(user.id);
 
-                          if (_otherUserInteraction != null) {
+                          if (otherUserInteraction != null) {
                             showMatchingDialog(
                                 context: context,
                                 currentUser: data,
-                                otherUser: _user);
+                                otherUser: user);
                           } else {
                             createInteractionNotification(
                                 title: "You have a new Interaction!",
                                 body: "Someone has super liked you!",
-                                receiverId: _user.id,
+                                receiverId: user.id,
                                 currentUser: data);
                           }
                         }
                       },
                       onTapCross: () async {
                         _matchEngine.currentItem?.nope();
-                        final _newInteraction = _interaction.copyWith(
+                        final newInteraction = interaction.copyWith(
                             isDislike: true, createdAt: DateTime.now());
-                        await createInteraction(_newInteraction);
+                        await createInteraction(newInteraction);
                       },
                       onTapHeart: () async {
                         _matchEngine.currentItem?.like();
-                        final _newInteraction = _interaction.copyWith(
+                        final newInteraction = interaction.copyWith(
                             isLike: true, createdAt: DateTime.now());
-                        final _result =
-                            await createInteraction(_newInteraction);
+                        final result = await createInteraction(newInteraction);
 
-                        if (_result) {
-                          final UserInteractionModel? _otherUserInteraction =
-                              await getExistingInteraction(_user.id);
-                          if (_otherUserInteraction != null) {
+                        if (result) {
+                          final UserInteractionModel? otherUserInteraction =
+                              await getExistingInteraction(user.id);
+                          if (otherUserInteraction != null) {
                             showMatchingDialog(
                                 context: context,
                                 currentUser: data,
-                                otherUser: _user);
+                                otherUser: user);
                           } else {
                             createInteractionNotification(
                                 title: "You have a new Interaction!",
                                 body: "Someone has liked you!",
-                                receiverId: _user.id,
+                                receiverId: user.id,
                                 currentUser: data);
                           }
                         }
@@ -515,7 +511,7 @@ class UserCirlePicture extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _size = size ?? AppConstants.defaultNumericValue * 5;
+    final newSize = size ?? AppConstants.defaultNumericValue * 5;
     return Container(
       decoration: BoxDecoration(
         borderRadius:
@@ -526,15 +522,15 @@ class UserCirlePicture extends StatelessWidget {
         borderRadius:
             BorderRadius.circular(AppConstants.defaultNumericValue * 10),
         child: SizedBox(
-          width: _size,
-          height: _size,
+          width: size,
+          height: size,
           child: imageUrl == null || imageUrl!.isEmpty
               ? CircleAvatar(
                   backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                   child: Icon(
                     CupertinoIcons.person_fill,
                     color: AppConstants.primaryColor,
-                    size: _size * 0.8,
+                    size: newSize * 0.8,
                   ),
                 )
               : CachedNetworkImage(

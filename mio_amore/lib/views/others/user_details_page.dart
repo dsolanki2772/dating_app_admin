@@ -38,54 +38,54 @@ class UserDetailsPage extends ConsumerWidget {
         required String body,
         required String receiverId,
         required UserProfileModel currentUser}) async {
-      final _currentTime = DateTime.now();
-      final _id = _currentTime.millisecondsSinceEpoch.toString();
-      final NotificationModel _notificationModel = NotificationModel(
-        id: _id,
+      final currentTime = DateTime.now();
+      final id = currentTime.millisecondsSinceEpoch.toString();
+      final NotificationModel notificationModel = NotificationModel(
+        id: id,
         userId: currentUser.userId,
         receiverId: receiverId,
         title: title,
         body: body,
         image: currentUser.profilePicture,
-        createdAt: _currentTime,
+        createdAt: currentTime,
         isRead: false,
         isMatchingNotification: false,
         isInteractionNotification: true,
       );
 
-      await addNotification(_notificationModel);
+      await addNotification(notificationModel);
     }
 
     Future<void> showMatchingDialog(
         {required BuildContext context,
         required UserProfileModel currentUser,
         required UserProfileModel otherUser}) async {
-      final MatchModel _matchModel = MatchModel(
+      final MatchModel matchModel = MatchModel(
         id: currentUser.userId + otherUser.userId,
         userIds: [currentUser.userId, otherUser.userId],
       );
 
-      final _matchResult = await createConversation(_matchModel);
+      final matchResult = await createConversation(matchModel);
 
-      if (_matchResult) {
-        final _currentTime = DateTime.now();
-        final _id =
-            _matchModel.id + _currentTime.millisecondsSinceEpoch.toString();
-        final NotificationModel _notificationModel = NotificationModel(
-          id: _id,
+      if (matchResult) {
+        final currentTime = DateTime.now();
+        final id =
+            matchModel.id + currentTime.millisecondsSinceEpoch.toString();
+        final NotificationModel notificationModel = NotificationModel(
+          id: id,
           userId: currentUser.userId,
           receiverId: otherUser.userId,
-          matchId: _matchModel.id,
+          matchId: matchModel.id,
           title: currentUser.fullName,
           body: "You have a new match",
           image: currentUser.profilePicture,
-          createdAt: _currentTime,
+          createdAt: currentTime,
           isRead: false,
           isMatchingNotification: true,
           isInteractionNotification: false,
         );
 
-        await addNotification(_notificationModel);
+        await addNotification(notificationModel);
 
         return await showDialog(
           context: context,
@@ -132,7 +132,7 @@ class UserDetailsPage extends ConsumerWidget {
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => ChatPage(
-                                  matchId: _matchModel.id,
+                                  matchId: matchModel.id,
                                   otherUserId: otherUser.userId,
                                 ),
                               ),
@@ -149,14 +149,14 @@ class UserDetailsPage extends ConsumerWidget {
       }
     }
 
-    final _currentUserProfile = ref.watch(userProfileStreamProvider);
+    final currentUserProfile = ref.watch(userProfileStreamProvider);
 
-    final String _myUserId = FirebaseAuth.instance.currentUser!.uid;
-    final String _id = _myUserId + user.id;
+    final String myUserId = FirebaseAuth.instance.currentUser!.uid;
+    final String id = myUserId + user.id;
 
-    final UserInteractionModel _interaction = UserInteractionModel(
-      id: _id,
-      userId: _myUserId,
+    final UserInteractionModel interaction = UserInteractionModel(
+      id: id,
+      userId: myUserId,
       intractToUserId: user.id,
       isSuperLike: false,
       isLike: false,
@@ -164,9 +164,9 @@ class UserDetailsPage extends ConsumerWidget {
       createdAt: DateTime.now(),
     );
 
-    UserProfileModel? _currentUserProfileModel;
-    _currentUserProfile.whenData((userProfile) {
-      _currentUserProfileModel = userProfile;
+    UserProfileModel? currentUserProfileModel;
+    currentUserProfile.whenData((userProfile) {
+      currentUserProfileModel = userProfile;
     });
 
     return Scaffold(
@@ -223,66 +223,72 @@ class UserDetailsPage extends ConsumerWidget {
                     width: MediaQuery.of(context).size.width,
                     child: UserLikeActions(
                       onTapCross: () async {
-                        final _newInteraction = _interaction.copyWith(
+                        final newInteraction = interaction.copyWith(
                             isDislike: true, createdAt: DateTime.now());
-                        await createInteraction(_newInteraction);
-
-                        Navigator.pop(context);
-                        ref.refresh(interactionFutureProvider);
+                        await createInteraction(newInteraction).then((value) {
+                          Navigator.pop(context);
+                          ref.refresh(interactionFutureProvider);
+                        });
                       },
                       onTapBolt: () async {
-                        final _newInteraction = _interaction.copyWith(
+                        final newInteraction = interaction.copyWith(
                             isSuperLike: true, createdAt: DateTime.now());
-                        final _result =
-                            await createInteraction(_newInteraction);
-
-                        if (_result && _currentUserProfileModel != null) {
-                          final UserInteractionModel? _otherUserInteraction =
-                              await getExistingInteraction(user.id);
-                          if (_otherUserInteraction != null) {
-                            await showMatchingDialog(
-                                context: context,
-                                currentUser: _currentUserProfileModel!,
-                                otherUser: user);
-                            Navigator.pop(context);
-                          } else {
-                            createInteractionNotification(
-                                title: "You have a new Interaction!",
-                                body: "Someone has super liked you!",
-                                receiverId: user.userId,
-                                currentUser: _currentUserProfileModel!);
-                            Navigator.pop(context);
+                        await createInteraction(newInteraction)
+                            .then((result) async {
+                          if (result && currentUserProfileModel != null) {
+                            await getExistingInteraction(user.id)
+                                .then((otherUserInteraction) async {
+                              if (otherUserInteraction != null) {
+                                await showMatchingDialog(
+                                        context: context,
+                                        currentUser: currentUserProfileModel!,
+                                        otherUser: user)
+                                    .then((value) {
+                                  Navigator.pop(context);
+                                });
+                              } else {
+                                createInteractionNotification(
+                                    title: "You have a new Interaction!",
+                                    body: "Someone has super liked you!",
+                                    receiverId: user.userId,
+                                    currentUser: currentUserProfileModel!);
+                                Navigator.pop(context);
+                              }
+                            });
                           }
-                        }
 
-                        ref.refresh(interactionFutureProvider);
+                          ref.refresh(interactionFutureProvider);
+                        });
                       },
                       onTapHeart: () async {
-                        final _newInteraction = _interaction.copyWith(
+                        final newInteraction = interaction.copyWith(
                             isLike: true, createdAt: DateTime.now());
-                        final _result =
-                            await createInteraction(_newInteraction);
-
-                        if (_result && _currentUserProfileModel != null) {
-                          final UserInteractionModel? _otherUserInteraction =
-                              await getExistingInteraction(user.id);
-                          if (_otherUserInteraction != null) {
-                            await showMatchingDialog(
-                                context: context,
-                                currentUser: _currentUserProfileModel!,
-                                otherUser: user);
-                            Navigator.pop(context);
-                          } else {
-                            createInteractionNotification(
-                                title: "You have a new Interaction!",
-                                body: "Someone has liked you!",
-                                receiverId: user.userId,
-                                currentUser: _currentUserProfileModel!);
-                            Navigator.pop(context);
+                        await createInteraction(newInteraction)
+                            .then((result) async {
+                          if (result && currentUserProfileModel != null) {
+                            await getExistingInteraction(user.id)
+                                .then((otherUserInteraction) async {
+                              if (otherUserInteraction != null) {
+                                await showMatchingDialog(
+                                        context: context,
+                                        currentUser: currentUserProfileModel!,
+                                        otherUser: user)
+                                    .then((value) {
+                                  Navigator.pop(context);
+                                });
+                              } else {
+                                createInteractionNotification(
+                                    title: "You have a new Interaction!",
+                                    body: "Someone has liked you!",
+                                    receiverId: user.userId,
+                                    currentUser: currentUserProfileModel!);
+                                Navigator.pop(context);
+                              }
+                            });
                           }
-                        }
 
-                        ref.refresh(interactionFutureProvider);
+                          ref.refresh(interactionFutureProvider);
+                        });
                       },
                     ),
                   ),
@@ -331,12 +337,14 @@ class _DetailsBodyState extends State<DetailsBody> {
                 child: const Text("Unmatch"),
                 onPressed: () async {
                   EasyLoading.show(status: "Unmatching...");
-                  final _currentUserId = FirebaseAuth.instance.currentUser!.uid;
+                  final currentUserId = FirebaseAuth.instance.currentUser!.uid;
                   await unMatchUser(
-                      widget.matchId!, widget.user.userId, _currentUserId);
-                  EasyLoading.dismiss();
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
+                          widget.matchId!, widget.user.userId, currentUserId)
+                      .then((value) {
+                    EasyLoading.dismiss();
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                  });
                 },
               ),
             ],
@@ -425,12 +433,6 @@ class _DetailsBodyState extends State<DetailsBody> {
                       widget.matchId == null
                           ? const SizedBox()
                           : CustomPopupMenu(
-                              child: const CupertinoButton(
-                                padding: EdgeInsets.zero,
-                                child: Icon(CupertinoIcons.ellipsis_vertical,
-                                    color: Colors.white),
-                                onPressed: null,
-                              ),
                               menuBuilder: () => ClipRRect(
                                 borderRadius: BorderRadius.circular(
                                     AppConstants.defaultNumericValue / 2),
@@ -475,6 +477,12 @@ class _DetailsBodyState extends State<DetailsBody> {
                               arrowColor: Colors.white,
                               barrierColor:
                                   AppConstants.primaryColor.withOpacity(0.1),
+                              child: const CupertinoButton(
+                                padding: EdgeInsets.zero,
+                                onPressed: null,
+                                child: Icon(CupertinoIcons.ellipsis_vertical,
+                                    color: Colors.white),
+                              ),
                             ),
                     ],
                   ),

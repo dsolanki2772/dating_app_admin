@@ -26,7 +26,7 @@ class _GetVerifiedPageState extends ConsumerState<GetVerifiedPage> {
   bool _submitAgain = false;
   @override
   Widget build(BuildContext context) {
-    final _verificationProvider = ref.watch(verificationProvider);
+    final verificationData = ref.watch(verificationProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Verification'),
@@ -38,7 +38,7 @@ class _GetVerifiedPageState extends ConsumerState<GetVerifiedPage> {
                   child: Text('You are verified'),
                 )
               : FutureBuilder<GetVerifiedModel?>(
-                  future: _verificationProvider.getVerifiedStatus(),
+                  future: verificationData.getVerifiedStatus(),
                   builder: (BuildContext context,
                       AsyncSnapshot<GetVerifiedModel?> snapshot) {
                     return snapshot.hasError
@@ -72,7 +72,7 @@ class _VerifiedPart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool _isNotApproved = data.isPending == false && data.isApproved == false;
+    bool isNotApproved = data.isPending == false && data.isApproved == false;
 
     return Padding(
       padding: const EdgeInsets.all(AppConstants.defaultNumericValue),
@@ -84,7 +84,7 @@ class _VerifiedPart extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _isNotApproved
+                  isNotApproved
                       ? Icon(
                           Icons.warning,
                           color: Colors.red,
@@ -97,7 +97,7 @@ class _VerifiedPart extends StatelessWidget {
                         ),
                   const SizedBox(height: AppConstants.defaultNumericValue),
                   Text(
-                    _isNotApproved
+                    isNotApproved
                         ? 'Not Approved'
                         : 'Your account is pending verification',
                     textAlign: TextAlign.center,
@@ -108,14 +108,14 @@ class _VerifiedPart extends StatelessWidget {
                   ),
                   const SizedBox(height: AppConstants.defaultNumericValue),
                   Text(
-                    _isNotApproved
+                    isNotApproved
                         ? data.statusMessage ??
                             "Your account is not approved. Please submit your documents again to verify your account."
                         : "You have submitted your documents.\nWe will verify your documents and update the status of your account.",
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: AppConstants.defaultNumericValue),
-                  _isNotApproved
+                  isNotApproved
                       ? CustomButton(
                           text: "Submit again",
                           onPressed: onPressedSubmitAgain,
@@ -165,54 +165,54 @@ class _NotVerifiedPartState extends ConsumerState<_NotVerifiedPart> {
   File? _selfie;
 
   void _onSubmit() async {
-    final _verificationProvider = ref.read(verificationProvider);
+    final verificationData = ref.read(verificationProvider);
 
     EasyLoading.show(status: 'Uploading...');
-    String? _photoIdFrontPath =
+    String? photoIdFrontPath =
         await _savePictures(_photoIdFrontView!, "photoIdFront");
-    String? _photoIdBackPath =
+    String? photoIdBackPath =
         await _savePictures(_photoIdBackView!, "photoIdBack");
-    String? _selfiePath = await _savePictures(_selfie!, "selfie");
+    String? selfiePath = await _savePictures(_selfie!, "selfie");
 
-    if (_photoIdFrontPath == null ||
-        _photoIdBackPath == null ||
-        _selfiePath == null) {
+    if (photoIdFrontPath == null ||
+        photoIdBackPath == null ||
+        selfiePath == null) {
       EasyLoading.showInfo("Something went wrong. Please try again later.");
       return;
     } else {
-      GetVerifiedModel _form = GetVerifiedModel(
+      GetVerifiedModel form = GetVerifiedModel(
         id: FirebaseAuth.instance.currentUser!.uid,
         userId: FirebaseAuth.instance.currentUser!.uid,
-        photoIdFrontViewUrl: _photoIdFrontPath,
-        photoIdBackViewUrl: _photoIdBackPath,
-        selfieUrl: _selfiePath,
+        photoIdFrontViewUrl: photoIdFrontPath,
+        photoIdBackViewUrl: photoIdBackPath,
+        selfieUrl: selfiePath,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
         isPending: true,
         isApproved: false,
       );
       if (widget.submitAgain) {
-        await _verificationProvider.updateVerificationForm(_form);
+        await verificationData.updateVerificationForm(form);
       } else {
-        await _verificationProvider.submitVerificationForm(_form);
+        await verificationData.submitVerificationForm(form);
       }
       EasyLoading.showSuccess("Submitted successfully");
     }
   }
 
   Future<String?> _savePictures(File file, String title) async {
-    Reference _storageReference = FirebaseStorage.instance
+    Reference storageReference = FirebaseStorage.instance
         .ref()
         .child(FirebaseAuth.instance.currentUser!.uid)
         .child("Verification Pictures")
         .child(title);
 
-    String? _url;
+    String? url;
 
-    UploadTask _uploadTask = _storageReference.putFile(file);
-    await _uploadTask.whenComplete(() async =>
-        await _storageReference.getDownloadURL().then((value) => _url = value));
-    return _url;
+    UploadTask uploadTask = storageReference.putFile(file);
+    await uploadTask.whenComplete(() async =>
+        await storageReference.getDownloadURL().then((value) => url = value));
+    return url;
   }
 
   @override
@@ -264,7 +264,7 @@ class _NotVerifiedPartState extends ConsumerState<_NotVerifiedPart> {
               VerificationSingleStep(
                 leadingIcon: Icons.credit_card,
                 onTap: () async {
-                  final List<File>? _results = await Navigator.push(
+                  final List<File>? results = await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => PhotoIdPage(
@@ -274,8 +274,8 @@ class _NotVerifiedPartState extends ConsumerState<_NotVerifiedPart> {
                     ),
                   );
                   setState(() {
-                    _photoIdFrontView = _results?.first;
-                    _photoIdBackView = _results?.last;
+                    _photoIdFrontView = results?.first;
+                    _photoIdBackView = results?.last;
                   });
                 },
                 title: "Photo ID",
@@ -288,14 +288,14 @@ class _NotVerifiedPartState extends ConsumerState<_NotVerifiedPart> {
               VerificationSingleStep(
                 leadingIcon: Icons.camera_alt,
                 onTap: () async {
-                  final File? _result = await Navigator.push(
+                  final File? result = await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => SelfiePage(selfie: _selfie),
                     ),
                   );
                   setState(() {
-                    _selfie = _result;
+                    _selfie = result;
                   });
                 },
                 title: "Take a selfie",

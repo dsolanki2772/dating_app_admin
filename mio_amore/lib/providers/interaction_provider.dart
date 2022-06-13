@@ -6,18 +6,18 @@ import 'package:mio_amore/models/user_interaction_model.dart';
 
 final interactionFutureProvider =
     FutureProvider.autoDispose<List<UserInteractionModel>>((ref) async {
-  final _interactionCollection = FirebaseFirestore.instance
+  final interactionCollection = FirebaseFirestore.instance
       .collection(FirebaseConstants.userInteractionCollection);
 
-  return await _interactionCollection
+  return await interactionCollection
       .where("userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
       .get()
       .then((snapshot) {
-    final List<UserInteractionModel> _interactionList = [];
+    final List<UserInteractionModel> interactionList = [];
     for (var doc in snapshot.docs) {
-      _interactionList.add(UserInteractionModel.fromMap(doc.data()));
+      interactionList.add(UserInteractionModel.fromMap(doc.data()));
     }
-    return _interactionList;
+    return interactionList;
   });
 });
 
@@ -43,10 +43,10 @@ Future<bool> deleteInteraction(String interactionId) async {
 }
 
 Future<UserInteractionModel?> getExistingInteraction(String otherUserId) async {
-  final _interactionCollection = FirebaseFirestore.instance
+  final interactionCollection = FirebaseFirestore.instance
       .collection(FirebaseConstants.userInteractionCollection);
 
-  return await _interactionCollection
+  return await interactionCollection
       .where("id",
           isEqualTo: otherUserId + FirebaseAuth.instance.currentUser!.uid)
       .get()

@@ -13,23 +13,23 @@ class CustomHeadLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _textLength = text.length;
-    final _firstPart = text.substring(0, _textLength ~/ 2);
-    final _secondPart = text.substring(_textLength ~/ 2);
+    final textLength = text.length;
+    final firstPart = text.substring(0, textLength ~/ 2);
+    final secondPart = text.substring(textLength ~/ 2);
 
-    final _textStyle = Theme.of(context)
+    final textStyle = Theme.of(context)
         .textTheme
         .headline5!
         .copyWith(fontWeight: FontWeight.bold);
 
     return Text.rich(
       TextSpan(
-        text: _firstPart,
-        style: _textStyle.copyWith(color: firstPartColor),
+        text: firstPart,
+        style: textStyle.copyWith(color: firstPartColor),
         children: [
           TextSpan(
-            text: _secondPart,
-            style: _textStyle.copyWith(color: secondPartColor),
+            text: secondPart,
+            style: textStyle.copyWith(color: secondPartColor),
           ),
         ],
       ),

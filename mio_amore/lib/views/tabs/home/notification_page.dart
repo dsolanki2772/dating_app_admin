@@ -104,14 +104,14 @@ class NotificationBody extends ConsumerWidget {
 
     void onTapNotification(WidgetRef ref, NotificationModel item) {
       if (item.isMatchingNotification) {
-        final _otherUsersProvider = ref.read(otherUsersProvider);
+        final otherUsers = ref.read(otherUsersProvider);
 
-        UserProfileModel? _otherUser;
-        _otherUsersProvider.whenData((value) {
-          _otherUser = value.firstWhere((element) => element.id == item.userId);
+        UserProfileModel? otherUser;
+        otherUsers.whenData((value) {
+          otherUser = value.firstWhere((element) => element.id == item.userId);
         });
 
-        if (_otherUser != null) {
+        if (otherUser != null) {
           if (!item.isRead) {
             updateNotification(item.copyWith(isRead: true));
           }
@@ -119,7 +119,7 @@ class NotificationBody extends ConsumerWidget {
             context,
             MaterialPageRoute(
               builder: (context) => UserDetailsPage(
-                user: _otherUser!,
+                user: otherUser!,
                 matchId: item.matchId,
               ),
             ),
@@ -135,48 +135,48 @@ class NotificationBody extends ConsumerWidget {
       }
     }
 
-    final _notifications = ref.watch(notificationsStreamProvider);
-    return _notifications.when(
+    final notifications = ref.watch(notificationsStreamProvider);
+    return notifications.when(
       data: (data) {
         if (data.isEmpty) {
           return const Center(child: Text('No notifications'));
         } else {
           return ListView.separated(
             itemBuilder: (context, index) {
-              NotificationModel _item = data[index];
+              NotificationModel item = data[index];
 
               return ListTile(
                 onLongPress: () {
-                  deleteNotification(_item);
+                  deleteNotification(item);
                 },
                 onTap: () {
-                  onTapNotification(ref, _item);
+                  onTapNotification(ref, item);
                 },
-                title: Text(_item.title),
-                tileColor: _item.isRead
+                title: Text(item.title),
+                tileColor: item.isRead
                     ? null
                     : AppConstants.primaryColor.withOpacity(0.2),
-                subtitle: Text(_item.body),
+                subtitle: Text(item.body),
                 trailing: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      DateFormatter.toTime(_item.createdAt),
+                      DateFormatter.toTime(item.createdAt),
                       style: Theme.of(context).textTheme.caption,
                     ),
                     Text(
-                      DateFormatter.toYearMonthDay2(_item.createdAt),
+                      DateFormatter.toYearMonthDay2(item.createdAt),
                       style: Theme.of(context).textTheme.caption,
                     ),
                   ],
                 ),
-                leading: _item.image == null
+                leading: item.image == null
                     ? CircleAvatar(
                         radius: AppConstants.defaultNumericValue * 1.5,
                         backgroundColor: AppConstants.primaryColor,
                         child: Text(
-                          _item.title.substring(0, 1),
+                          item.title.substring(0, 1),
                           style: Theme.of(context)
                               .textTheme
                               .headline6!
@@ -184,7 +184,7 @@ class NotificationBody extends ConsumerWidget {
                         ),
                       )
                     : UserCirlePicture(
-                        imageUrl: _item.image,
+                        imageUrl: item.image,
                         size: AppConstants.defaultNumericValue * 2.5),
               );
             },

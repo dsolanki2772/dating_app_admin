@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -75,33 +74,33 @@ class LoginPage extends ConsumerWidget {
               if (isFacebookAuthAvailable)
                 const SizedBox(height: AppConstants.defaultNumericValue),
 
-              //Twitter
-              if (isTwitterAuthAvailable)
-                LoginButton(
-                  icon: Image.asset(twitterLogo,
-                      width: AppConstants.defaultNumericValue * 2),
-                  onPressed: () {
-                    EasyLoading.showInfo('Coming soon...');
-                  },
-                  text: "Log in with twitter",
-                ),
-              if (isTwitterAuthAvailable)
-                const SizedBox(height: AppConstants.defaultNumericValue),
+              // //Twitter
+              // if (isTwitterAuthAvailable)
+              //   LoginButton(
+              //     icon: Image.asset(twitterLogo,
+              //         width: AppConstants.defaultNumericValue * 2),
+              //     onPressed: () {
+              //       EasyLoading.showInfo('Coming soon...');
+              //     },
+              //     text: "Log in with twitter",
+              //   ),
+              // if (isTwitterAuthAvailable)
+              //   const SizedBox(height: AppConstants.defaultNumericValue),
 
-              //Apple
-              if (isAppleAuthAvailable)
-                if (Platform.isIOS)
-                  LoginButton(
-                    icon: Image.asset(appleLogo,
-                        width: AppConstants.defaultNumericValue * 2),
-                    onPressed: () {
-                      EasyLoading.showInfo('Coming soon...');
-                    },
-                    text: "Log in with apple",
-                  ),
-              if (isAppleAuthAvailable)
-                if (Platform.isIOS)
-                  const SizedBox(height: AppConstants.defaultNumericValue),
+              // //Apple
+              // if (isAppleAuthAvailable)
+              //   if (Platform.isIOS)
+              //     LoginButton(
+              //       icon: Image.asset(appleLogo,
+              //           width: AppConstants.defaultNumericValue * 2),
+              //       onPressed: () {
+              //         EasyLoading.showInfo('Coming soon...');
+              //       },
+              //       text: "Log in with apple",
+              //     ),
+              // if (isAppleAuthAvailable)
+              //   if (Platform.isIOS)
+              //     const SizedBox(height: AppConstants.defaultNumericValue),
 
               //Phone
               if (isPhoneAuthAvailable)
@@ -205,24 +204,24 @@ class PhoneLoginLandingWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _countryCodesProvider = ref.watch(countryCodesProvider);
-    final _currentLocationProviderProvider =
+    final countryCodesData = ref.watch(countryCodesProvider);
+    final currentLocationProviderProvider =
         ref.watch(getCurrentLocationProviderProvider);
 
-    return _countryCodesProvider.when(
+    return countryCodesData.when(
         data: (data) {
-          return _currentLocationProviderProvider.when(
+          return currentLocationProviderProvider.when(
               data: (location) {
                 if (location != null) {
-                  final List<CountryCode> _countryCodes = data
+                  final List<CountryCode> countryCodes = data
                       .where((element) =>
                           location.addressText.contains(element.name))
                       .toList();
 
-                  return _countryCodes.isEmpty
+                  return countryCodes.isEmpty
                       ? const SelectCountryPage()
                       : LoginWithPhoneNumberPage(
-                          countryCode: _countryCodes.first);
+                          countryCode: countryCodes.first);
                 } else {
                   return const SelectCountryPage();
                 }

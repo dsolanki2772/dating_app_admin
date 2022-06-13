@@ -8,10 +8,10 @@ import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
 
 final userProfileStreamProvider = StreamProvider<UserProfileModel?>((ref) {
-  final _userCollection = FirebaseFirestore.instance
+  final userCollection = FirebaseFirestore.instance
       .collection(FirebaseConstants.userProfileCollection);
 
-  return _userCollection
+  return userCollection
       .where("userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
       .snapshots()
       .map((event) {
@@ -33,24 +33,22 @@ class UserProfileProvider {
 
   Future<bool> createUserProfile(UserProfileModel userProfileModel) async {
     try {
-      UserProfileModel? _newUserProfile;
+      UserProfileModel? newUserProfile;
 
       if (userProfileModel.profilePicture != null) {
         if (Uri.parse(userProfileModel.profilePicture!).isAbsolute) {
-          _newUserProfile = userProfileModel;
+          newUserProfile = userProfileModel;
         } else {
-          final _profileURL =
+          final profileURL =
               await _uploadProfilePicture(userProfileModel.profilePicture!);
-          _newUserProfile =
-              userProfileModel.copyWith(profilePicture: _profileURL);
+          newUserProfile =
+              userProfileModel.copyWith(profilePicture: profileURL);
         }
       } else {
-        _newUserProfile = userProfileModel;
+        newUserProfile = userProfileModel;
       }
 
-      await _userCollection
-          .doc(_newUserProfile.id)
-          .set(_newUserProfile.toMap());
+      await _userCollection.doc(newUserProfile.id).set(newUserProfile.toMap());
       return true;
     } catch (e) {
       return false;
@@ -59,43 +57,43 @@ class UserProfileProvider {
 
   Future<bool> updateUserProfile(UserProfileModel userProfileModel) async {
     try {
-      UserProfileModel? _newUserProfile;
+      UserProfileModel? newUserProfile;
 
       if (userProfileModel.profilePicture != null) {
         if (Uri.parse(userProfileModel.profilePicture!).isAbsolute) {
-          _newUserProfile = userProfileModel;
+          newUserProfile = userProfileModel;
         } else if (userProfileModel.profilePicture == "") {
-          _newUserProfile = userProfileModel.copyWith(profilePicture: "");
+          newUserProfile = userProfileModel.copyWith(profilePicture: "");
         } else {
-          final _profileURL =
+          final profileURL =
               await _uploadProfilePicture(userProfileModel.profilePicture!);
-          _newUserProfile =
-              userProfileModel.copyWith(profilePicture: _profileURL);
+          newUserProfile =
+              userProfileModel.copyWith(profilePicture: profileURL);
         }
       } else {
-        _newUserProfile = userProfileModel;
+        newUserProfile = userProfileModel;
       }
 
-      List<String> _mediaURLs = [];
+      List<String> mediaURLs = [];
       for (var media in userProfileModel.mediaFiles) {
         if (Uri.parse(media).isAbsolute) {
-          _mediaURLs.add(media);
+          mediaURLs.add(media);
         } else if (media == "") {
           debugPrint("Media is empty");
         } else {
-          final _mediaURL = await _uploadUserMediaFiles(media);
-          if (_mediaURL != null) {
-            _mediaURLs.add(_mediaURL);
+          final mediaURL = await _uploadUserMediaFiles(media);
+          if (mediaURL != null) {
+            mediaURLs.add(mediaURL);
           }
         }
       }
 
-      final _anotherNewUserProfile =
-          _newUserProfile.copyWith(mediaFiles: _mediaURLs);
+      final anotherNewUserProfile =
+          newUserProfile.copyWith(mediaFiles: mediaURLs);
 
       await _userCollection
-          .doc(_anotherNewUserProfile.id)
-          .update(_anotherNewUserProfile.toMap());
+          .doc(anotherNewUserProfile.id)
+          .update(anotherNewUserProfile.toMap());
       return true;
     } catch (e) {
       return false;
@@ -103,30 +101,30 @@ class UserProfileProvider {
   }
 
   Future<String?> _uploadProfilePicture(String imagePath) async {
-    final _storageRef = FirebaseStorage.instance.ref();
-    final _userId = FirebaseAuth.instance.currentUser!.uid;
-    final _imageRef = _storageRef.child("user_profile_pictures/$_userId");
-    final _uploadTask = _imageRef.putFile(File(imagePath));
+    final storageRef = FirebaseStorage.instance.ref();
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final imageRef = storageRef.child("user_profile_pictures/$userId");
+    final uploadTask = imageRef.putFile(File(imagePath));
 
-    String? _imageUrl;
-    await _uploadTask.whenComplete(() async {
-      _imageUrl = await _imageRef.getDownloadURL();
+    String? imageUrl;
+    await uploadTask.whenComplete(() async {
+      imageUrl = await imageRef.getDownloadURL();
     });
-    return _imageUrl;
+    return imageUrl;
   }
 
   Future<String?> _uploadUserMediaFiles(String path) async {
-    final _storageRef = FirebaseStorage.instance.ref();
-    final _userId = FirebaseAuth.instance.currentUser!.uid;
-    final _imageRef =
-        _storageRef.child("user_media_files/$_userId/${path.split("/").last}");
-    final _uploadTask = _imageRef.putFile(File(path));
+    final storageRef = FirebaseStorage.instance.ref();
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final imageRef =
+        storageRef.child("user_media_files/$userId/${path.split("/").last}");
+    final uploadTask = imageRef.putFile(File(path));
 
-    String? _imageUrl;
-    await _uploadTask.whenComplete(() async {
-      _imageUrl = await _imageRef.getDownloadURL();
+    String? imageUrl;
+    await uploadTask.whenComplete(() async {
+      imageUrl = await imageRef.getDownloadURL();
     });
-    return _imageUrl;
+    return imageUrl;
   }
 
   // Future<bool> deleteUserProfile(UserProfileModel userProfileModel) async {
@@ -142,26 +140,26 @@ class UserProfileProvider {
 }
 
 Future<bool> isUserAdded(String userId) async {
-  final _userCollection = FirebaseFirestore.instance
+  final userCollection = FirebaseFirestore.instance
       .collection(FirebaseConstants.userProfileCollection);
-  bool _isUserAdded = false;
-  await _userCollection.where("userId", isEqualTo: userId).get().then((event) {
+  bool isUserAdded = false;
+  await userCollection.where("userId", isEqualTo: userId).get().then((event) {
     if (event.docs.isNotEmpty) {
-      _isUserAdded = true;
+      isUserAdded = true;
     }
   });
-  return _isUserAdded;
+  return isUserAdded;
 }
 
 final isUserAddedProvider = FutureProvider((ref) async {
-  final _userCollection = FirebaseFirestore.instance
+  final userCollection = FirebaseFirestore.instance
       .collection(FirebaseConstants.userProfileCollection);
-  final _userId = FirebaseAuth.instance.currentUser!.uid;
-  bool _isUserAdded = false;
-  await _userCollection.where("userId", isEqualTo: _userId).get().then((event) {
+  final userId = FirebaseAuth.instance.currentUser!.uid;
+  bool isUserAdded = false;
+  await userCollection.where("userId", isEqualTo: userId).get().then((event) {
     if (event.docs.isNotEmpty) {
-      _isUserAdded = true;
+      isUserAdded = true;
     }
   });
-  return _isUserAdded;
+  return isUserAdded;
 });

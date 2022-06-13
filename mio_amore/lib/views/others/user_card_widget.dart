@@ -48,6 +48,148 @@ class _UserCardWidgetState extends State<UserCardWidget> {
   @override
   Widget build(BuildContext context) {
     return GridTile(
+      header: _pageController.hasClients
+          ? Align(
+              alignment: Alignment.topRight,
+              child: Container(
+                margin: const EdgeInsets.only(
+                    top: AppConstants.defaultNumericValue / 2,
+                    right: AppConstants.defaultNumericValue / 2),
+                padding:
+                    const EdgeInsets.all(AppConstants.defaultNumericValue / 2),
+                child: Text(
+                  "${_pageController.page!.round() + 1}/${_images.length}",
+                  style: const TextStyle(
+                      color: Colors.white60, fontWeight: FontWeight.bold),
+                ),
+              ),
+            )
+          : null,
+      footer: GestureDetector(
+        onTap: () {
+          Navigator.push(
+              context,
+              CupertinoPageRoute(
+                  builder: (context) => UserDetailsPage(user: widget.user)));
+        },
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(AppConstants.defaultNumericValue),
+            bottomRight: Radius.circular(AppConstants.defaultNumericValue),
+          ),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+            child: Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(color: Colors.black45),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: AppConstants.defaultNumericValue),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: AppConstants.defaultNumericValue),
+                        child: Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: '${widget.user.fullName} ',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 21,
+                                ),
+                              ),
+                              TextSpan(
+                                text: (DateTime.now()
+                                            .difference(widget.user.birthDay)
+                                            .inDays ~/
+                                        365)
+                                    .toString(),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      widget.user.isVerified
+                          ? const Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: AppConstants.defaultNumericValue),
+                              child: Icon(Icons.verified_user,
+                                  color: CupertinoColors.activeGreen),
+                            )
+                          : const SizedBox(),
+                    ],
+                  ),
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final myProfile = ref.watch(userProfileStreamProvider);
+                      return myProfile.when(
+                          data: (data) {
+                            if (data != null) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  const SizedBox(
+                                      height:
+                                          AppConstants.defaultNumericValue / 4),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal:
+                                            AppConstants.defaultNumericValue /
+                                                1.3),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Icon(Icons.location_on_outlined,
+                                            size: 16, color: Colors.white),
+                                        const SizedBox(
+                                            width: AppConstants
+                                                    .defaultNumericValue /
+                                                4),
+                                        Text(
+                                          '${(Geolocator.distanceBetween(data.userAccountSettingsModel.location.latitude, data.userAccountSettingsModel.location.longitude, widget.user.userAccountSettingsModel.location.latitude, widget.user.userAccountSettingsModel.location.longitude) / 1000).toStringAsFixed(2)} km away',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                      height:
+                                          AppConstants.defaultNumericValue / 2),
+                                  UserLikeActions(
+                                    onTapCross: widget.onTapCross,
+                                    onTapBolt: widget.onTapBolt,
+                                    onTapHeart: widget.onTapHeart,
+                                  ),
+                                  const SizedBox(
+                                      height: AppConstants.defaultNumericValue),
+                                ],
+                              );
+                            } else {
+                              return const SizedBox();
+                            }
+                          },
+                          error: (_, __) => const SizedBox(),
+                          loading: () => const SizedBox());
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
       child: _images.isEmpty
           ? Container(
               decoration: BoxDecoration(
@@ -127,171 +269,6 @@ class _UserCardWidgetState extends State<UserCardWidget> {
                 );
               }).toList(),
             ),
-      header: _pageController.hasClients
-          ? Align(
-              alignment: Alignment.topRight,
-              child: Container(
-                margin: const EdgeInsets.only(
-                    top: AppConstants.defaultNumericValue / 2,
-                    right: AppConstants.defaultNumericValue / 2),
-                padding:
-                    const EdgeInsets.all(AppConstants.defaultNumericValue / 2),
-                child: Text(
-                  (_pageController.page!.round() + 1).toString() +
-                      "/" +
-                      _images.length.toString(),
-                  style: const TextStyle(
-                      color: Colors.white60, fontWeight: FontWeight.bold),
-                ),
-              ),
-            )
-          : null,
-      footer: GestureDetector(
-        onTap: () {
-          Navigator.push(
-              context,
-              CupertinoPageRoute(
-                  builder: (context) => UserDetailsPage(user: widget.user)));
-        },
-        child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            bottomLeft: Radius.circular(AppConstants.defaultNumericValue),
-            bottomRight: Radius.circular(AppConstants.defaultNumericValue),
-          ),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-            child: Container(
-              width: double.infinity,
-              decoration: const BoxDecoration(color: Colors.black45),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: AppConstants.defaultNumericValue),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: AppConstants.defaultNumericValue),
-                        child: Text.rich(
-                          TextSpan(
-                            children: [
-                              TextSpan(
-                                text: widget.user.fullName + ' ',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 21,
-                                ),
-                              ),
-                              TextSpan(
-                                text: (DateTime.now()
-                                            .difference(widget.user.birthDay)
-                                            .inDays ~/
-                                        365)
-                                    .toString(),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      widget.user.isVerified
-                          ? const Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: AppConstants.defaultNumericValue),
-                              child: Icon(Icons.verified_user,
-                                  color: CupertinoColors.activeGreen),
-                            )
-                          : const SizedBox(),
-                    ],
-                  ),
-                  Consumer(
-                    builder: (context, ref, child) {
-                      final _myProfile = ref.watch(userProfileStreamProvider);
-                      return _myProfile.when(
-                          data: (data) {
-                            if (data != null) {
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  const SizedBox(
-                                      height:
-                                          AppConstants.defaultNumericValue / 4),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal:
-                                            AppConstants.defaultNumericValue /
-                                                1.3),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const Icon(Icons.location_on_outlined,
-                                            size: 16, color: Colors.white),
-                                        const SizedBox(
-                                            width: AppConstants
-                                                    .defaultNumericValue /
-                                                4),
-                                        Text(
-                                          (Geolocator.distanceBetween(
-                                                          data
-                                                              .userAccountSettingsModel
-                                                              .location
-                                                              .latitude,
-                                                          data
-                                                              .userAccountSettingsModel
-                                                              .location
-                                                              .longitude,
-                                                          widget
-                                                              .user
-                                                              .userAccountSettingsModel
-                                                              .location
-                                                              .latitude,
-                                                          widget
-                                                              .user
-                                                              .userAccountSettingsModel
-                                                              .location
-                                                              .longitude) /
-                                                      1000)
-                                                  .toStringAsFixed(2) +
-                                              ' km away',
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                      height:
-                                          AppConstants.defaultNumericValue / 2),
-                                  UserLikeActions(
-                                    onTapCross: widget.onTapCross,
-                                    onTapBolt: widget.onTapBolt,
-                                    onTapHeart: widget.onTapHeart,
-                                  ),
-                                  const SizedBox(
-                                      height: AppConstants.defaultNumericValue),
-                                ],
-                              );
-                            } else {
-                              return const SizedBox();
-                            }
-                          },
-                          error: (_, __) => const SizedBox(),
-                          loading: () => const SizedBox());
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

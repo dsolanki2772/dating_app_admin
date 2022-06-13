@@ -65,30 +65,30 @@ class FeedsBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    final _feedList = ref.watch(getFeedsProvider);
+    final feedList = ref.watch(getFeedsProvider);
     return ListView(
       children: [
         const CreateNewPostSection(),
-        ..._feedList.when(
+        ...feedList.when(
             data: (data) {
-              final _otherUsersProvider = ref.watch(otherUsersProvider);
-              final _userProfileProvider = ref.watch(userProfileStreamProvider);
+              final otherUsers = ref.watch(otherUsersProvider);
+              final userProfileProvider = ref.watch(userProfileStreamProvider);
 
-              List<UserProfileModel> _feedsUsers = [];
+              List<UserProfileModel> feedsUsers = [];
 
-              _otherUsersProvider.whenData((value) {
-                final _users = value.where((element) {
+              otherUsers.whenData((value) {
+                final users = value.where((element) {
                   return data
                       .map((e) => e.userId)
                       .toList()
                       .contains(element.userId);
                 }).toList();
 
-                _feedsUsers.addAll(_users);
+                feedsUsers.addAll(users);
               });
 
-              _userProfileProvider.whenData((value) {
-                _feedsUsers.add(value!);
+              userProfileProvider.whenData((value) {
+                feedsUsers.add(value!);
               });
 
               return data.isEmpty
@@ -98,9 +98,9 @@ class FeedsBody extends ConsumerWidget {
                           child: const Center(child: Text('No Feeds Yet')))
                     ]
                   : data.map((e) {
-                      final _user = _feedsUsers
+                      final user = feedsUsers
                           .firstWhere((element) => element.userId == e.userId);
-                      return SingleFeedPost(feed: e, user: _user);
+                      return SingleFeedPost(feed: e, user: user);
                     });
             },
             error: (_, __) => [const SizedBox()],
@@ -115,9 +115,9 @@ class CreateNewPostSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    final _currentUserProfile = ref.read(userProfileStreamProvider);
+    final currentUserProfile = ref.read(userProfileStreamProvider);
 
-    return _currentUserProfile.when(
+    return currentUserProfile.when(
         data: (data) {
           return data == null
               ? const SizedBox()
@@ -220,9 +220,6 @@ class _SingleFeedPostState extends State<SingleFeedPost> {
                 if (widget.feed.userId ==
                     FirebaseAuth.instance.currentUser!.uid)
                   CustomPopupMenu(
-                    child: GestureDetector(
-                      child: const Icon(CupertinoIcons.ellipsis_vertical),
-                    ),
                     menuBuilder: () => ClipRRect(
                       borderRadius: BorderRadius.circular(
                           AppConstants.defaultNumericValue / 2),
@@ -269,10 +266,13 @@ class _SingleFeedPostState extends State<SingleFeedPost> {
                                                   child: const Text("Delete"),
                                                   onPressed: () async {
                                                     await deleteFeed(
-                                                        widget.feed.id);
-                                                    ref.refresh(
-                                                        getFeedsProvider);
-                                                    Navigator.of(context).pop();
+                                                            widget.feed.id)
+                                                        .then((value) {
+                                                      ref.refresh(
+                                                          getFeedsProvider);
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    });
                                                   },
                                                 );
                                               },
@@ -293,6 +293,9 @@ class _SingleFeedPostState extends State<SingleFeedPost> {
                     showArrow: true,
                     arrowColor: Colors.white,
                     barrierColor: AppConstants.primaryColor.withOpacity(0.1),
+                    child: GestureDetector(
+                      child: const Icon(CupertinoIcons.ellipsis_vertical),
+                    ),
                   ),
               ],
             ),

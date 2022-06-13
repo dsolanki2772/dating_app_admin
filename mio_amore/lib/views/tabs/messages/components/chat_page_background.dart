@@ -16,32 +16,32 @@ class ChatPageBackground extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    final _chatWallpaperProvider = ref.watch(chatWallpaperProvider);
+    final chatWallpapers = ref.watch(chatWallpaperProvider);
 
-    final ChatWallpaperModel? _chatWallpaperModel =
-        _chatWallpaperProvider.getWallpaper();
+    final ChatWallpaperModel? chatWallpaperModel =
+        chatWallpapers.getWallpaper();
 
     return Scaffold(
       body: Container(
-        decoration: _chatWallpaperModel == null
+        decoration: chatWallpaperModel == null
             ? const BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage(AppConfig.defaultChatBg),
                   fit: BoxFit.cover,
                 ),
               )
-            : _chatWallpaperModel.imagePath != null
+            : chatWallpaperModel.imagePath != null
                 ? BoxDecoration(
                     image: DecorationImage(
-                      image: FileImage(File(_chatWallpaperModel.imagePath!)),
+                      image: FileImage(File(chatWallpaperModel.imagePath!)),
                       fit: BoxFit.cover,
                       onError: (_, __) =>
                           const AssetImage(AppConfig.defaultChatBg),
                     ),
                   )
-                : _chatWallpaperModel.solidColor != null
+                : chatWallpaperModel.solidColor != null
                     ? BoxDecoration(
-                        color: _chatWallpaperModel.solidColor,
+                        color: chatWallpaperModel.solidColor,
                       )
                     : const BoxDecoration(
                         image: DecorationImage(
@@ -101,12 +101,16 @@ class ChatWallpaperPage extends ConsumerWidget {
           //My Photos
           GestureDetector(
             onTap: () async {
-              final _path = await pickMedia();
-              if (_path != null) {
-                await ref.read(chatWallpaperProvider).setWallpaper(
-                      ChatWallpaperModel(imagePath: _path),
-                    );
-                Navigator.pop(context);
+              final path = await pickMedia();
+              if (path != null) {
+                await ref
+                    .read(chatWallpaperProvider)
+                    .setWallpaper(
+                      ChatWallpaperModel(imagePath: path),
+                    )
+                    .then((value) {
+                  Navigator.pop(context);
+                });
               }
             },
             child: Container(
@@ -170,9 +174,11 @@ class ChatWallpaperSolidColors extends ConsumerWidget {
               onTap: () async {
                 await ref
                     .read(chatWallpaperProvider)
-                    .setWallpaper(ChatWallpaperModel(solidColor: e));
-                Navigator.pop(context);
-                Navigator.pop(context);
+                    .setWallpaper(ChatWallpaperModel(solidColor: e))
+                    .then((value) {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                });
               },
               child: Container(
                 decoration: BoxDecoration(

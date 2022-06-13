@@ -9,23 +9,23 @@ import 'package:mio_amore/models/feed_model.dart';
 import 'package:mio_amore/providers/match_provider.dart';
 
 final getFeedsProvider = FutureProvider<List<FeedModel>>((ref) async {
-  final _feedsCollection =
+  final feedsCollection =
       FirebaseFirestore.instance.collection(FirebaseConstants.feedsCollection);
-  final _currentUserId = FirebaseAuth.instance.currentUser!.uid;
-  final _machingProvider = ref.watch(matchStreamProvider);
-  final List<String> _matchUserIds = [_currentUserId];
+  final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+  final machingProvider = ref.watch(matchStreamProvider);
+  final List<String> matchUserIds = [currentUserId];
 
-  _machingProvider.whenData((value) {
-    final List<String> _otherUserIds = [];
+  machingProvider.whenData((value) {
+    final List<String> otherUserIds = [];
     for (var element in value) {
-      final _id = element.userIds.where((id) => id != _currentUserId);
-      _otherUserIds.addAll(_id);
+      final id = element.userIds.where((id) => id != currentUserId);
+      otherUserIds.addAll(id);
     }
-    _matchUserIds.addAll(_otherUserIds);
+    matchUserIds.addAll(otherUserIds);
   });
 
   final snapshot =
-      await _feedsCollection.where('userId', whereIn: _matchUserIds).get();
+      await feedsCollection.where('userId', whereIn: matchUserIds).get();
 
   final List<FeedModel> feeds = [];
   for (final doc in snapshot.docs) {
@@ -74,23 +74,23 @@ Future<List<String>> uploadFeedImages(
     final List<String> urls = [];
 
     for (var element in files) {
-      final _currentTime = DateTime.now();
-      final _ref = FirebaseStorage.instance
+      final currentTime = DateTime.now();
+      final ref = FirebaseStorage.instance
           .ref()
           .child(FirebaseConstants.feedsCollection)
           .child(userId)
-          .child(_currentTime.millisecondsSinceEpoch.toString() +
+          .child(currentTime.millisecondsSinceEpoch.toString() +
               userId +
               element.path.split('/').last);
 
-      final _uploadTask = _ref.putFile(element);
-      String? _url;
-      await _uploadTask.whenComplete(() async {
-        _url = await _ref.getDownloadURL();
+      final uploadTask = ref.putFile(element);
+      String? url;
+      await uploadTask.whenComplete(() async {
+        url = await ref.getDownloadURL();
       });
 
-      if (_url != null) {
-        urls.add(_url!);
+      if (url != null) {
+        urls.add(url!);
       }
     }
 

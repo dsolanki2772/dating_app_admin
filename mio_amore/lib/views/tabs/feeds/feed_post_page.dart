@@ -14,7 +14,7 @@ class FeedPostPage extends ConsumerStatefulWidget {
   const FeedPostPage({Key? key}) : super(key: key);
 
   @override
-  _FeedPostPageState createState() => _FeedPostPageState();
+  ConsumerState<FeedPostPage> createState() => _FeedPostPageState();
 }
 
 class _FeedPostPageState extends ConsumerState<FeedPostPage> {
@@ -35,37 +35,37 @@ class _FeedPostPageState extends ConsumerState<FeedPostPage> {
   void _onPost() async {
     EasyLoading.show(status: 'Posting...');
 
-    final _currentTime = DateTime.now();
-    final _currentUserId = FirebaseAuth.instance.currentUser!.uid;
-    final _feedId =
-        _currentUserId + _currentTime.millisecondsSinceEpoch.toString();
+    final currentTime = DateTime.now();
+    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    final feedId =
+        currentUserId + currentTime.millisecondsSinceEpoch.toString();
 
-    final List<String> _imageUrls = [];
+    final List<String> imageUrls = [];
 
     if (_selectedImages.isNotEmpty) {
-      final _urls = await uploadFeedImages(
-          files: _selectedImages, userId: _currentUserId);
-      _imageUrls.addAll(_urls);
+      final urls =
+          await uploadFeedImages(files: _selectedImages, userId: currentUserId);
+      imageUrls.addAll(urls);
     }
 
-    final FeedModel _feedModel = FeedModel(
-      id: _feedId,
+    final FeedModel feedModel = FeedModel(
+      id: feedId,
       caption: _postController.text.isEmpty ? null : _postController.text,
-      userId: _currentUserId,
-      createdAt: _currentTime,
-      images: _imageUrls,
+      userId: currentUserId,
+      createdAt: currentTime,
+      images: imageUrls,
       likes: [],
     );
 
-    final _result = await addFeed(_feedModel);
-
-    if (_result) {
-      EasyLoading.showSuccess('Posted');
-      ref.refresh(getFeedsProvider);
-      Navigator.pop(context);
-    } else {
-      EasyLoading.showError('Failed to post');
-    }
+    await addFeed(feedModel).then((result) {
+      if (result) {
+        EasyLoading.showSuccess('Posted');
+        ref.refresh(getFeedsProvider);
+        Navigator.pop(context);
+      } else {
+        EasyLoading.showError('Failed to post');
+      }
+    });
   }
 
   void _onPressedGallery() async {
@@ -357,9 +357,9 @@ class CretePostNameSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _currentUserProfile = ref.read(userProfileStreamProvider);
+    final currentUserProfile = ref.read(userProfileStreamProvider);
 
-    return _currentUserProfile.when(
+    return currentUserProfile.when(
         data: (data) {
           return data == null
               ? const SizedBox()

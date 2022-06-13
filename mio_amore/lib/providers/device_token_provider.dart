@@ -14,26 +14,26 @@ class DeviceTokenProvider {
   }
 
   Future<void> saveDeviceToken() async {
-    final _currentUserId = FirebaseAuth.instance.currentUser!.uid;
-    final _token = await _getDeviceToken();
-    if (_token != null) {
-      final DeviceTokenModel _deviceToken = DeviceTokenModel(
-        deviceToken: _token,
-        userId: _currentUserId,
+    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    final token = await _getDeviceToken();
+    if (token != null) {
+      final DeviceTokenModel deviceToken = DeviceTokenModel(
+        deviceToken: token,
+        userId: currentUserId,
       );
       await FirebaseFirestore.instance
           .collection(_deviceTokenCollection)
-          .doc(_deviceToken.deviceToken)
-          .set(_deviceToken.toMap());
+          .doc(deviceToken.deviceToken)
+          .set(deviceToken.toMap());
     }
   }
 
   Future<void> deleteDeviceToken() async {
-    final _token = await _getDeviceToken();
-    if (_token != null) {
+    final token = await _getDeviceToken();
+    if (token != null) {
       await FirebaseFirestore.instance
           .collection(_deviceTokenCollection)
-          .doc(_token)
+          .doc(token)
           .delete();
     }
   }

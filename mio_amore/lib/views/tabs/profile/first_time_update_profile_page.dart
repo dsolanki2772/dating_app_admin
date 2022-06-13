@@ -50,9 +50,9 @@ class _FirstTimeUserProfilePageState
   }
 
   void _onSubmit() async {
-    final _userId = FirebaseAuth.instance.currentUser!.uid;
+    final userId = FirebaseAuth.instance.currentUser!.uid;
 
-    final UserAccountSettingsModel _userAccountSettingsModel =
+    final UserAccountSettingsModel userAccountSettingsModel =
         UserAccountSettingsModel(
       location: _userLocation!,
       distanceInKm: AppConfig.initialDistanceInKM,
@@ -65,9 +65,9 @@ class _FirstTimeUserProfilePageState
       minimumAge: AppConfig.initialMinimumAge,
     );
 
-    final UserProfileModel _userProfileModel = UserProfileModel(
-      id: _userId,
-      userId: _userId,
+    final UserProfileModel userProfileModel = UserProfileModel(
+      id: userId,
+      userId: userId,
       fullName: _fullNameController.text.trim(),
       mediaFiles: [],
       interests: [],
@@ -75,13 +75,12 @@ class _FirstTimeUserProfilePageState
       birthDay: _birthday!,
       email: FirebaseAuth.instance.currentUser!.email,
       phoneNumber: FirebaseAuth.instance.currentUser!.phoneNumber,
-      userAccountSettingsModel: _userAccountSettingsModel,
+      userAccountSettingsModel: userAccountSettingsModel,
       isVerified: false,
     );
-    final _result = await ref
-        .read(userProfileProvider)
-        .createUserProfile(_userProfileModel);
-    if (_result) {
+    final result =
+        await ref.read(userProfileProvider).createUserProfile(userProfileModel);
+    if (result) {
       ref.refresh(isUserAddedProvider);
     } else {}
   }
@@ -618,14 +617,14 @@ class _BirthdayScreen extends StatelessWidget {
                       return null;
                     },
                     onTap: () {
-                      const _duration =
+                      const duration =
                           Duration(days: 365 * AppConfig.minimumAgeRequired);
                       showDatePicker(
                               context: context,
                               firstDate: DateTime(1900),
-                              lastDate: DateTime.now().subtract(_duration),
-                              initialDate: birthday ??
-                                  DateTime.now().subtract(_duration))
+                              lastDate: DateTime.now().subtract(duration),
+                              initialDate:
+                                  birthday ?? DateTime.now().subtract(duration))
                           .then((value) {
                         if (value != null) {
                           onBirthdaySelected(value);
@@ -709,7 +708,7 @@ class _UserLocationScreen extends StatelessWidget {
                   // ),
                   GestureDetector(
                     onTap: () async {
-                      final _location = await Navigator.push(
+                      final location = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const SetUserLocation(),
@@ -717,8 +716,8 @@ class _UserLocationScreen extends StatelessWidget {
                         ),
                       );
 
-                      if (_location != null) {
-                        onLocationChanged(_location);
+                      if (location != null) {
+                        onLocationChanged(location);
                       }
                     },
                     child: Container(

@@ -19,7 +19,7 @@ class ProfilePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    final _userProfileProvider = ref.watch(userProfileStreamProvider);
+    final userProfileProvider = ref.watch(userProfileStreamProvider);
     return Scaffold(
       backgroundColor: AppConstants.primaryColor,
       appBar: AppBar(
@@ -50,7 +50,7 @@ class ProfilePage extends ConsumerWidget {
                       secondPartColor: Colors.white,
                     ),
                   ),
-                  trailing: _userProfileProvider.when(
+                  trailing: userProfileProvider.when(
                       data: (data) => data == null
                           ? const SizedBox()
                           : CustomIconButton(
@@ -74,7 +74,7 @@ class ProfilePage extends ConsumerWidget {
             ],
           ),
           Expanded(
-            child: _userProfileProvider.when(
+            child: userProfileProvider.when(
               data: (data) {
                 return data == null
                     ? const Center(child: Text("Not Available"))
@@ -422,8 +422,8 @@ class UserGalleryView extends StatelessWidget {
   Widget build(BuildContext context) {
     return data.mediaFiles.isEmpty
         ? SizedBox(
-            child: const Center(child: Text("Nothing Found!")),
             height: MediaQuery.of(context).size.height / 2,
+            child: const Center(child: Text("Nothing Found!")),
           )
         : GridView(
             shrinkWrap: true,
@@ -474,13 +474,13 @@ class UserFeedsView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _feedList = ref.watch(getFeedsProvider);
-    return _feedList.when(
+    final feedList = ref.watch(getFeedsProvider);
+    return feedList.when(
       data: (data) {
-        final _myFeeds =
+        final myFeeds =
             data.where((element) => element.userId == user.userId).toList();
 
-        if (_myFeeds.isEmpty) {
+        if (myFeeds.isEmpty) {
           return SizedBox(
             height: MediaQuery.of(context).size.height * 0.5,
             child: const Center(child: Text('No Feeds Yet')),
@@ -490,11 +490,11 @@ class UserFeedsView extends ConsumerWidget {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
-                final _feed = _myFeeds[index];
+                final feed = myFeeds[index];
 
-                return SingleFeedPost(feed: _feed, user: user);
+                return SingleFeedPost(feed: feed, user: user);
               },
-              itemCount: _myFeeds.length);
+              itemCount: myFeeds.length);
         }
       },
       error: (_, __) => SizedBox(

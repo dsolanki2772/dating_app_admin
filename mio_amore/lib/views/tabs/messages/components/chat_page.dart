@@ -51,66 +51,66 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   String? _searchQuery;
 
   void _onSendMessage() async {
-    final _chatProvider = ref.read(chatProvider);
+    final chatData = ref.read(chatProvider);
 
     if (_chatController.text.isNotEmpty ||
         _imagePath != null ||
         _videoPath != null ||
         _audioPath != null ||
         _filePath != null) {
-      final _currentTime = DateTime.now();
+      final currentTime = DateTime.now();
 
-      String? _imageUrl;
-      String? _videoUrl;
-      String? _audioUrl;
-      String? _fileUrl;
+      String? imageUrl;
+      String? videoUrl;
+      String? audioUrl;
+      String? fileUrl;
 
       if (_imagePath != null) {
         EasyLoading.show(status: 'Uploading image...');
-        _imageUrl = await _chatProvider.uploadFile(
+        imageUrl = await chatData.uploadFile(
             file: File(_imagePath!), matchId: widget.matchId);
         EasyLoading.dismiss();
       }
 
       if (_videoPath != null) {
         EasyLoading.show(status: 'Uploading video...');
-        _videoUrl = await _chatProvider.uploadFile(
+        videoUrl = await chatData.uploadFile(
             file: File(_videoPath!), matchId: widget.matchId);
         EasyLoading.dismiss();
       }
 
       if (_audioPath != null) {
         EasyLoading.show(status: 'Uploading audio...');
-        _audioUrl = await _chatProvider.uploadFile(
+        audioUrl = await chatData.uploadFile(
             file: File(_audioPath!), matchId: widget.matchId);
         EasyLoading.dismiss();
       }
 
       if (_filePath != null) {
         EasyLoading.show(status: 'Uploading file...');
-        _fileUrl = await _chatProvider.uploadFile(
+        fileUrl = await chatData.uploadFile(
             file: File(_filePath!), matchId: widget.matchId);
         EasyLoading.dismiss();
       }
 
-      final String? _message = _chatController.text.isEmpty
+      final String? message = _chatController.text.isEmpty
           ? null
           : encryptText(_chatController.text);
 
       ChatItemModel chatItem = ChatItemModel(
-        message: _message,
-        createdAt: _currentTime,
-        id: _currentTime.millisecondsSinceEpoch.toString(),
+        message: message,
+        createdAt: currentTime,
+        id: currentTime.millisecondsSinceEpoch.toString(),
         userId: FirebaseAuth.instance.currentUser!.uid,
         matchId: widget.matchId,
         isRead: false,
-        image: _imageUrl,
-        video: _videoUrl,
-        audio: _audioUrl,
-        file: _fileUrl,
+        image: imageUrl,
+        video: videoUrl,
+        audio: audioUrl,
+        file: fileUrl,
       );
 
-      _chatProvider.createChatItem(widget.matchId, chatItem);
+      chatData.createChatItem(widget.matchId, chatItem);
       _chatController.clear();
       setState(() {
         _imagePath = null;
@@ -141,10 +141,10 @@ class _ChatPageState extends ConsumerState<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    final _otherUsersProvider = ref.watch(otherUsersProvider);
-    UserProfileModel? _otherUser;
-    _otherUsersProvider.whenData((value) {
-      _otherUser = value
+    final otherUsers = ref.watch(otherUsersProvider);
+    UserProfileModel? otherUser;
+    otherUsers.whenData((value) {
+      otherUser = value
           .where((element) {
             return element.userId == widget.otherUserId;
           })
@@ -173,9 +173,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (_otherUser != null)
+                if (otherUser != null)
                   ChatTopBar(
-                    otherUser: _otherUser!,
+                    otherUser: otherUser!,
                     matchId: widget.matchId,
                     onSearch: (query) {
                       setState(() {
@@ -289,9 +289,9 @@ class _ChatBodyState extends ConsumerState<ChatBody> {
 
   @override
   Widget build(BuildContext context) {
-    final _chatStreams = ref.watch(chatStreamProviderProvider(widget.matchId));
+    final chatStreams = ref.watch(chatStreamProviderProvider(widget.matchId));
 
-    return _chatStreams.when(
+    return chatStreams.when(
         data: (data) {
           return Column(
             children: [
@@ -445,12 +445,6 @@ class _ChatTopBarState extends ConsumerState<ChatTopBar> {
             //   onPressed: () {},
             // ),
             CustomPopupMenu(
-              child: const CupertinoButton(
-                padding: EdgeInsets.zero,
-                child:
-                    Icon(CupertinoIcons.ellipsis_vertical, color: Colors.white),
-                onPressed: null,
-              ),
               menuBuilder: () => ClipRRect(
                 borderRadius:
                     BorderRadius.circular(AppConstants.defaultNumericValue / 2),
@@ -491,15 +485,15 @@ class _ChatTopBarState extends ConsumerState<ChatTopBar> {
                           title: 'Search',
                           onTap: () async {
                             _moreMenuController.hideMenu();
-                            final String? _query = await showDialog(
+                            final String? query = await showDialog(
                                 context: context,
                                 builder: (context) {
-                                  final _searchController =
+                                  final searchController =
                                       TextEditingController();
                                   return AlertDialog(
                                     title: const Text('Search Keyword'),
                                     content: TextField(
-                                      controller: _searchController,
+                                      controller: searchController,
                                       autofocus: true,
                                       onChanged: (_) {
                                         setState(() {});
@@ -517,9 +511,9 @@ class _ChatTopBarState extends ConsumerState<ChatTopBar> {
                                       ElevatedButton(
                                         onPressed: () {
                                           Navigator.of(context).pop(
-                                              _searchController.text.isEmpty
+                                              searchController.text.isEmpty
                                                   ? null
-                                                  : _searchController.text);
+                                                  : searchController.text);
                                         },
                                         child: const Text("Search"),
                                       )
@@ -527,7 +521,7 @@ class _ChatTopBarState extends ConsumerState<ChatTopBar> {
                                   );
                                 });
 
-                            widget.onSearch(_query);
+                            widget.onSearch(query);
                           },
                         ),
                         MoreMenuTitle(
@@ -581,6 +575,12 @@ class _ChatTopBarState extends ConsumerState<ChatTopBar> {
               showArrow: true,
               arrowColor: Colors.white,
               barrierColor: AppConstants.primaryColor.withOpacity(0.1),
+              child: const CupertinoButton(
+                padding: EdgeInsets.zero,
+                onPressed: null,
+                child:
+                    Icon(CupertinoIcons.ellipsis_vertical, color: Colors.white),
+              ),
             ),
           ],
         ),
@@ -684,12 +684,6 @@ class _ChatTextFieldAndOthersState extends State<ChatTextFieldAndOthers> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             CustomPopupMenu(
-              child: CupertinoButton(
-                padding: EdgeInsets.zero,
-                child: Icon(CupertinoIcons.add_circled_solid,
-                    color: AppConstants.primaryColor),
-                onPressed: null,
-              ),
               menuBuilder: () => ClipRRect(
                 borderRadius:
                     BorderRadius.circular(AppConstants.defaultNumericValue / 2),
@@ -755,6 +749,12 @@ class _ChatTextFieldAndOthersState extends State<ChatTextFieldAndOthers> {
               controller: _addMenuController,
               arrowColor: AppConstants.primaryColor,
               barrierColor: AppConstants.primaryColor.withOpacity(0.1),
+              child: CupertinoButton(
+                padding: EdgeInsets.zero,
+                onPressed: null,
+                child: Icon(CupertinoIcons.add_circled_solid,
+                    color: AppConstants.primaryColor),
+              ),
             ),
             Expanded(
               child: Container(
@@ -790,8 +790,8 @@ class _ChatTextFieldAndOthersState extends State<ChatTextFieldAndOthers> {
                     //Emoji
                     CupertinoButton(
                       padding: EdgeInsets.zero,
-                      child: const Icon(CupertinoIcons.smiley),
                       onPressed: widget.onTapEmoji,
+                      child: const Icon(CupertinoIcons.smiley),
                     ),
                   ],
                 ),
@@ -804,13 +804,13 @@ class _ChatTextFieldAndOthersState extends State<ChatTextFieldAndOthers> {
                     widget.fileUrl == null
                 ? CupertinoButton(
                     padding: EdgeInsets.zero,
-                    child: const Icon(CupertinoIcons.mic_circle_fill),
                     onPressed: widget.onTapVoice,
+                    child: const Icon(CupertinoIcons.mic_circle_fill),
                   )
                 : CupertinoButton(
                     padding: EdgeInsets.zero,
-                    child: const Icon(CupertinoIcons.paperplane_fill),
                     onPressed: widget.onTapSend,
+                    child: const Icon(CupertinoIcons.paperplane_fill),
                   ),
           ],
         ),
@@ -922,11 +922,11 @@ class MessageSingleTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bool? _isNotMe = chat.userId == null
+    final bool? isNotMe = chat.userId == null
         ? null
         : chat.userId != FirebaseAuth.instance.currentUser?.uid;
 
-    if (_isNotMe == null) {
+    if (isNotMe == null) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: Center(
@@ -946,7 +946,7 @@ class MessageSingleTile extends ConsumerWidget {
       );
     } else {
       if (!chat.isRead) {
-        if (_isNotMe) {
+        if (isNotMe) {
           ref
               .read(chatProvider)
               .updateChatItem(matchId, chat.copyWith(isRead: true));
@@ -957,7 +957,7 @@ class MessageSingleTile extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Align(
-            alignment: _isNotMe ? Alignment.centerLeft : Alignment.centerRight,
+            alignment: isNotMe ? Alignment.centerLeft : Alignment.centerRight,
             child: Container(
               margin:
                   const EdgeInsets.all(AppConstants.defaultNumericValue / 4),
@@ -965,7 +965,7 @@ class MessageSingleTile extends ConsumerWidget {
                 maxWidth: MediaQuery.of(context).size.width * 0.8,
               ),
               decoration: BoxDecoration(
-                color: _isNotMe
+                color: isNotMe
                     ? AppConfig.chatTextFieldAndOtherText
                     : AppConfig.chatMyTextColor,
                 borderRadius: BorderRadius.only(
@@ -973,10 +973,10 @@ class MessageSingleTile extends ConsumerWidget {
                       const Radius.circular(AppConstants.defaultNumericValue),
                   topRight:
                       const Radius.circular(AppConstants.defaultNumericValue),
-                  bottomLeft: _isNotMe
+                  bottomLeft: isNotMe
                       ? Radius.zero
                       : const Radius.circular(AppConstants.defaultNumericValue),
-                  bottomRight: _isNotMe
+                  bottomRight: isNotMe
                       ? const Radius.circular(AppConstants.defaultNumericValue)
                       : Radius.zero,
                 ),
@@ -986,7 +986,7 @@ class MessageSingleTile extends ConsumerWidget {
                     AppConstants.defaultNumericValue / 1.3),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: _isNotMe
+                  crossAxisAlignment: isNotMe
                       ? CrossAxisAlignment.start
                       : CrossAxisAlignment.end,
                   children: [
@@ -1022,7 +1022,7 @@ class MessageSingleTile extends ConsumerWidget {
                     if (chat.audio != null)
                       VoiceMessage(
                         audioSrc: chat.audio!,
-                        me: !_isNotMe,
+                        me: !isNotMe,
                         contactBgColor: Colors.white,
                         meBgColor: AppConstants.primaryColor,
                         contactFgColor: AppConstants.primaryColor,
@@ -1048,8 +1048,8 @@ class MessageSingleTile extends ConsumerWidget {
                           DateFormatter.toWholeDateTime(chat.createdAt),
                           style: Theme.of(context).textTheme.caption,
                         ),
-                        if (!_isNotMe) const SizedBox(width: 8),
-                        if (!_isNotMe)
+                        if (!isNotMe) const SizedBox(width: 8),
+                        if (!isNotMe)
                           Icon(
                             Icons.done_all,
                             size: 12,
@@ -1064,7 +1064,7 @@ class MessageSingleTile extends ConsumerWidget {
               ),
             ),
           ),
-          _isNotMe
+          isNotMe
               ? const SizedBox(height: AppConstants.defaultNumericValue / 8)
               : const SizedBox()
         ],
@@ -1115,30 +1115,32 @@ class VoiceRecorder extends ConsumerWidget {
               backGroundColor: AppConstants.primaryColor,
               radius: BorderRadius.circular(8),
               sendRequestFunction: (soundFile) async {
-                final _chatProvider = ref.read(chatProvider);
-                final _currentTime = DateTime.now();
+                final chatData = ref.read(chatProvider);
+                final currentTime = DateTime.now();
 
                 EasyLoading.show(status: 'Sending voice message...');
 
-                final _audioUrl = await _chatProvider.uploadFile(
-                    file: soundFile, matchId: matchId);
-                EasyLoading.dismiss();
+                await chatData
+                    .uploadFile(file: soundFile, matchId: matchId)
+                    .then((audioUrl) {
+                  EasyLoading.dismiss();
 
-                if (_audioUrl == null) {
-                  EasyLoading.showError('Failed to send voice message');
-                } else {
-                  ChatItemModel chatItem = ChatItemModel(
-                    createdAt: _currentTime,
-                    id: _currentTime.millisecondsSinceEpoch.toString(),
-                    userId: FirebaseAuth.instance.currentUser!.uid,
-                    matchId: matchId,
-                    isRead: false,
-                    audio: _audioUrl,
-                  );
+                  if (audioUrl == null) {
+                    EasyLoading.showError('Failed to send voice message');
+                  } else {
+                    ChatItemModel chatItem = ChatItemModel(
+                      createdAt: currentTime,
+                      id: currentTime.millisecondsSinceEpoch.toString(),
+                      userId: FirebaseAuth.instance.currentUser!.uid,
+                      matchId: matchId,
+                      isRead: false,
+                      audio: audioUrl,
+                    );
 
-                  _chatProvider.createChatItem(matchId, chatItem);
-                }
-                Navigator.of(context).pop();
+                    chatData.createChatItem(matchId, chatItem);
+                  }
+                  Navigator.of(context).pop();
+                });
               },
               encode: AudioEncoderType.AAC_LD,
             ),

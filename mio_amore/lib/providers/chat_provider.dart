@@ -7,12 +7,12 @@ import 'package:mio_amore/models/chat_item_model.dart';
 
 final chatStreamProviderProvider =
     StreamProvider.family<List<ChatItemModel>, String>((ref, matchId) {
-  final _chatCollection = FirebaseFirestore.instance
+  final chatCollection = FirebaseFirestore.instance
       .collection(FirebaseConstants.matchCollection)
       .doc(matchId)
       .collection(FirebaseConstants.chatCollection);
 
-  return _chatCollection.orderBy('createdAt', descending: true).snapshots().map(
+  return chatCollection.orderBy('createdAt', descending: true).snapshots().map(
     (event) {
       return event.docs.isEmpty
           ? []
@@ -29,13 +29,13 @@ final chatProvider = Provider<ChatProvider>((ref) {
 
 class ChatProvider {
   Future<bool> createChatItem(String matchId, ChatItemModel chat) async {
-    final _chatCollection = FirebaseFirestore.instance
+    final chatCollection = FirebaseFirestore.instance
         .collection(FirebaseConstants.matchCollection)
         .doc(matchId)
         .collection(FirebaseConstants.chatCollection);
 
     try {
-      await _chatCollection.doc(chat.id).set(chat.toMap());
+      await chatCollection.doc(chat.id).set(chat.toMap());
       return true;
     } catch (e) {
       return false;
@@ -44,13 +44,13 @@ class ChatProvider {
 
   //Delete chat
   Future<bool> deleteChatItem(String matchId, String chatId) async {
-    final _chatCollection = FirebaseFirestore.instance
+    final chatCollection = FirebaseFirestore.instance
         .collection(FirebaseConstants.matchCollection)
         .doc(matchId)
         .collection(FirebaseConstants.chatCollection);
 
     try {
-      await _chatCollection.doc(chatId).delete();
+      await chatCollection.doc(chatId).delete();
       return true;
     } catch (e) {
       return false;
@@ -59,13 +59,13 @@ class ChatProvider {
 
   //Clear all chats
   Future<bool> clearChat(String matchId) async {
-    final _chatCollection = FirebaseFirestore.instance
+    final chatCollection = FirebaseFirestore.instance
         .collection(FirebaseConstants.matchCollection)
         .doc(matchId)
         .collection(FirebaseConstants.chatCollection);
 
     try {
-      await _chatCollection.get().then((snapshot) {
+      await chatCollection.get().then((snapshot) {
         for (var doc in snapshot.docs) {
           doc.reference.delete();
         }
@@ -78,13 +78,13 @@ class ChatProvider {
 
   //Update chat
   Future<bool> updateChatItem(String matchId, ChatItemModel chat) async {
-    final _chatCollection = FirebaseFirestore.instance
+    final chatCollection = FirebaseFirestore.instance
         .collection(FirebaseConstants.matchCollection)
         .doc(matchId)
         .collection(FirebaseConstants.chatCollection);
 
     try {
-      await _chatCollection.doc(chat.id).update(chat.toMap());
+      await chatCollection.doc(chat.id).update(chat.toMap());
       return true;
     } catch (e) {
       return false;
@@ -93,22 +93,22 @@ class ChatProvider {
 
   Future<String?> uploadFile(
       {required File file, required String matchId}) async {
-    final _currentTime = DateTime.now();
+    final currentTime = DateTime.now();
 
     try {
-      final _ref = FirebaseStorage.instance
+      final ref = FirebaseStorage.instance
           .ref()
           .child(FirebaseConstants.chatCollection)
           .child(matchId)
-          .child(_currentTime.millisecondsSinceEpoch.toString());
+          .child(currentTime.millisecondsSinceEpoch.toString());
 
-      final _uploadTask = _ref.putFile(file);
-      String? _url;
-      await _uploadTask.whenComplete(() async {
-        _url = await _ref.getDownloadURL();
+      final uploadTask = ref.putFile(file);
+      String? url;
+      await uploadTask.whenComplete(() async {
+        url = await ref.getDownloadURL();
       });
 
-      return _url;
+      return url;
     } catch (e) {
       return null;
     }

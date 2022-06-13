@@ -58,7 +58,7 @@ class _InteractionsPageState extends ConsumerState<InteractionsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final _interactions = ref.watch(interactionFutureProvider);
+    final interactions = ref.watch(interactionFutureProvider);
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -111,72 +111,72 @@ class _InteractionsPageState extends ConsumerState<InteractionsPage> {
             const SizedBox(height: AppConstants.defaultNumericValue / 2),
             const Divider(height: 0),
             Expanded(
-              child: _interactions.when(
+              child: interactions.when(
                 data: (data) {
-                  final _otherUsersProvider = ref.watch(otherUsersProvider);
-                  final _matchedUsersProvider = ref.watch(matchStreamProvider);
+                  final otherUsers = ref.watch(otherUsersProvider);
+                  final matchedUsersProvider = ref.watch(matchStreamProvider);
 
-                  final List<UserProfileModel> _usersWithoutMatched = [];
+                  final List<UserProfileModel> usersWithoutMatched = [];
 
-                  _otherUsersProvider.whenData((value) {
-                    _matchedUsersProvider.whenData((matchedUsers) {
+                  otherUsers.whenData((value) {
+                    matchedUsersProvider.whenData((matchedUsers) {
                       for (var user in value) {
                         if (!matchedUsers.any(
                             (element) => element.userIds.contains(user.id))) {
-                          _usersWithoutMatched.add(user);
+                          usersWithoutMatched.add(user);
                         }
                       }
                     });
                   });
 
-                  final List<UserProfileModel> _searchedUsers = [];
+                  final List<UserProfileModel> searchedUsers = [];
 
-                  for (var value in _usersWithoutMatched) {
+                  for (var value in usersWithoutMatched) {
                     if (value.fullName
                         .toLowerCase()
                         .contains(_searchController.text.toLowerCase())) {
-                      _searchedUsers.add(value);
+                      searchedUsers.add(value);
                     }
                   }
 
-                  final List<UserInteractionViewModel> _likedUsers = [];
-                  final List<UserInteractionViewModel> _superLikedUsers = [];
-                  final List<UserInteractionViewModel> _dislikedUsers = [];
+                  final List<UserInteractionViewModel> likedUsers = [];
+                  final List<UserInteractionViewModel> superLikedUsers = [];
+                  final List<UserInteractionViewModel> dislikedUsers = [];
 
-                  for (var user in _searchedUsers) {
+                  for (var user in searchedUsers) {
                     if (data.any((element) =>
                         element.intractToUserId == user.id &&
                         element.isLike == true)) {
-                      final UserInteractionViewModel _user =
+                      final UserInteractionViewModel userInteractionViewModel =
                           UserInteractionViewModel(
                         user: user,
                         interaction: data.firstWhere((element) =>
                             element.intractToUserId == user.id &&
                             element.isLike == true),
                       );
-                      _likedUsers.add(_user);
+                      likedUsers.add(userInteractionViewModel);
                     } else if (data.any((element) =>
                         element.intractToUserId == user.id &&
                         element.isSuperLike == true)) {
-                      final UserInteractionViewModel _user =
+                      final UserInteractionViewModel userInteractionViewModel =
                           UserInteractionViewModel(
                         user: user,
                         interaction: data.firstWhere((element) =>
                             element.intractToUserId == user.id &&
                             element.isSuperLike == true),
                       );
-                      _superLikedUsers.add(_user);
+                      superLikedUsers.add(userInteractionViewModel);
                     } else if (data.any((element) =>
                         element.intractToUserId == user.id &&
                         element.isDislike == true)) {
-                      final UserInteractionViewModel _user =
+                      final UserInteractionViewModel userInteractionViewModel =
                           UserInteractionViewModel(
                         user: user,
                         interaction: data.firstWhere((element) =>
                             element.intractToUserId == user.id &&
                             element.isDislike == true),
                       );
-                      _dislikedUsers.add(_user);
+                      dislikedUsers.add(userInteractionViewModel);
                     }
                   }
 
@@ -252,10 +252,10 @@ class _InteractionsPageState extends ConsumerState<InteractionsPage> {
                         child: TabBarView(
                           // physics: const NeverScrollableScrollPhysics(),
                           children: [
-                            _likedUsers.isEmpty
+                            likedUsers.isEmpty
                                 ? const Center(child: Text('No liked users'))
                                 : GridView.builder(
-                                    itemCount: _likedUsers.length,
+                                    itemCount: likedUsers.length,
                                     padding: const EdgeInsets.all(
                                         AppConstants.defaultNumericValue / 2),
                                     gridDelegate:
@@ -270,20 +270,19 @@ class _InteractionsPageState extends ConsumerState<InteractionsPage> {
                                     itemBuilder: (context, index) {
                                       return GestureDetector(
                                         onLongPress: () {
-                                          onLongPressUserCard(_likedUsers[index]
-                                              .interaction
-                                              .id);
+                                          onLongPressUserCard(
+                                              likedUsers[index].interaction.id);
                                         },
                                         child: UserImageCard(
-                                            user: _likedUsers[index].user),
+                                            user: likedUsers[index].user),
                                       );
                                     },
                                   ),
-                            _superLikedUsers.isEmpty
+                            superLikedUsers.isEmpty
                                 ? const Center(
                                     child: Text('No Superliked users'))
                                 : GridView.builder(
-                                    itemCount: _superLikedUsers.length,
+                                    itemCount: superLikedUsers.length,
                                     padding: const EdgeInsets.all(
                                         AppConstants.defaultNumericValue / 2),
                                     gridDelegate:
@@ -299,19 +298,19 @@ class _InteractionsPageState extends ConsumerState<InteractionsPage> {
                                       return GestureDetector(
                                         onLongPress: () {
                                           onLongPressUserCard(
-                                              _superLikedUsers[index]
+                                              superLikedUsers[index]
                                                   .interaction
                                                   .id);
                                         },
                                         child: UserImageCard(
-                                            user: _superLikedUsers[index].user),
+                                            user: superLikedUsers[index].user),
                                       );
                                     },
                                   ),
-                            _dislikedUsers.isEmpty
+                            dislikedUsers.isEmpty
                                 ? const Center(child: Text('No Disliked users'))
                                 : GridView.builder(
-                                    itemCount: _dislikedUsers.length,
+                                    itemCount: dislikedUsers.length,
                                     padding: const EdgeInsets.all(
                                         AppConstants.defaultNumericValue / 2),
                                     gridDelegate:
@@ -327,12 +326,12 @@ class _InteractionsPageState extends ConsumerState<InteractionsPage> {
                                       return GestureDetector(
                                         onLongPress: () {
                                           onLongPressUserCard(
-                                              _dislikedUsers[index]
+                                              dislikedUsers[index]
                                                   .interaction
                                                   .id);
                                         },
                                         child: UserImageCard(
-                                            user: _dislikedUsers[index].user),
+                                            user: dislikedUsers[index].user),
                                       );
                                     },
                                   ),

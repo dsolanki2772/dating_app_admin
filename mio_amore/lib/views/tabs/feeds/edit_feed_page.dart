@@ -51,12 +51,13 @@ class _EditFeedPageState extends ConsumerState<EditFeedPage> {
             CustomButton(
               text: "Save",
               onPressed: () async {
-                final FeedModel _newFeed = widget.feed.copyWith(
+                final FeedModel newFeed = widget.feed.copyWith(
                   caption: _captionController.text,
                 );
-                await updateFeed(_newFeed);
-                ref.refresh(getFeedsProvider);
-                Navigator.pop(context);
+                await updateFeed(newFeed).then((value) {
+                  ref.refresh(getFeedsProvider);
+                  Navigator.pop(context);
+                });
               },
             ),
           ],

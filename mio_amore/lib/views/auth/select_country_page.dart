@@ -17,7 +17,7 @@ class _SelectCountryPageState extends ConsumerState<SelectCountryPage> {
   final _searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    final _countryCodesProvider = ref.watch(countryCodesProvider);
+    final countryCodesData = ref.watch(countryCodesProvider);
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
@@ -26,9 +26,9 @@ class _SelectCountryPageState extends ConsumerState<SelectCountryPage> {
         appBar: AppBar(
           title: Text("Select Country".toUpperCase()),
         ),
-        body: _countryCodesProvider.when(
+        body: countryCodesData.when(
           data: (data) {
-            final _filteredData = data
+            final filteredData = data
                 .where((e) => e.name
                     .toLowerCase()
                     .contains(_searchController.text.toLowerCase()))
@@ -93,7 +93,7 @@ class _SelectCountryPageState extends ConsumerState<SelectCountryPage> {
                 Expanded(
                   child: Scrollbar(
                     child: ListView(
-                      children: _filteredData
+                      children: filteredData
                           .map((e) => ListTile(
                                 onTap: () {
                                   Navigator.pushReplacement(

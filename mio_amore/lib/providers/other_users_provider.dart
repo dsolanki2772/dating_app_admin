@@ -9,75 +9,75 @@ import 'package:mio_amore/providers/user_profile_provider.dart';
 
 final filteredOtherUsersProvider =
     FutureProvider<List<UserProfileModel>>((ref) async {
-  List<UserProfileModel> _usersList = [];
+  List<UserProfileModel> usersList = [];
 
-  final _otherUsersProvider = ref.watch(otherUsersProvider);
+  final otherUsers = ref.watch(otherUsersProvider);
 
-  _otherUsersProvider.whenData((value) {
-    _usersList.addAll(value);
+  otherUsers.whenData((value) {
+    usersList.addAll(value);
   });
 
-  final _myProfileProvider = ref.watch(userProfileStreamProvider);
+  final myProfileProvider = ref.watch(userProfileStreamProvider);
 
-  List<UserProfileModel> _filteredUserList = [];
+  List<UserProfileModel> filteredUserList = [];
 
-  _myProfileProvider.whenData((value) {
+  myProfileProvider.whenData((value) {
     if (value != null) {
-      final UserAccountSettingsModel _mySettings =
+      final UserAccountSettingsModel mySettings =
           value.userAccountSettingsModel;
 
-      for (var user in _usersList) {
-        bool _willBeShown = false;
-        bool _isBoth = false;
+      for (var user in usersList) {
+        bool willBeShown = false;
+        bool isBoth = false;
 
-        final _userAge = DateTime.now().difference(user.birthDay).inDays ~/ 365;
-        final _userLocation = user.userAccountSettingsModel.location;
-        final _userGender = user.gender;
+        final userAge = DateTime.now().difference(user.birthDay).inDays ~/ 365;
+        final userLocation = user.userAccountSettingsModel.location;
+        final userGender = user.gender;
 
-        double _distanceBetweenMeAndUser = Geolocator.distanceBetween(
-                _mySettings.location.latitude,
-                _mySettings.location.longitude,
-                _userLocation.latitude,
-                _userLocation.longitude) /
+        double distanceBetweenMeAndUser = Geolocator.distanceBetween(
+                mySettings.location.latitude,
+                mySettings.location.longitude,
+                userLocation.latitude,
+                userLocation.longitude) /
             1000;
 
-        if (_mySettings.interestedIn == null) {
-          _isBoth = true;
+        if (mySettings.interestedIn == null) {
+          isBoth = true;
         }
 
-        if (_userAge >= _mySettings.minimumAge &&
-            _userAge <= _mySettings.maximumAge &&
-            _mySettings.distanceInKm >= _distanceBetweenMeAndUser) {
-          if (_isBoth) {
-            _willBeShown = true;
+        if (userAge >= mySettings.minimumAge &&
+            userAge <= mySettings.maximumAge &&
+            mySettings.distanceInKm >= distanceBetweenMeAndUser) {
+          if (isBoth) {
+            willBeShown = true;
           } else {
-            if (_mySettings.interestedIn == _userGender) {
-              _willBeShown = true;
+            if (mySettings.interestedIn == userGender) {
+              willBeShown = true;
             } else {
-              _willBeShown = false;
+              willBeShown = false;
             }
           }
         }
 
-        if (_willBeShown) {
-          _filteredUserList.add(user);
+        if (willBeShown) {
+          filteredUserList.add(user);
         }
       }
     }
   });
 
-  return _filteredUserList;
+  return filteredUserList;
 });
 
 final otherUsersProvider = FutureProvider<List<UserProfileModel>>((ref) async {
-  final _userCollection = FirebaseFirestore.instance
+  final userCollection = FirebaseFirestore.instance
       .collection(FirebaseConstants.userProfileCollection);
-  final _myUserId = FirebaseAuth.instance.currentUser!.uid;
+  final myUserId = FirebaseAuth.instance.currentUser!.uid;
 
-  final _otherUsers =
-      await _userCollection.where("userId", isNotEqualTo: _myUserId).get();
+  final otherUsers =
+      await userCollection.where("userId", isNotEqualTo: myUserId).get();
 
-  return _otherUsers.docs.map((doc) {
+  return otherUsers.docs.map((doc) {
     return UserProfileModel.fromMap(doc.data());
   }).toList();
 });

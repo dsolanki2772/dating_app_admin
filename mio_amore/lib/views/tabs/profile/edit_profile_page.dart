@@ -53,7 +53,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
 
   void _onSave() async {
     if (_formKey.currentState!.validate()) {
-      final _newUserProfileModel = widget.userProfileModel.copyWith(
+      final newUserProfileModel = widget.userProfileModel.copyWith(
         fullName: _fullNameController.text.trim(),
         email: _emailController.text.trim(),
         phoneNumber: _phoneNumberController.text.trim(),
@@ -66,9 +66,11 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
 
       await ref
           .read(userProfileProvider)
-          .updateUserProfile(_newUserProfileModel);
-      EasyLoading.dismiss();
-      Navigator.pop(context);
+          .updateUserProfile(newUserProfileModel)
+          .then((value) {
+        EasyLoading.dismiss();
+        Navigator.pop(context);
+      });
     }
   }
 
@@ -102,10 +104,10 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                       child: GestureDetector(
                         onTap: () async {
                           void _setProfilePicture() async {
-                            final _imagePath = await pickMedia();
-                            if (_imagePath != null) {
+                            final imagePath = await pickMedia();
+                            if (imagePath != null) {
                               setState(() {
-                                _profilePicture = _imagePath;
+                                _profilePicture = imagePath;
                               });
                             }
                           }
@@ -291,10 +293,10 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                         (image) => GestureDetector(
                           onTap: () async {
                             void _selecImage() async {
-                              final _imagePath = await pickMedia();
-                              if (_imagePath != null) {
+                              final imagePath = await pickMedia();
+                              if (imagePath != null) {
                                 setState(() {
-                                  _medias[_medias.indexOf(image)] = _imagePath;
+                                  _medias[_medias.indexOf(image)] = imagePath;
                                 });
                               }
                             }
