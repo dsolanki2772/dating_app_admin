@@ -69,6 +69,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
           .updateUserProfile(newUserProfileModel)
           .then((value) {
         EasyLoading.dismiss();
+        ref.refresh(userProfileFutureProvider);
         Navigator.pop(context);
       });
     }

@@ -17,7 +17,7 @@ class AccountSettingsLandingWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.read(userProfileStreamProvider);
+    final user = ref.watch(userProfileFutureProvider);
 
     return user.when(
       data: (data) {
@@ -265,6 +265,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                     .read(userProfileProvider)
                     .updateUserProfile(userProfileModel)
                     .then((value) {
+                  ref.refresh(userProfileFutureProvider);
                   EasyLoading.dismiss();
                   Navigator.pop(context);
                 });

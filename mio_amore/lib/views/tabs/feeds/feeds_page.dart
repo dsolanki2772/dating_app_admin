@@ -72,7 +72,7 @@ class FeedsBody extends ConsumerWidget {
         ...feedList.when(
             data: (data) {
               final otherUsers = ref.watch(otherUsersProvider);
-              final userProfileProvider = ref.watch(userProfileStreamProvider);
+              final userProfileProvider = ref.watch(userProfileFutureProvider);
 
               List<UserProfileModel> feedsUsers = [];
 
@@ -115,7 +115,7 @@ class CreateNewPostSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    final currentUserProfile = ref.read(userProfileStreamProvider);
+    final currentUserProfile = ref.watch(userProfileFutureProvider);
 
     return currentUserProfile.when(
         data: (data) {

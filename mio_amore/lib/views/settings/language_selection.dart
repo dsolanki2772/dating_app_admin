@@ -164,6 +164,7 @@ class _LanguageSelectionState extends ConsumerState<LanguageSelection> {
                     .read(userProfileProvider)
                     .updateUserProfile(userProfileModel)
                     .then((value) {
+                  ref.refresh(userProfileFutureProvider);
                   EasyLoading.dismiss();
                   Navigator.pop(context);
                 });

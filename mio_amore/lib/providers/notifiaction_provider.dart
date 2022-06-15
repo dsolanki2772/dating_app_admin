@@ -6,13 +6,12 @@ import 'package:mio_amore/models/notification_model.dart';
 
 final notificationsStreamProvider =
     StreamProvider<List<NotificationModel>>((ref) {
-  const matchingNotificationCollection =
-      FirebaseConstants.notificationsCollection;
+  const notificationCollection = FirebaseConstants.notificationsCollection;
 
   final currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
   return FirebaseFirestore.instance
-      .collection(matchingNotificationCollection)
+      .collection(notificationCollection)
       .where("receiverId", isEqualTo: currentUserId)
       .orderBy("createdAt", descending: true)
       .snapshots()
@@ -23,13 +22,12 @@ final notificationsStreamProvider =
   });
 });
 
-const _matchingNotificationCollection =
-    FirebaseConstants.notificationsCollection;
+const _notificationCollection = FirebaseConstants.notificationsCollection;
 
 Future<bool> addNotification(NotificationModel notificationModel) async {
   try {
     await FirebaseFirestore.instance
-        .collection(_matchingNotificationCollection)
+        .collection(_notificationCollection)
         .doc(notificationModel.id)
         .set(notificationModel.toMap());
 
@@ -43,9 +41,34 @@ Future<bool> addNotification(NotificationModel notificationModel) async {
 Future<bool> updateNotification(NotificationModel notificationModel) async {
   try {
     await FirebaseFirestore.instance
-        .collection(_matchingNotificationCollection)
+        .collection(_notificationCollection)
         .doc(notificationModel.id)
         .update(notificationModel.toMap());
+
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+// Mark All As Read Notification
+Future<bool> markAllAsRead() async {
+  try {
+    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+
+    await FirebaseFirestore.instance
+        .collection(_notificationCollection)
+        .where("receiverId", isEqualTo: currentUserId)
+        .get()
+        .then((snapshot) async {
+      for (var doc in snapshot.docs) {
+        final notificationModel = NotificationModel.fromMap(doc.data());
+        if (notificationModel.isRead == false) {
+          notificationModel.isRead = true;
+          await updateNotification(notificationModel);
+        }
+      }
+    });
 
     return true;
   } catch (e) {
@@ -56,7 +79,7 @@ Future<bool> updateNotification(NotificationModel notificationModel) async {
 Future<bool> deleteNotification(String notificationId) async {
   try {
     await FirebaseFirestore.instance
-        .collection(_matchingNotificationCollection)
+        .collection(_notificationCollection)
         .doc(notificationId)
         .delete();
 

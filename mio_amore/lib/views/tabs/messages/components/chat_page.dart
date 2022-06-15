@@ -15,6 +15,7 @@ import 'package:mio_amore/helpers/encrypt_helper.dart';
 import 'package:mio_amore/helpers/media_picker_helper.dart';
 import 'package:mio_amore/models/chat_item_model.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
+import 'package:mio_amore/providers/block_user_provider.dart';
 import 'package:mio_amore/providers/chat_provider.dart';
 import 'package:mio_amore/providers/other_users_provider.dart';
 import 'package:mio_amore/views/others/photo_view_page.dart';
@@ -560,8 +561,44 @@ class _ChatTopBarState extends ConsumerState<ChatTopBar> {
                         MoreMenuTitle(
                           title: 'Block',
                           onTap: () {
-                            //TODO: Block User
                             _moreMenuController.hideMenu();
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: const Text("Block"),
+                                    content: const Text(
+                                        "Are you sure you want to block this user?"),
+                                    actions: [
+                                      TextButton(
+                                        child: const Text("Cancel"),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                      Consumer(builder: (context, ref, child) {
+                                        return TextButton(
+                                          child: const Text("Block"),
+                                          onPressed: () async {
+                                            EasyLoading.show(
+                                                status: "Blocking...");
+
+                                            await blockUser(
+                                                    widget.otherUser.userId)
+                                                .then((value) {
+                                              ref.refresh(otherUsersProvider);
+                                              ref.refresh(
+                                                  blockedUsersFutureProvider);
+                                              EasyLoading.dismiss();
+                                              Navigator.of(context).pop();
+                                              Navigator.of(context).pop();
+                                            });
+                                          },
+                                        );
+                                      }),
+                                    ],
+                                  );
+                                });
                           },
                         ),
                       ],

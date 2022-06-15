@@ -199,6 +199,7 @@ class _NotificationSettingsState extends ConsumerState<NotificationSettings> {
                     .updateUserProfile(userProfileModel)
                     .then((value) {
                   EasyLoading.dismiss();
+                  ref.refresh(userProfileFutureProvider);
                   Navigator.pop(context);
                 });
               },

@@ -30,6 +30,7 @@ class FirebaseConstants {
   static const String feedsCollection = "feeds";
   static const String deviceTokensCollection = "deviceTokens";
   static const String notificationsCollection = "notifications";
+  static const String blockedUsersCollection = "blockedUsers";
 }
 
 class HiveConstants {

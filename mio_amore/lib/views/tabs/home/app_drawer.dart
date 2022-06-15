@@ -13,6 +13,7 @@ import 'package:mio_amore/views/company/faq_page.dart';
 import 'package:mio_amore/views/company/privacy_policy.dart';
 import 'package:mio_amore/views/company/terms_and_conditions.dart';
 import 'package:mio_amore/views/custom/custom_icon_button.dart';
+import 'package:mio_amore/views/security/security_and_privacy_page.dart';
 import 'package:mio_amore/views/settings/account_settings.dart';
 import 'package:mio_amore/views/tabs/profile/profile_page.dart';
 
@@ -23,7 +24,7 @@ class AppDrawer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    final userProfileProvider = ref.watch(userProfileStreamProvider);
+    final userProfileProvider = ref.watch(userProfileFutureProvider);
     return Drawer(
       backgroundColor: AppConstants.primaryColor,
       child: Column(
@@ -118,16 +119,23 @@ class AppDrawer extends ConsumerWidget {
                   //   ),
                   // ),
                   // const SizedBox(height: AppConstants.defaultNumericValue / 2),
-                  // DrawerItem(
-                  //   onPressed: () {},
-                  //   title: 'Security',
-                  //   leadingIcon: CupertinoIcons.lock_circle,
-                  //   trailing: const Icon(
-                  //     Icons.chevron_right,
-                  //     color: Colors.white70,
-                  //   ),
-                  // ),
-                  // const SizedBox(height: AppConstants.defaultNumericValue / 2),
+                  DrawerItem(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const SecurityAndPrivacyLandingPage(),
+                              fullscreenDialog: true));
+                    },
+                    title: 'Security and Privacy',
+                    leadingIcon: CupertinoIcons.lock_circle,
+                    trailing: const Icon(
+                      Icons.chevron_right,
+                      color: Colors.white70,
+                    ),
+                  ),
+                  const SizedBox(height: AppConstants.defaultNumericValue / 2),
                   // DrawerItem(
                   //   onPressed: () {},
                   //   title: 'Language',

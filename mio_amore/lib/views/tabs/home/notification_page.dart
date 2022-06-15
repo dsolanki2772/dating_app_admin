@@ -1,3 +1,4 @@
+import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,9 +14,19 @@ import 'package:mio_amore/views/custom/custom_headline.dart';
 import 'package:mio_amore/views/custom/custom_icon_button.dart';
 import 'package:mio_amore/views/others/user_details_page.dart';
 import 'package:mio_amore/views/tabs/home/home_page.dart';
+import 'package:mio_amore/views/tabs/messages/components/chat_page.dart';
 
-class NotificationPage extends StatelessWidget {
+class NotificationPage extends StatefulWidget {
   const NotificationPage({Key? key}) : super(key: key);
+
+  @override
+  State<NotificationPage> createState() => _NotificationPageState();
+}
+
+class _NotificationPageState extends State<NotificationPage> {
+  final CustomPopupMenuController _moreMenuController =
+      CustomPopupMenuController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,8 +56,38 @@ class NotificationPage extends StatelessWidget {
                 text: 'Notifications',
                 secondPartColor: AppConstants.primaryColor,
               )),
-              trailing:
-                  const SizedBox(width: AppConstants.defaultNumericValue * 2),
+              trailing: CustomPopupMenu(
+                menuBuilder: () => ClipRRect(
+                  borderRadius: BorderRadius.circular(
+                      AppConstants.defaultNumericValue / 2),
+                  child: Container(
+                    decoration: const BoxDecoration(color: Colors.white),
+                    child: IntrinsicWidth(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          MoreMenuTitle(
+                            title: 'Mark all as read',
+                            onTap: () async {
+                              _moreMenuController.hideMenu();
+                              await markAllAsRead();
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                pressType: PressType.singleClick,
+                verticalMargin: 0,
+                controller: _moreMenuController,
+                showArrow: true,
+                arrowColor: Colors.white,
+                barrierColor: AppConstants.primaryColor.withOpacity(0.1),
+                child: GestureDetector(
+                  child: const Icon(CupertinoIcons.ellipsis_vertical),
+                ),
+              ),
             ),
           ),
           const SizedBox(height: AppConstants.defaultNumericValue),
@@ -104,7 +145,7 @@ class NotificationBody extends ConsumerWidget {
 
     void onTapNotification(WidgetRef ref, NotificationModel item) {
       if (item.isMatchingNotification) {
-        final otherUsers = ref.read(otherUsersProvider);
+        final otherUsers = ref.watch(otherUsersProvider);
 
         UserProfileModel? otherUser;
         otherUsers.whenData((value) {

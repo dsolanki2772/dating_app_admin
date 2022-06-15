@@ -7,25 +7,37 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/models/feed_model.dart';
 import 'package:mio_amore/providers/match_provider.dart';
+import 'package:mio_amore/providers/other_users_provider.dart';
 
 final getFeedsProvider = FutureProvider<List<FeedModel>>((ref) async {
   final feedsCollection =
       FirebaseFirestore.instance.collection(FirebaseConstants.feedsCollection);
   final currentUserId = FirebaseAuth.instance.currentUser!.uid;
   final machingProvider = ref.watch(matchStreamProvider);
-  final List<String> matchUserIds = [currentUserId];
+  final otherUsersRef = ref.watch(otherUsersProvider);
 
-  machingProvider.whenData((value) {
-    final List<String> otherUserIds = [];
-    for (var element in value) {
-      final id = element.userIds.where((id) => id != currentUserId);
-      otherUserIds.addAll(id);
-    }
-    matchUserIds.addAll(otherUserIds);
+  final List<String> feedsUserIds = [currentUserId];
+
+  machingProvider.whenData((matches) {
+    otherUsersRef.whenData((otherUsers) {
+      final List<String> matchUserIds = [];
+      for (var match in matches) {
+        matchUserIds
+            .add(match.userIds.firstWhere((userId) => userId != currentUserId));
+      }
+
+      for (var matchUserId in matchUserIds) {
+        for (var otherUser in otherUsers) {
+          if (matchUserId == otherUser.id) {
+            feedsUserIds.add(otherUser.id);
+          }
+        }
+      }
+    });
   });
 
   final snapshot =
-      await feedsCollection.where('userId', whereIn: matchUserIds).get();
+      await feedsCollection.where('userId', whereIn: feedsUserIds).get();
 
   final List<FeedModel> feeds = [];
   for (final doc in snapshot.docs) {

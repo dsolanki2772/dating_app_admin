@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
                     AppConstants.defaultNumericValue / 1.5),
               ),
               title: Consumer(builder: (context, ref, _) {
-                final user = ref.watch(userProfileStreamProvider);
+                final user = ref.watch(userProfileFutureProvider);
                 return user.when(
                     data: (data) {
                       return data == null
@@ -332,73 +332,75 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
         isInteractionNotification: false,
       );
 
-      await addNotification(notificationModel);
-
-      return await showDialog(
-        context: context,
-        builder: (context) {
-          return SimpleDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius:
-                  BorderRadius.circular(AppConstants.defaultNumericValue),
-            ),
-            insetPadding:
-                const EdgeInsets.all(AppConstants.defaultNumericValue * 2),
-            contentPadding:
-                const EdgeInsets.all(AppConstants.defaultNumericValue * 2),
-            title: const Center(child: Text("Matched")),
-            children: [
-              const SizedBox(height: AppConstants.defaultNumericValue),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  UserCirlePicture(imageUrl: otherUser.profilePicture),
-                  const SizedBox(width: AppConstants.defaultNumericValue / 4),
-                  UserCirlePicture(imageUrl: currentUser.profilePicture),
-                ],
+      await addNotification(notificationModel).then((value) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return SimpleDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius:
+                    BorderRadius.circular(AppConstants.defaultNumericValue),
               ),
-              const SizedBox(height: AppConstants.defaultNumericValue),
-              Center(
-                child: Text("You are now matched with ${otherUser.fullName}"),
-              ),
-              const SizedBox(height: AppConstants.defaultNumericValue),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                      child: OutlinedButton(
+              insetPadding:
+                  const EdgeInsets.all(AppConstants.defaultNumericValue * 2),
+              contentPadding:
+                  const EdgeInsets.all(AppConstants.defaultNumericValue * 2),
+              title: const Center(child: Text("Matched")),
+              children: [
+                const SizedBox(height: AppConstants.defaultNumericValue),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    UserCirlePicture(
+                        imageUrl: otherUser.profilePicture, size: 40),
+                    const SizedBox(width: AppConstants.defaultNumericValue / 4),
+                    UserCirlePicture(
+                        imageUrl: currentUser.profilePicture, size: 40),
+                  ],
+                ),
+                const SizedBox(height: AppConstants.defaultNumericValue),
+                Center(
+                  child: Text("You are now matched with ${otherUser.fullName}"),
+                ),
+                const SizedBox(height: AppConstants.defaultNumericValue),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                        child: OutlinedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text("Not Now"))),
+                    const SizedBox(width: AppConstants.defaultNumericValue),
+                    Expanded(
+                      child: ElevatedButton(
                           onPressed: () {
                             Navigator.of(context).pop();
-                          },
-                          child: const Text("Not Now"))),
-                  const SizedBox(width: AppConstants.defaultNumericValue),
-                  Expanded(
-                    child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => ChatPage(
-                                matchId: matchModel.id,
-                                otherUserId: otherUser.userId,
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => ChatPage(
+                                  matchId: matchModel.id,
+                                  otherUserId: otherUser.userId,
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                        child: const Text("Start Chat")),
-                  ),
-                ],
-              ),
-            ],
-          );
-        },
-      );
+                            );
+                          },
+                          child: const Text("Start Chat")),
+                    ),
+                  ],
+                ),
+              ],
+            );
+          },
+        );
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final currentUserProfile = ref.watch(userProfileStreamProvider);
+    final currentUserProfile = ref.watch(userProfileFutureProvider);
 
     return currentUserProfile.when(
         data: (data) {
@@ -439,25 +441,27 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
                         _matchEngine.currentItem?.superLike();
                         final newInteraction = interaction.copyWith(
                             isSuperLike: true, createdAt: DateTime.now());
-                        final result = await createInteraction(newInteraction);
 
-                        if (result) {
-                          final UserInteractionModel? otherUserInteraction =
-                              await getExistingInteraction(user.id);
-
-                          if (otherUserInteraction != null) {
-                            showMatchingDialog(
-                                context: context,
-                                currentUser: data,
-                                otherUser: user);
-                          } else {
-                            createInteractionNotification(
-                                title: "You have a new Interaction!",
-                                body: "Someone has super liked you!",
-                                receiverId: user.id,
-                                currentUser: data);
+                        await createInteraction(newInteraction)
+                            .then((result) async {
+                          if (result) {
+                            await getExistingInteraction(user.id)
+                                .then((otherUserInteraction) {
+                              if (otherUserInteraction != null) {
+                                showMatchingDialog(
+                                    context: context,
+                                    currentUser: data,
+                                    otherUser: user);
+                              } else {
+                                createInteractionNotification(
+                                    title: "You have a new Interaction!",
+                                    body: "Someone has super liked you!",
+                                    receiverId: user.id,
+                                    currentUser: data);
+                              }
+                            });
                           }
-                        }
+                        });
                       },
                       onTapCross: () async {
                         _matchEngine.currentItem?.nope();
@@ -469,24 +473,26 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
                         _matchEngine.currentItem?.like();
                         final newInteraction = interaction.copyWith(
                             isLike: true, createdAt: DateTime.now());
-                        final result = await createInteraction(newInteraction);
-
-                        if (result) {
-                          final UserInteractionModel? otherUserInteraction =
-                              await getExistingInteraction(user.id);
-                          if (otherUserInteraction != null) {
-                            showMatchingDialog(
-                                context: context,
-                                currentUser: data,
-                                otherUser: user);
-                          } else {
-                            createInteractionNotification(
-                                title: "You have a new Interaction!",
-                                body: "Someone has liked you!",
-                                receiverId: user.id,
-                                currentUser: data);
+                        await createInteraction(newInteraction)
+                            .then((result) async {
+                          if (result) {
+                            await getExistingInteraction(user.id)
+                                .then((otherUserInteraction) {
+                              if (otherUserInteraction != null) {
+                                showMatchingDialog(
+                                    context: context,
+                                    currentUser: data,
+                                    otherUser: user);
+                              } else {
+                                createInteractionNotification(
+                                    title: "You have a new Interaction!",
+                                    body: "Someone has liked you!",
+                                    receiverId: user.id,
+                                    currentUser: data);
+                              }
+                            });
                           }
-                        }
+                        });
                       },
                     );
                   },

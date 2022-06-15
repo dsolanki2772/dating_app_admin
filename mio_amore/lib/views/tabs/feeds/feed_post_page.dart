@@ -357,7 +357,7 @@ class CretePostNameSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentUserProfile = ref.read(userProfileStreamProvider);
+    final currentUserProfile = ref.watch(userProfileFutureProvider);
 
     return currentUserProfile.when(
         data: (data) {

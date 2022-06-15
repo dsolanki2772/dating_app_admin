@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/models/user_account_settings_model.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
+import 'package:mio_amore/providers/block_user_provider.dart';
 import 'package:mio_amore/providers/user_profile_provider.dart';
 
 final filteredOtherUsersProvider =
@@ -17,7 +18,7 @@ final filteredOtherUsersProvider =
     usersList.addAll(value);
   });
 
-  final myProfileProvider = ref.watch(userProfileStreamProvider);
+  final myProfileProvider = ref.watch(userProfileFutureProvider);
 
   List<UserProfileModel> filteredUserList = [];
 
@@ -70,6 +71,31 @@ final filteredOtherUsersProvider =
 });
 
 final otherUsersProvider = FutureProvider<List<UserProfileModel>>((ref) async {
+  final allOtherUsers = await getAllOtherUsers();
+
+  final List<String> blockedUsersIds = [];
+  final usersIblocked = await getBlockUsers();
+  for (var user in usersIblocked) {
+    blockedUsersIds.add(user.blockedUserId);
+  }
+  final usersWhoBlockedMe = await getUsersWhoBlockedMe();
+  for (var user in usersWhoBlockedMe) {
+    blockedUsersIds.add(user.blockedByUserId);
+  }
+
+  final filteredUsers = allOtherUsers.where((user) {
+    return !blockedUsersIds.contains(user.userId);
+  }).toList();
+
+  return filteredUsers;
+});
+
+final otherUsersWithoutBlockedProvider =
+    FutureProvider<List<UserProfileModel>>((ref) async {
+  return await getAllOtherUsers();
+});
+
+Future<List<UserProfileModel>> getAllOtherUsers() async {
   final userCollection = FirebaseFirestore.instance
       .collection(FirebaseConstants.userProfileCollection);
   final myUserId = FirebaseAuth.instance.currentUser!.uid;
@@ -77,7 +103,9 @@ final otherUsersProvider = FutureProvider<List<UserProfileModel>>((ref) async {
   final otherUsers =
       await userCollection.where("userId", isNotEqualTo: myUserId).get();
 
-  return otherUsers.docs.map((doc) {
+  final allOtherUsers = otherUsers.docs.map((doc) {
     return UserProfileModel.fromMap(doc.data());
   }).toList();
-});
+
+  return allOtherUsers;
+}

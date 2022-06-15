@@ -130,7 +130,7 @@ class _UserCardWidgetState extends State<UserCardWidget> {
                   ),
                   Consumer(
                     builder: (context, ref, child) {
-                      final myProfile = ref.watch(userProfileStreamProvider);
+                      final myProfile = ref.watch(userProfileFutureProvider);
                       return myProfile.when(
                           data: (data) {
                             if (data != null) {

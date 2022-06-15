@@ -11,9 +11,11 @@ import 'package:mio_amore/models/match_model.dart';
 import 'package:mio_amore/models/notification_model.dart';
 import 'package:mio_amore/models/user_interaction_model.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
+import 'package:mio_amore/providers/block_user_provider.dart';
 import 'package:mio_amore/providers/interaction_provider.dart';
 import 'package:mio_amore/providers/match_provider.dart';
 import 'package:mio_amore/providers/notifiaction_provider.dart';
+import 'package:mio_amore/providers/other_users_provider.dart';
 import 'package:mio_amore/providers/user_profile_provider.dart';
 import 'package:mio_amore/views/custom/custom_button.dart';
 import 'package:mio_amore/views/custom/custom_icon_button.dart';
@@ -149,7 +151,7 @@ class UserDetailsPage extends ConsumerWidget {
       }
     }
 
-    final currentUserProfile = ref.watch(userProfileStreamProvider);
+    final currentUserProfile = ref.watch(userProfileFutureProvider);
 
     final String myUserId = FirebaseAuth.instance.currentUser!.uid;
     final String id = myUserId + user.id;
@@ -460,9 +462,59 @@ class _DetailsBodyState extends State<DetailsBody> {
                                         ),
                                         MoreMenuTitle(
                                           title: 'Block',
-                                          onTap: () {
-                                            //TODO: Block User
+                                          onTap: () async {
                                             _moreMenuController.hideMenu();
+
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return AlertDialog(
+                                                    title: const Text("Block"),
+                                                    content: const Text(
+                                                        "Are you sure you want to block this user?"),
+                                                    actions: [
+                                                      TextButton(
+                                                        child: const Text(
+                                                            "Cancel"),
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                      ),
+                                                      Consumer(builder:
+                                                          (context, ref,
+                                                              child) {
+                                                        return TextButton(
+                                                          child: const Text(
+                                                              "Block"),
+                                                          onPressed: () async {
+                                                            EasyLoading.show(
+                                                                status:
+                                                                    "Blocking...");
+
+                                                            await blockUser(
+                                                                    widget.user
+                                                                        .userId)
+                                                                .then((value) {
+                                                              ref.refresh(
+                                                                  otherUsersProvider);
+                                                              ref.refresh(
+                                                                  blockedUsersFutureProvider);
+                                                              EasyLoading
+                                                                  .dismiss();
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
+                                                            });
+                                                          },
+                                                        );
+                                                      }),
+                                                    ],
+                                                  );
+                                                });
                                           },
                                         ),
                                       ],

@@ -7,18 +7,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
 
-final userProfileStreamProvider = StreamProvider<UserProfileModel?>((ref) {
+final userProfileFutureProvider =
+    FutureProvider<UserProfileModel?>((ref) async {
   final userCollection = FirebaseFirestore.instance
       .collection(FirebaseConstants.userProfileCollection);
 
   return userCollection
       .where("userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-      .snapshots()
-      .map((event) {
-    if (event.docs.isEmpty) {
+      .get()
+      .then((data) {
+    if (data.docs.isEmpty) {
       return null;
     } else {
-      return UserProfileModel.fromMap(event.docs.first.data());
+      return UserProfileModel.fromMap(data.docs.first.data());
     }
   });
 });

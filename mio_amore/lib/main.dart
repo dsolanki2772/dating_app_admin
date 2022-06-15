@@ -170,6 +170,7 @@ class _LandingWidgetState extends ConsumerState<LandingWidget> {
           }
         },
         error: (_, e) {
+          print(e);
           return const ErrorPage();
         },
         loading: () => const LoadingPage());

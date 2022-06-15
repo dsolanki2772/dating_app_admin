@@ -19,7 +19,7 @@ class ProfilePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    final userProfileProvider = ref.watch(userProfileStreamProvider);
+    final userProfileRef = ref.watch(userProfileFutureProvider);
     return Scaffold(
       backgroundColor: AppConstants.primaryColor,
       appBar: AppBar(
@@ -50,7 +50,7 @@ class ProfilePage extends ConsumerWidget {
                       secondPartColor: Colors.white,
                     ),
                   ),
-                  trailing: userProfileProvider.when(
+                  trailing: userProfileRef.when(
                       data: (data) => data == null
                           ? const SizedBox()
                           : CustomIconButton(
@@ -74,7 +74,7 @@ class ProfilePage extends ConsumerWidget {
             ],
           ),
           Expanded(
-            child: userProfileProvider.when(
+            child: userProfileRef.when(
               data: (data) {
                 return data == null
                     ? const Center(child: Text("Not Available"))
@@ -267,7 +267,8 @@ class ProfilePage extends ConsumerWidget {
               },
               error: (_, e) =>
                   const Center(child: Text("Something went wrong!")),
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(
+                  child: CircularProgressIndicator(color: Colors.white)),
             ),
           ),
         ],
