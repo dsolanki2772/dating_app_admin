@@ -126,7 +126,7 @@ class _HomePageState extends State<HomePage> {
                   return filteredUsers.when(
                     data: (data) {
                       return data.isEmpty
-                          ? const SizedBox()
+                          ? const NotFoundUsersWidget()
                           : FilterInteraction(users: data);
                     },
                     error: (_, __) => const Center(
@@ -226,7 +226,7 @@ class FilterInteraction extends ConsumerWidget {
         }
 
         return filteredUsers.isEmpty
-            ? const Center(child: Text("No User Found!"))
+            ? const NotFoundUsersWidget()
             : HomeBody(users: filteredUsers);
       },
       error: (_, __) => const Center(
@@ -550,5 +550,24 @@ class UserCirlePicture extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class NotFoundUsersWidget extends ConsumerWidget {
+  const NotFoundUsersWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final notFoundUsersFuture = ref.watch(notShowingUsersProvider);
+    return Center(
+        child: Padding(
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppConstants.defaultNumericValue * 2),
+      child: Text(
+        notFoundUsersFuture,
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.headline6,
+      ),
+    ));
   }
 }

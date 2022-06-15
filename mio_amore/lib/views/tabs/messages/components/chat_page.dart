@@ -19,6 +19,7 @@ import 'package:mio_amore/providers/block_user_provider.dart';
 import 'package:mio_amore/providers/chat_provider.dart';
 import 'package:mio_amore/providers/other_users_provider.dart';
 import 'package:mio_amore/views/others/photo_view_page.dart';
+import 'package:mio_amore/views/others/report_page.dart';
 import 'package:mio_amore/views/others/user_details_page.dart';
 import 'package:mio_amore/views/others/video_player_page.dart';
 import 'package:mio_amore/views/tabs/home/home_page.dart';
@@ -554,8 +555,14 @@ class _ChatTopBarState extends ConsumerState<ChatTopBar> {
                         MoreMenuTitle(
                           title: 'Report',
                           onTap: () {
-                            //TODO: Report User
                             _moreMenuController.hideMenu();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ReportPage(
+                                    userProfileModel: widget.otherUser),
+                              ),
+                            );
                           },
                         ),
                         MoreMenuTitle(
@@ -834,15 +841,22 @@ class _ChatTextFieldAndOthersState extends State<ChatTextFieldAndOthers> {
                 ),
               ),
             ),
+
+            //TODO: Send Voice Message
             widget.chatController.text.isEmpty &&
                     widget.imageUrl == null &&
                     widget.videoUrl == null &&
                     widget.audioUrl == null &&
                     widget.fileUrl == null
-                ? CupertinoButton(
+                // ? CupertinoButton(
+                //     padding: EdgeInsets.zero,
+                //     onPressed: widget.onTapVoice,
+                //     child: const Icon(CupertinoIcons.mic_circle_fill),
+                //   )
+                ? const CupertinoButton(
                     padding: EdgeInsets.zero,
-                    onPressed: widget.onTapVoice,
-                    child: const Icon(CupertinoIcons.mic_circle_fill),
+                    onPressed: null,
+                    child: Icon(CupertinoIcons.paperplane_fill),
                   )
                 : CupertinoButton(
                     padding: EdgeInsets.zero,

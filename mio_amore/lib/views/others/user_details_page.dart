@@ -20,6 +20,7 @@ import 'package:mio_amore/providers/user_profile_provider.dart';
 import 'package:mio_amore/views/custom/custom_button.dart';
 import 'package:mio_amore/views/custom/custom_icon_button.dart';
 import 'package:mio_amore/views/others/photo_view_page.dart';
+import 'package:mio_amore/views/others/report_page.dart';
 import 'package:mio_amore/views/others/user_card_widget.dart';
 import 'package:mio_amore/views/tabs/home/home_page.dart';
 import 'package:mio_amore/views/tabs/messages/components/chat_page.dart';
@@ -456,65 +457,24 @@ class _DetailsBodyState extends State<DetailsBody> {
                                         MoreMenuTitle(
                                           title: 'Report',
                                           onTap: () {
-                                            //TODO: Report User
                                             _moreMenuController.hideMenu();
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ReportPage(
+                                                        userProfileModel:
+                                                            widget.user),
+                                              ),
+                                            );
                                           },
                                         ),
                                         MoreMenuTitle(
                                           title: 'Block',
                                           onTap: () async {
                                             _moreMenuController.hideMenu();
-
-                                            showDialog(
-                                                context: context,
-                                                builder: (context) {
-                                                  return AlertDialog(
-                                                    title: const Text("Block"),
-                                                    content: const Text(
-                                                        "Are you sure you want to block this user?"),
-                                                    actions: [
-                                                      TextButton(
-                                                        child: const Text(
-                                                            "Cancel"),
-                                                        onPressed: () {
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                        },
-                                                      ),
-                                                      Consumer(builder:
-                                                          (context, ref,
-                                                              child) {
-                                                        return TextButton(
-                                                          child: const Text(
-                                                              "Block"),
-                                                          onPressed: () async {
-                                                            EasyLoading.show(
-                                                                status:
-                                                                    "Blocking...");
-
-                                                            await blockUser(
-                                                                    widget.user
-                                                                        .userId)
-                                                                .then((value) {
-                                                              ref.refresh(
-                                                                  otherUsersProvider);
-                                                              ref.refresh(
-                                                                  blockedUsersFutureProvider);
-                                                              EasyLoading
-                                                                  .dismiss();
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop();
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop();
-                                                            });
-                                                          },
-                                                        );
-                                                      }),
-                                                    ],
-                                                  );
-                                                });
+                                            showBlockDialog(
+                                                context, widget.user.userId);
                                           },
                                         ),
                                       ],
@@ -819,3 +779,38 @@ class _DetailsBodyState extends State<DetailsBody> {
 //         loading: () => const SizedBox());
 //   }
 // }
+
+Future<void> showBlockDialog(BuildContext context, String userId) async {
+  await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Block"),
+          content: const Text("Are you sure you want to block this user?"),
+          actions: [
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            Consumer(builder: (context, ref, child) {
+              return TextButton(
+                child: const Text("Block"),
+                onPressed: () async {
+                  EasyLoading.show(status: "Blocking...");
+
+                  await blockUser(userId).then((value) {
+                    ref.refresh(otherUsersProvider);
+                    ref.refresh(blockedUsersFutureProvider);
+                    EasyLoading.dismiss();
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                  });
+                },
+              );
+            }),
+          ],
+        );
+      });
+}

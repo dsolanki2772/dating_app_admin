@@ -5,6 +5,7 @@ import 'package:mio_amore/providers/user_profile_provider.dart';
 import 'package:mio_amore/views/others/error_page.dart';
 import 'package:mio_amore/views/others/loading_page.dart';
 import 'package:mio_amore/views/security/blocking_page.dart';
+import 'package:mio_amore/views/settings/verification/verification_steps.dart';
 
 class SecurityAndPrivacyLandingPage extends ConsumerWidget {
   const SecurityAndPrivacyLandingPage({Key? key}) : super(key: key);
@@ -56,6 +57,27 @@ class _SecurityAndPrivacyPageState
                 MaterialPageRoute(builder: (context) => const BlockingPage()),
               );
             },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.verified_user),
+            title: const Text('Verification Status'),
+            subtitle: Text(
+              widget.user.isVerified ? "Verified" : "Not Verified",
+              style: Theme.of(context).textTheme.subtitle2!.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: widget.user.isVerified ? Colors.green : Colors.red),
+            ),
+            onTap: (widget.user.isVerified)
+                ? null
+                : () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              GetVerifiedPage(user: widget.user)),
+                    );
+                  },
           ),
           const Divider(),
         ],

@@ -103,7 +103,7 @@ class NotificationBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    void deleteNotification(NotificationModel item) {
+    void deleteNotificationDialog(NotificationModel item) {
       showModalBottomSheet(
           context: context,
           builder: (context) {
@@ -132,7 +132,7 @@ class NotificationBody extends ConsumerWidget {
                         child: const Text('Delete'),
                         onPressed: () {
                           Navigator.pop(context);
-                          deleteNotification(item);
+                          deleteNotification(item.id);
                         },
                       ),
                     ],
@@ -188,7 +188,7 @@ class NotificationBody extends ConsumerWidget {
 
               return ListTile(
                 onLongPress: () {
-                  deleteNotification(item);
+                  deleteNotificationDialog(item);
                 },
                 onTap: () {
                   onTapNotification(ref, item);

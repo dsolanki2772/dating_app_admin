@@ -10,7 +10,6 @@ import 'package:mio_amore/views/custom/custom_button.dart';
 import 'package:mio_amore/views/others/error_page.dart';
 import 'package:mio_amore/views/others/loading_page.dart';
 import 'package:mio_amore/views/others/set_user_location_page.dart';
-import 'package:mio_amore/views/settings/verification/verification_steps.dart';
 
 class AccountSettingsLandingWidget extends ConsumerWidget {
   const AccountSettingsLandingWidget({Key? key}) : super(key: key);
@@ -43,6 +42,7 @@ class AccountSettingsPage extends ConsumerStatefulWidget {
 class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
   late UserLocation _userLocation;
   late double _distanceInKm;
+  late bool _isWorldWide;
   late double _maxDistanceInKm;
   late double _minimumAge;
   late double _maximumAge;
@@ -50,7 +50,9 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
 
   @override
   void initState() {
-    _distanceInKm = widget.user.userAccountSettingsModel.distanceInKm;
+    _distanceInKm = widget.user.userAccountSettingsModel.distanceInKm ??
+        AppConfig.initialMaximumDistanceInKM;
+    _isWorldWide = widget.user.userAccountSettingsModel.distanceInKm == null;
     _interestedIn = widget.user.userAccountSettingsModel.interestedIn;
 
     _userLocation = widget.user.userAccountSettingsModel.location;
@@ -159,6 +161,29 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                 });
               },
             ),
+
+            Card(
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius:
+                    BorderRadius.circular(AppConstants.defaultNumericValue),
+              ),
+              borderOnForeground: true,
+              child: CheckboxListTile(
+                value: _isWorldWide,
+                controlAffinity: ListTileControlAffinity.leading,
+                onChanged: (value) {
+                  setState(() {
+                    _isWorldWide = value!;
+                    _distanceInKm = value
+                        ? AppConfig.initialMaximumDistanceInKM
+                        : widget.user.userAccountSettingsModel.distanceInKm ??
+                            AppConfig.initialMaximumDistanceInKM;
+                  });
+                },
+                title: const Text("World wide"),
+              ),
+            ),
             const SizedBox(height: AppConstants.defaultNumericValue * 2),
             Text("Interested In",
                 style: Theme.of(context)
@@ -249,7 +274,8 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
               onPressed: () async {
                 final UserAccountSettingsModel userAccountSettingsModel =
                     UserAccountSettingsModel(
-                  distanceInKm: _distanceInKm.toInt().toDouble(),
+                  distanceInKm:
+                      _isWorldWide ? null : _distanceInKm.toInt().toDouble(),
                   interestedIn: _interestedIn,
                   minimumAge: _minimumAge.toInt(),
                   maximumAge: _maximumAge.toInt(),
@@ -273,32 +299,6 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
               text: 'Apply',
             ),
             const SizedBox(height: AppConstants.defaultNumericValue * 2),
-            Text("Verification Status",
-                style: Theme.of(context)
-                    .textTheme
-                    .headline6!
-                    .copyWith(fontWeight: FontWeight.bold)),
-            SizedBox(
-              height: AppConstants.defaultNumericValue * 6,
-              child: Center(
-                child: Text(
-                    widget.user.isVerified ? "Verified" : "Not Verified",
-                    style: Theme.of(context).textTheme.subtitle2!.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: widget.user.isVerified
-                            ? Colors.green
-                            : Colors.red)),
-              ),
-            ),
-            if (!widget.user.isVerified)
-              CustomButton(
-                onPressed: () async {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) {
-                    return GetVerifiedPage(user: widget.user);
-                  }));
-                },
-                text: 'Get Verified',
-              ),
           ],
         ),
       ),

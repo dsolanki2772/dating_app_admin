@@ -2,13 +2,13 @@ import 'dart:convert';
 
 class UserAccountSettingsModel {
   UserLocation location;
-  double distanceInKm;
+  double? distanceInKm;
   String? interestedIn;
   int minimumAge;
   int maximumAge;
   UserAccountSettingsModel({
     required this.location,
-    required this.distanceInKm,
+    this.distanceInKm,
     this.interestedIn,
     required this.minimumAge,
     required this.maximumAge,
@@ -23,7 +23,7 @@ class UserAccountSettingsModel {
   }) {
     return UserAccountSettingsModel(
       location: location ?? this.location,
-      distanceInKm: distanceInKm ?? this.distanceInKm,
+      distanceInKm: distanceInKm,
       interestedIn: interestedIn ?? this.interestedIn,
       minimumAge: minimumAge ?? this.minimumAge,
       maximumAge: maximumAge ?? this.maximumAge,
@@ -34,7 +34,10 @@ class UserAccountSettingsModel {
     final result = <String, dynamic>{};
 
     result.addAll({'location': location.toMap()});
-    result.addAll({'distanceInKm': distanceInKm});
+    if (distanceInKm != null) {
+      result.addAll({'distanceInKm': distanceInKm});
+    }
+
     if (interestedIn != null) {
       result.addAll({'interestedIn': interestedIn});
     }
@@ -47,7 +50,7 @@ class UserAccountSettingsModel {
   factory UserAccountSettingsModel.fromMap(Map<String, dynamic> map) {
     return UserAccountSettingsModel(
       location: UserLocation.fromMap(map['location']),
-      distanceInKm: map['distanceInKm']?.toDouble() ?? 0.0,
+      distanceInKm: map['distanceInKm']?.toDouble(),
       interestedIn: map['interestedIn'],
       minimumAge: map['minimumAge']?.toInt() ?? 0,
       maximumAge: map['maximumAge']?.toInt() ?? 0,

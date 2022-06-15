@@ -60,14 +60,14 @@ class AppConfig {
       "AIzaSyDvkwrf9abC92F6SFdYEDmmYIgdvBrLi9o";
 
 // Base settings for a user!
-  static const double initialDistanceInKM = 50;
-  static const double initialMaximumDistanceInKM = 500;
+  static const double initialDistanceInKM = 300;
+  static const double initialMaximumDistanceInKM = 1000;
   static const int initialMinimumAge = 18;
   static const int initialMaximumAge = 28;
 
 // Other Settings
   static const bool canChangeName = true;
-  static const int minimumAgeRequired = 12;
+  static const int minimumAgeRequired = 18;
   static const int maxNumOfMedia = 6;
   static const int maxNumOfInterests = 5;
   static const List<String> interests = [

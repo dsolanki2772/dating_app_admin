@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,9 +47,14 @@ final filteredOtherUsersProvider =
           isBoth = true;
         }
 
+        bool isWorldWide = mySettings.distanceInKm == null;
+
+        bool isDistanceOk = isWorldWide ||
+            (mySettings.distanceInKm! >= distanceBetweenMeAndUser);
+
         if (userAge >= mySettings.minimumAge &&
             userAge <= mySettings.maximumAge &&
-            mySettings.distanceInKm >= distanceBetweenMeAndUser) {
+            isDistanceOk) {
           if (isBoth) {
             willBeShown = true;
           } else {
@@ -69,6 +75,81 @@ final filteredOtherUsersProvider =
 
   return filteredUserList;
 });
+
+final notShowingUsersProvider = Provider<String>((ref) {
+  List<UserProfileModel> usersList = [];
+
+  final otherUsers = ref.watch(otherUsersProvider);
+
+  otherUsers.whenData((value) {
+    usersList.addAll(value);
+  });
+
+  final myProfileProvider = ref.watch(userProfileFutureProvider);
+
+  List<ClosestUser> closestUsers = [];
+
+  myProfileProvider.whenData((value) {
+    if (value != null) {
+      final UserAccountSettingsModel mySettings =
+          value.userAccountSettingsModel;
+
+      for (var user in usersList) {
+        bool willBeShown = false;
+        bool isBoth = false;
+
+        final userAge = DateTime.now().difference(user.birthDay).inDays ~/ 365;
+        final userLocation = user.userAccountSettingsModel.location;
+        final userGender = user.gender;
+
+        double distanceBetweenMeAndUser = Geolocator.distanceBetween(
+                mySettings.location.latitude,
+                mySettings.location.longitude,
+                userLocation.latitude,
+                userLocation.longitude) /
+            1000;
+
+        if (mySettings.interestedIn == null) {
+          isBoth = true;
+        }
+
+        if (userAge >= mySettings.minimumAge &&
+            userAge <= mySettings.maximumAge) {
+          if (isBoth) {
+            willBeShown = true;
+          } else {
+            if (mySettings.interestedIn == userGender) {
+              willBeShown = true;
+            } else {
+              willBeShown = false;
+            }
+          }
+        }
+
+        if (willBeShown) {
+          closestUsers
+              .add(ClosestUser(user: user, distance: distanceBetweenMeAndUser));
+        }
+      }
+    }
+  });
+
+  closestUsers.sort((a, b) => a.distance.compareTo(b.distance));
+
+  String returnText = closestUsers.isEmpty
+      ? "There are no users that match your criteria"
+      : "There are no users that match your criteria. But you can still see other users nearby. So many other users who are ${closestUsers.first.distance.toStringAsFixed(0)} KM away waiting for you to meet them. Explore and find them!";
+  return returnText;
+});
+
+class ClosestUser {
+  UserProfileModel user;
+  double distance;
+  ClosestUser({
+    required this.user,
+    required this.distance,
+  });
+}
 
 final otherUsersProvider = FutureProvider<List<UserProfileModel>>((ref) async {
   final allOtherUsers = await getAllOtherUsers();

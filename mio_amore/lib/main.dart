@@ -170,7 +170,6 @@ class _LandingWidgetState extends ConsumerState<LandingWidget> {
           }
         },
         error: (_, e) {
-          print(e);
           return const ErrorPage();
         },
         loading: () => const LoadingPage());
@@ -226,7 +225,7 @@ void showAwesomeNotification(RemoteMessage message) {
   //   AwesomeNotifications().createNotificationFromJsonData(message.data);
   // }
 
-  print("Notification type: ${message.data["type"]}");
-  print("Other User Id ${message.data["userId"]}");
-  print("MatchId ${message.data["matchId"]}");
+  debugPrint("Notification type: ${message.data["type"]}");
+  debugPrint("Other User Id ${message.data["userId"]}");
+  debugPrint("MatchId ${message.data["matchId"]}");
 }
