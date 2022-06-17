@@ -134,7 +134,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
               children: [
                 Expanded(
                   child: Text(
-                    'Distance',
+                    'Radius',
                     style: Theme.of(context)
                         .textTheme
                         .headline6!
@@ -142,25 +142,27 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                   ),
                 ),
                 const SizedBox(width: AppConstants.defaultNumericValue),
-                Text(
-                  '${_distanceInKm.toInt()} km',
-                  style: Theme.of(context).textTheme.headline6!.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: AppConstants.primaryColor),
-                ),
+                if (!_isWorldWide)
+                  Text(
+                    '${_distanceInKm.toInt()} km',
+                    style: Theme.of(context).textTheme.headline6!.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppConstants.primaryColor),
+                  ),
               ],
             ),
             const SizedBox(height: AppConstants.defaultNumericValue),
-            Slider(
-              value: _distanceInKm,
-              min: 1,
-              max: _maxDistanceInKm,
-              onChanged: (value) {
-                setState(() {
-                  _distanceInKm = value;
-                });
-              },
-            ),
+            if (!_isWorldWide)
+              Slider(
+                value: _distanceInKm,
+                min: 1,
+                max: _maxDistanceInKm,
+                onChanged: (value) {
+                  setState(() {
+                    _distanceInKm = value;
+                  });
+                },
+              ),
 
             Card(
               elevation: 0,
@@ -181,7 +183,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                             AppConfig.initialMaximumDistanceInKM;
                   });
                 },
-                title: const Text("World wide"),
+                title: const Text("Anywhere"),
               ),
             ),
             const SizedBox(height: AppConstants.defaultNumericValue * 2),
@@ -261,7 +263,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
               values:
                   RangeValues(_minimumAge.toDouble(), _maximumAge.toDouble()),
               min: AppConfig.minimumAgeRequired.toDouble(),
-              max: 70.0,
+              max: AppConfig.maximumUserAge.toDouble(),
               onChanged: (RangeValues values) {
                 setState(() {
                   _minimumAge = values.start;

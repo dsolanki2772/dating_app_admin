@@ -192,7 +192,7 @@ class UserDetailsPage extends ConsumerWidget {
                     width: MediaQuery.of(context).size.width,
                     child: Center(
                       child: CustomButton(
-                        text: "Start Chatting",
+                        text: "Send a Message",
                         onPressed: () {
                           Navigator.push(
                             context,

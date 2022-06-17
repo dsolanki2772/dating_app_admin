@@ -1,16 +1,10 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/helpers/media_picker_helper.dart';
-import 'package:mio_amore/main.dart';
 import 'package:mio_amore/models/report_model.dart';
-
 import 'package:mio_amore/models/user_profile_model.dart';
 import 'package:mio_amore/providers/report_provider.dart';
 import 'package:mio_amore/views/custom/custom_button.dart';

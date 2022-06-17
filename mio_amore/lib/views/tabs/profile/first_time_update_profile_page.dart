@@ -55,14 +55,8 @@ class _FirstTimeUserProfilePageState
     final UserAccountSettingsModel userAccountSettingsModel =
         UserAccountSettingsModel(
       location: _userLocation!,
-      distanceInKm: AppConfig.initialDistanceInKM,
-      interestedIn: _gender == null
-          ? null
-          : _gender == AppConfig.maleText
-              ? AppConfig.femaleText
-              : AppConfig.maleText,
-      maximumAge: AppConfig.initialMaximumAge,
-      minimumAge: AppConfig.initialMinimumAge,
+      maximumAge: AppConfig.maximumUserAge,
+      minimumAge: AppConfig.minimumAgeRequired,
     );
 
     final UserProfileModel userProfileModel = UserProfileModel(
@@ -286,7 +280,7 @@ class _WelcomeScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(
                       horizontal: AppConstants.defaultNumericValue * 2),
                   child: Text(
-                    "Welcome to Incevio Dating!",
+                    "Welcome to ${AppConfig.appName}",
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headline5!.copyWith(
                         color: AppConstants.primaryColor,
@@ -432,7 +426,7 @@ class _GenderScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    "My gender is",
+                    "I am",
                     style: Theme.of(context)
                         .textTheme
                         .headline5!

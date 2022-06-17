@@ -119,11 +119,23 @@ class _UserCardWidgetState extends State<UserCardWidget> {
                         ),
                       ),
                       widget.user.isVerified
-                          ? const Padding(
-                              padding: EdgeInsets.symmetric(
+                          ? Padding(
+                              padding: const EdgeInsets.symmetric(
                                   horizontal: AppConstants.defaultNumericValue),
-                              child: Icon(Icons.verified_user,
-                                  color: CupertinoColors.activeGreen),
+                              child: Column(
+                                children: [
+                                  const Icon(Icons.verified_user,
+                                      color: CupertinoColors.activeGreen),
+                                  Text(
+                                    'Verified',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .caption!
+                                        .copyWith(
+                                            color: CupertinoColors.activeGreen),
+                                  ),
+                                ],
+                              ),
                             )
                           : const SizedBox(),
                     ],
@@ -165,8 +177,7 @@ class _UserCardWidgetState extends State<UserCardWidget> {
                                     ),
                                   ),
                                   const SizedBox(
-                                      height:
-                                          AppConstants.defaultNumericValue / 2),
+                                      height: AppConstants.defaultNumericValue),
                                   UserLikeActions(
                                     onTapCross: widget.onTapCross,
                                     onTapBolt: widget.onTapBolt,
@@ -290,7 +301,7 @@ class UserLikeActions extends StatelessWidget {
       padding: const EdgeInsets.symmetric(
           horizontal: AppConstants.defaultNumericValue),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           GestureDetector(
