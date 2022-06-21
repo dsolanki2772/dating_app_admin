@@ -113,6 +113,26 @@ class _OtpPageState extends ConsumerState<OtpPage> {
   //   // }
   // }
 
+  void _onOtpVerification() async {
+    if (_formKey.currentState!.validate()) {
+      EasyLoading.show(status: "Verifying OTP");
+      await ref
+          .read(authProvider)
+          .signInWithPhoneNumber(_otpController.text.trim(), _verificationId)
+          .then((value) {
+        if (value != null) {
+          EasyLoading.showSuccess("Login Successful");
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (_) => const LandingWidget()),
+              (route) => false);
+        } else {
+          EasyLoading.showError("Something went wrong!");
+        }
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -162,6 +182,11 @@ class _OtpPageState extends ConsumerState<OtpPage> {
                           }
                           return null;
                         },
+                        onChanged: (value) {
+                          if (value.length == 6) {
+                            _onOtpVerification();
+                          }
+                        },
                       ),
                     )
                   ],
@@ -171,28 +196,9 @@ class _OtpPageState extends ConsumerState<OtpPage> {
                     "We have sent you an OTP code on your phone number. Please enter it below. If you did not receive an OTP, please resend it."),
                 const SizedBox(height: AppConstants.defaultNumericValue * 2),
                 CustomButton(
-                    onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-                        EasyLoading.show(status: "Verifying OTP");
-                        await ref
-                            .read(authProvider)
-                            .signInWithPhoneNumber(
-                                _otpController.text.trim(), _verificationId)
-                            .then((value) {
-                          if (value != null) {
-                            EasyLoading.showSuccess("Login Successful");
-                            Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => const LandingWidget()),
-                                (route) => false);
-                          } else {
-                            EasyLoading.showError("Something went wrong!");
-                          }
-                        });
-                      }
-                    },
-                    text: "Verify"),
+                  onPressed: _onOtpVerification,
+                  text: "Verify",
+                ),
               ],
             ),
           ),

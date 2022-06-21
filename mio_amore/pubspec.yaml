@@ -79,6 +79,7 @@ dependencies:
   flutter_native_splash: ^2.1.6
   webview_flutter: ^3.0.4
   collection: ^1.16.0
+  tutorial_coach_mark: ^1.2.3
 
 dependency_overrides:
   photo_view:

@@ -83,6 +83,11 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                   .headline6!
                   .copyWith(fontWeight: FontWeight.bold),
             ),
+
+            const SizedBox(height: AppConstants.defaultNumericValue / 2),
+            Text(
+                'This is your location. Other users will be able to see you if they are within this range.',
+                style: Theme.of(context).textTheme.caption),
             const SizedBox(height: AppConstants.defaultNumericValue),
             GestureDetector(
               onTap: () async {
@@ -151,6 +156,9 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                   ),
               ],
             ),
+            const SizedBox(height: AppConstants.defaultNumericValue / 2),
+            Text('This radius is used to find other users within this range.',
+                style: Theme.of(context).textTheme.caption),
             const SizedBox(height: AppConstants.defaultNumericValue),
             if (!_isWorldWide)
               Slider(
@@ -192,6 +200,9 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                     .textTheme
                     .headline6!
                     .copyWith(fontWeight: FontWeight.bold)),
+            const SizedBox(height: AppConstants.defaultNumericValue / 2),
+            Text('This is the type of people you are interested in.',
+                style: Theme.of(context).textTheme.caption),
             const SizedBox(height: AppConstants.defaultNumericValue),
             Wrap(
               alignment: WrapAlignment.center,
@@ -258,6 +269,9 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                 ),
               ],
             ),
+            const SizedBox(height: AppConstants.defaultNumericValue / 2),
+            Text('This is the age range you are interested in.',
+                style: Theme.of(context).textTheme.caption),
             const SizedBox(height: AppConstants.defaultNumericValue),
             RangeSlider(
               values:

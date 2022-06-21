@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:mio_amore/config/config.dart';
 import 'package:mio_amore/models/match_model.dart';
 import 'package:mio_amore/models/notification_model.dart';
 import 'package:mio_amore/providers/match_provider.dart';
@@ -23,6 +25,7 @@ import 'package:mio_amore/views/custom/custom_icon_button.dart';
 import 'package:mio_amore/views/others/user_card_widget.dart';
 import 'package:mio_amore/views/settings/account_settings.dart';
 import 'package:mio_amore/views/tabs/home/app_drawer.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -33,6 +36,184 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  final _menuKey = GlobalKey();
+  final _locationKey = GlobalKey();
+  final _notificationKey = GlobalKey();
+
+  final List<TargetFocus> _targets = [];
+
+  @override
+  void initState() {
+    final showGuidedTour = Hive.box(HiveConstants.hiveBox)
+        .get(HiveConstants.guidedTour, defaultValue: true) as bool;
+
+    if (showGuidedTour) {
+      Future.delayed(const Duration(milliseconds: 500), () async {
+        _showTutorials();
+        await setShowGuidedTour(false);
+      });
+    }
+
+    super.initState();
+  }
+
+  void _showTutorials() {
+    _targets.clear();
+    _targets.add(
+      TargetFocus(
+        identify: "Menu",
+        keyTarget: _menuKey,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  "Menu",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 20.0),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0),
+                  child: Text(
+                    "You will find account settings, notifications, logout and others here...",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                )
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+
+    _targets.add(
+      TargetFocus(
+        identify: "Location",
+        keyTarget: _locationKey,
+        shape: ShapeLightFocus.RRect,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  "Location",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 20.0),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0),
+                  child: Text(
+                    "Click here to change your location...",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                )
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+
+    _targets.add(
+      TargetFocus(
+        identify: "Notification",
+        keyTarget: _notificationKey,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  "Notifications",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 20.0),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0),
+                  child: Text(
+                    "You will find notifications here...",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                )
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+
+    // _targets.add(
+    //   TargetFocus(
+    //     identify: "Interaction",
+    //     keyTarget: _interactionKey,
+    //     shape: ShapeLightFocus.RRect,
+    //     contents: [
+    //       TargetContent(
+    //         align: ContentAlign.top,
+    //         child: Column(
+    //           mainAxisSize: MainAxisSize.min,
+    //           crossAxisAlignment: CrossAxisAlignment.start,
+    //           children: const [
+    //             Text(
+    //               "Interactions",
+    //               style: TextStyle(
+    //                   fontWeight: FontWeight.bold,
+    //                   color: Colors.black,
+    //                   fontSize: 20.0),
+    //             ),
+    //             Padding(
+    //               padding: EdgeInsets.only(top: 10.0),
+    //               child: Text(
+    //                 "Here you can see users as per your settings. You can view their profiles and interact with them...\n\nIf you don't want to interact just swipe the card to the right or left. \n\n There are 3 buttons on the bottom of the card.\n\n 1. ${AppConfig.dislikeButtonText}\n 2. ${AppConfig.showInteractionButtonText}\n 3. ${AppConfig.likeButtonText}",
+    //                 style: TextStyle(color: Colors.black),
+    //               ),
+    //             )
+    //           ],
+    //         ),
+    //       )
+    //     ],
+    //   ),
+    // );
+
+    TutorialCoachMark(
+      context,
+      targets: _targets,
+      colorShadow: AppConstants.primaryColor,
+      onClickTarget: (target) {
+        print(target);
+      },
+      onClickTargetWithTapPosition: (target, tapDetails) {
+        print("target: $target");
+        print(
+            "clicked at position local: ${tapDetails.localPosition} - global: ${tapDetails.globalPosition}");
+      },
+      onClickOverlay: (target) {
+        print(target);
+      },
+      onSkip: () {
+        print("skip");
+      },
+      onFinish: () {
+        print("finish");
+      },
+    ).show();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,6 +235,7 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: AppConstants.defaultNumericValue),
             CustomAppBar(
               leading: CustomIconButton(
+                key: _menuKey,
                 icon: CupertinoIcons.square_grid_2x2_fill,
                 onPressed: () {
                   _scaffoldKey.currentState?.openDrawer();
@@ -61,62 +243,66 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.all(
                     AppConstants.defaultNumericValue / 1.5),
               ),
-              title: Consumer(builder: (context, ref, _) {
-                final user = ref.watch(userProfileFutureProvider);
-                return user.when(
-                    data: (data) {
-                      return data == null
-                          ? const SizedBox()
-                          : GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const AccountSettingsLandingWidget(),
-                                  ),
-                                );
-                              },
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    CupertinoIcons.location_solid,
-                                    color: AppConstants.primaryColor,
-                                    size: 18,
-                                  ),
-                                  const SizedBox(
-                                      width:
-                                          AppConstants.defaultNumericValue / 3),
-                                  Flexible(
-                                    child: Text(
-                                      data.userAccountSettingsModel.location
-                                          .addressText,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .subtitle2!
-                                          .copyWith(
-                                              fontWeight: FontWeight.bold),
+              title: Consumer(
+                key: _locationKey,
+                builder: (context, ref, _) {
+                  final user = ref.watch(userProfileFutureProvider);
+                  return user.when(
+                      data: (data) {
+                        return data == null
+                            ? const SizedBox()
+                            : GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const AccountSettingsLandingWidget(),
                                     ),
-                                  ),
-                                  // const SizedBox(
-                                  //     width:
-                                  //         AppConstants.defaultNumericValue / 3),
-                                  // Icon(
-                                  //   Icons.keyboard_arrow_down,
-                                  //   color: AppConstants.primaryColor,
-                                  // ),
-                                ],
-                              ),
-                            );
-                    },
-                    error: (_, __) => const SizedBox(),
-                    loading: () => const SizedBox());
-              }),
-              trailing: const NotificationButton(),
+                                  );
+                                },
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      CupertinoIcons.location_solid,
+                                      color: AppConstants.primaryColor,
+                                      size: 18,
+                                    ),
+                                    const SizedBox(
+                                        width:
+                                            AppConstants.defaultNumericValue /
+                                                3),
+                                    Flexible(
+                                      child: Text(
+                                        data.userAccountSettingsModel.location
+                                            .addressText,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .subtitle2!
+                                            .copyWith(
+                                                fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                    // const SizedBox(
+                                    //     width:
+                                    //         AppConstants.defaultNumericValue / 3),
+                                    // Icon(
+                                    //   Icons.keyboard_arrow_down,
+                                    //   color: AppConstants.primaryColor,
+                                    // ),
+                                  ],
+                                ),
+                              );
+                      },
+                      error: (_, __) => const SizedBox(),
+                      loading: () => const SizedBox());
+                },
+              ),
+              trailing: NotificationButton(key: _notificationKey),
             ),
             Expanded(
               child: Consumer(
@@ -127,7 +313,9 @@ class _HomePageState extends State<HomePage> {
                     data: (data) {
                       return data.isEmpty
                           ? const SizedBox()
-                          : FilterInteraction(users: data);
+                          : FilterInteraction(
+                              users: data,
+                            );
                     },
                     error: (_, __) => const Center(
                       child: Text("Something Went Wrong!"),
@@ -205,6 +393,7 @@ class NotificationButton extends ConsumerWidget {
 
 class FilterInteraction extends ConsumerWidget {
   final List<UserProfileModel> users;
+
   const FilterInteraction({
     Key? key,
     required this.users,
@@ -227,7 +416,9 @@ class FilterInteraction extends ConsumerWidget {
 
         return filteredUsers.isEmpty
             ? const NotFoundUsersWidget()
-            : HomeBody(users: filteredUsers);
+            : HomeBody(
+                users: filteredUsers,
+              );
       },
       error: (_, __) => const Center(
         child: Text("Something Went Wrong!"),
@@ -241,6 +432,7 @@ class FilterInteraction extends ConsumerWidget {
 
 class HomeBody extends ConsumerStatefulWidget {
   final List<UserProfileModel> users;
+
   const HomeBody({
     Key? key,
     required this.users,

@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:mio_amore/helpers/constants.dart';
 import 'package:mio_amore/models/user_profile_model.dart';
 
@@ -140,19 +141,7 @@ class UserProfileProvider {
   // }
 }
 
-Future<bool> isUserAdded(String userId) async {
-  final userCollection = FirebaseFirestore.instance
-      .collection(FirebaseConstants.userProfileCollection);
-  bool isUserAdded = false;
-  await userCollection.where("userId", isEqualTo: userId).get().then((event) {
-    if (event.docs.isNotEmpty) {
-      isUserAdded = true;
-    }
-  });
-  return isUserAdded;
-}
-
-final isUserAddedProvider = FutureProvider((ref) async {
+final isUserAddedProvider = FutureProvider<bool>((ref) async {
   final userCollection = FirebaseFirestore.instance
       .collection(FirebaseConstants.userProfileCollection);
   final userId = FirebaseAuth.instance.currentUser!.uid;
@@ -164,3 +153,14 @@ final isUserAddedProvider = FutureProvider((ref) async {
   });
   return isUserAdded;
 });
+
+Future<void> setShowCompleteDialog(bool value) async {
+  final box = Hive.box(HiveConstants.hiveBox);
+  await box.put(HiveConstants.showCompleteDialog, value);
+}
+
+//Show Guided Tour
+Future<void> setShowGuidedTour(bool value) async {
+  final box = Hive.box(HiveConstants.hiveBox);
+  await box.put(HiveConstants.guidedTour, value);
+}

@@ -17,6 +17,7 @@ class UserCardWidget extends StatefulWidget {
   final VoidCallback onTapCross;
   final VoidCallback onTapHeart;
   final VoidCallback onTapBolt;
+
   const UserCardWidget({
     Key? key,
     required this.user,

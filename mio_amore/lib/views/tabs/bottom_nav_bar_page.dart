@@ -1,8 +1,11 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:mio_amore/helpers/constants.dart';
+import 'package:mio_amore/models/user_profile_model.dart';
 import 'package:mio_amore/providers/match_provider.dart';
 import 'package:mio_amore/providers/user_profile_provider.dart';
 import 'package:mio_amore/views/others/error_page.dart';
@@ -12,6 +15,7 @@ import 'package:mio_amore/views/tabs/feeds/feeds_page.dart';
 import 'package:mio_amore/views/tabs/home/home_page.dart';
 import 'package:mio_amore/views/tabs/interactions/interactions_page.dart';
 import 'package:mio_amore/views/tabs/messages/messages_page.dart';
+import 'package:mio_amore/views/tabs/profile/edit_profile_page.dart';
 import 'package:mio_amore/views/tabs/profile/first_time_update_profile_page.dart';
 
 class BottomNavBarPage extends ConsumerStatefulWidget {
@@ -23,8 +27,74 @@ class BottomNavBarPage extends ConsumerStatefulWidget {
 
 class _BottomNavBarPageState extends ConsumerState<BottomNavBarPage> {
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void _showCompleteProfile() async {
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      final userRef = ref.read(userProfileFutureProvider);
+
+      UserProfileModel? userProfile;
+
+      userRef.whenData((value) {
+        userProfile = value;
+      });
+
+      if (userProfile != null) {
+        final showCompleteDialog = Hive.box(HiveConstants.hiveBox)
+            .get(HiveConstants.showCompleteDialog, defaultValue: false) as bool;
+
+        if (!showCompleteDialog) {
+          if (userProfile!.profilePicture == null) {
+            await Future.delayed(const Duration(seconds: 3), () async {
+              if (mounted) {
+                await showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text('Complete your profile'),
+                        content: const Text(
+                            'Please set your profile picture. You can also edit your profile after you have set your profile picture. Add some other photos to your profile to make it more interesting.'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: const Text('Cancel'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          TextButton(
+                            child: const Text('Okay'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => EditProfilePage(
+                                      userProfileModel: userProfile!),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      );
+                    }).then((value) {
+                  Hive.box(HiveConstants.hiveBox)
+                      .put(HiveConstants.showCompleteDialog, true);
+                });
+              }
+            });
+          }
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    // _showCompleteProfile();
+
     final isUserAdded = ref.watch(isUserAddedProvider);
 
     return isUserAdded.when(

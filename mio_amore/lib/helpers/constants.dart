@@ -40,6 +40,8 @@ class HiveConstants {
   static const String hiveBox = "hiveBox";
 
   static const String chatWallpaper = "chatWallpaper";
+  static const String showCompleteDialog = "showCompleteDialog";
+  static const String guidedTour = "guidedTour";
 }
 
 const String countryCodeJson = "assets/json/country_code.json";
