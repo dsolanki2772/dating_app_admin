@@ -33,7 +33,7 @@ class _BottomNavBarPageState extends ConsumerState<BottomNavBarPage> {
     super.initState();
   }
 
-  void _showCompleteProfile() async {
+  void showCompleteProfile() async {
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       final userRef = ref.read(userProfileFutureProvider);
 

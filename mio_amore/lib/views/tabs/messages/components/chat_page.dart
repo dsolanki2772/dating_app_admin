@@ -254,7 +254,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                   child: SizedBox(
                     height: 250,
                     child: EmojiPicker(
-                      onEmojiSelected: (Category category, Emoji emoji) {
+                      onEmojiSelected: (Category? category, Emoji emoji) {
                         _onEmojiSelected(emoji);
                       },
                       onBackspacePressed: _onBackspacePressed,
@@ -949,7 +949,6 @@ final _emojiPickerConfig = Config(
   indicatorColor: AppConstants.primaryColor,
   iconColor: Colors.grey,
   iconColorSelected: AppConstants.primaryColor,
-  progressIndicatorColor: AppConstants.primaryColor,
   backspaceColor: AppConstants.primaryColor,
   skinToneDialogBgColor: Colors.white,
   skinToneIndicatorColor: Colors.grey,
