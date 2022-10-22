@@ -34,7 +34,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   google_fonts: ^3.0.0
-  flutter_riverpod: ^1.0.3
+  flutter_riverpod: ^2.0.2
   hive_flutter: ^1.1.0
   flutter_easyloading: ^3.0.3
   hive: ^2.1.0
@@ -44,29 +44,29 @@ dependencies:
   photo_view: ^0.13.0
   animations: ^2.0.2
   google_sign_in: ^5.2.4
-  firebase_core: ^1.14.0
-  firebase_auth: ^3.3.12
-  cloud_firestore: ^3.1.11
+  firebase_core: ^2.1.0
+  firebase_auth: ^4.0.2
+  cloud_firestore: ^4.0.2
   intl: ^0.17.0
-  firebase_storage: ^10.2.11
+  firebase_storage: ^11.0.2
   image_picker: ^0.8.5
   location: ^4.3.0
   emoji_picker_flutter: ^1.1.2
   custom_pop_up_menu: ^1.2.3+1
   auto_size_text: ^3.0.0
-  geolocator: ^8.2.0
+  geolocator: ^9.0.2
   http: ^0.13.4
   geocoding: ^2.0.4
   swipe_cards: ^1.0.0
   url_launcher: ^6.1.0
-  share_plus: ^4.0.4
+  share_plus: ^6.0.1
   sign_in_with_apple: ^4.0.0
-  package_info_plus: ^1.4.2
+  package_info_plus: ^3.0.1
   just_audio: ^0.9.20
   # awesome_notifications: ^0.6.21
   easy_localization: ^3.0.0
   flutter_facebook_auth: ^4.3.4+1
-  device_info_plus: ^3.2.3
+  device_info_plus: ^7.0.1
   flutter_widget_from_html: ^0.8.5
   flutter_spinkit: ^5.1.0
   twitter_login: ^4.2.3
@@ -74,8 +74,8 @@ dependencies:
   encrypt: ^5.0.1
   social_media_recorder: ^0.1.61
   voice_message_package: ^0.0.74
-  google_mobile_ads: ^1.2.0
-  firebase_messaging: ^11.4.1
+  google_mobile_ads: ^2.1.0
+  firebase_messaging: ^14.0.2
   flutter_native_splash: ^2.1.6
   webview_flutter: ^3.0.4
   collection: ^1.16.0
