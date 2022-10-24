@@ -310,7 +310,7 @@ class _HomePageState extends State<HomePage> {
                   return filteredUsers.when(
                     data: (data) {
                       return data.isEmpty
-                          ? const SizedBox()
+                          ? const Center(child: Text("Nothing found"))
                           : FilterInteraction(
                               users: data,
                             );
