@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
@@ -47,9 +49,11 @@ class AuthProvider {
   Future<User?> signInWithFacebook() async {
     try {
       final LoginResult result = await FacebookAuth.instance.login();
+      log('FB Result: ${result.accessToken}');
       if (result.status == LoginStatus.success) {
         final OAuthCredential credential =
             FacebookAuthProvider.credential(result.accessToken!.token);
+        log('FB Credentials: $credential');
 
         final userCred =
             await FirebaseAuth.instance.signInWithCredential(credential);
