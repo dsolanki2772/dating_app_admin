@@ -30,6 +30,8 @@ class AuthProvider {
         idToken: googleAuth?.idToken,
       );
 
+      log('Google Credential: $credential');
+
       final userCred =
           await FirebaseAuth.instance.signInWithCredential(credential);
 

@@ -104,7 +104,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                           AppConstants.defaultNumericValue * 10),
                       child: GestureDetector(
                         onTap: () async {
-                          void _setProfilePicture() async {
+                          void setProfilePicture() async {
                             final imagePath = await pickMedia();
                             if (imagePath != null) {
                               setState(() {
@@ -127,7 +127,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                         leading: const Icon(Icons.image),
                                         onTap: () {
                                           Navigator.pop(context);
-                                          _setProfilePicture();
+                                          setProfilePicture();
                                         },
                                       ),
                                       ListTile(
@@ -145,7 +145,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                   );
                                 });
                           } else {
-                            _setProfilePicture();
+                            setProfilePicture();
                           }
                         },
                         child: SizedBox(
@@ -293,7 +293,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                       .map(
                         (image) => GestureDetector(
                           onTap: () async {
-                            void _selecImage() async {
+                            void selecImage() async {
                               final imagePath = await pickMedia();
                               if (imagePath != null) {
                                 setState(() {
@@ -314,7 +314,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                           leading: const Icon(Icons.image),
                                           onTap: () {
                                             Navigator.pop(context);
-                                            _selecImage();
+                                            selecImage();
                                           },
                                         ),
                                         ListTile(
@@ -333,7 +333,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                     );
                                   });
                             } else {
-                              _selecImage();
+                              selecImage();
                             }
                           },
                           child: SizedBox(

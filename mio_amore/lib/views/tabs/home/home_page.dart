@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:mio_amore/config/config.dart';
 import 'package:mio_amore/models/match_model.dart';
 import 'package:mio_amore/models/notification_model.dart';
 import 'package:mio_amore/providers/match_provider.dart';
@@ -191,7 +190,6 @@ class _HomePageState extends State<HomePage> {
     // );
 
     TutorialCoachMark(
-      context,
       targets: _targets,
       colorShadow: AppConstants.primaryColor,
       onClickTarget: (target) {
@@ -211,7 +209,7 @@ class _HomePageState extends State<HomePage> {
       onFinish: () {
         print("finish");
       },
-    ).show();
+    ).show(context: context);
   }
 
   @override
@@ -312,7 +310,7 @@ class _HomePageState extends State<HomePage> {
                   return filteredUsers.when(
                     data: (data) {
                       return data.isEmpty
-                          ? const SizedBox()
+                          ? const Center(child: Text("Nothing found"))
                           : FilterInteraction(
                               users: data,
                             );

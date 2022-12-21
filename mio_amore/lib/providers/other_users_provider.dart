@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -41,7 +42,7 @@ final filteredOtherUsersProvider =
                 mySettings.location.longitude,
                 userLocation.latitude,
                 userLocation.longitude) /
-            1000;
+            1;
 
         if (mySettings.interestedIn == null) {
           isBoth = true;

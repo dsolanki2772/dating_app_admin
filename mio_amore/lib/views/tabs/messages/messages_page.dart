@@ -359,10 +359,13 @@ class MessageViewModel {
 }
 
 List<MessageViewModel> getAllMessages(WidgetRef ref, List<MatchModel> data) {
-  final otherUserIds = data
-      .map((e) => e.userIds.firstWhere(
-          (element) => element != FirebaseAuth.instance.currentUser!.uid))
-      .toList();
+  final otherUserIds = data.map((e) {
+    return e.userIds
+            .any((element) => element != FirebaseAuth.instance.currentUser!.uid)
+        ? e.userIds.firstWhere(
+            (element) => element != FirebaseAuth.instance.currentUser!.uid)
+        : null;
+  }).toList();
 
   final otherUsers = ref.watch(otherUsersProvider);
   List<UserProfileModel> matchedUsers = [];

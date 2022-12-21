@@ -70,12 +70,10 @@ class _FeedPostPageState extends ConsumerState<FeedPostPage> {
 
   void _onPressedGallery() async {
     await _picker.pickMultiImage(imageQuality: 30).then((value) async {
-      if (value != null) {
-        for (var item in value) {
-          setState(() {
-            _selectedImages.add(File(item.path));
-          });
-        }
+      for (var item in value) {
+        setState(() {
+          _selectedImages.add(File(item.path));
+        });
       }
     });
   }
