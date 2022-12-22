@@ -36,7 +36,7 @@ void main() async {
 //   await AwesomeNotifications().initialize(
 //     null,
 //     [
-//       NotificationChannel( 
+//       NotificationChannel(
 //           channelKey: 'basic_notification',
 //           channelName: 'Basic notifications',
 //           channelDescription: 'All Notifications',
