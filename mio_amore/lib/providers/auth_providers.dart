@@ -57,13 +57,23 @@ class AuthProvider {
             FacebookAuthProvider.credential(result.accessToken!.token);
         log('FB Credentials: $credential');
 
-        final userCred =
-            await FirebaseAuth.instance.signInWithCredential(credential);
+        final userCred = await FirebaseAuth.instance
+            .signInWithCredential(credential)
+            .catchError(
+          (e) {
+            log('FB Error: $e');
+          },
+        );
+
+        log('FB User: ${userCred.user}');
         await _deviceTokenProvider.saveDeviceToken();
+        EasyLoading.showSuccess('Logged in successfully.');
 
         return userCred.user;
+      } else {
+        EasyLoading.showError('Something went wrong.');
+        return null;
       }
-      return null;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'account-exists-with-different-credential') {
         EasyLoading.showError(

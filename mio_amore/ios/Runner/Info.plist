@@ -64,14 +64,14 @@
 				<array>
 					<!-- Copied from GoogleService-Info.plist key REVERSED_CLIENT_ID -->
 					<string>com.googleusercontent.apps.705774753844-3cb5d6ruiu4ljmtkjo53ojh4ucolo4dm</string>
-					 <string>fb707806390507068</string>
+					 <string>fb752318719243949</string>
 				</array>
 			</dict>
 		</array>
 		<key>FacebookAppID</key>
-		<string>707806390507068</string>
+		<string>752318719243949</string>
 		<key>FacebookClientToken</key>
-		<string>5996ee953216707a43c797953014a816</string>
+		<string>114bdb99fa3b33de1160263e65ada833</string>
 		<key>FacebookDisplayName</key>
 		<string>mio amore</string>
 		<key>LSApplicationQueriesSchemes</key>

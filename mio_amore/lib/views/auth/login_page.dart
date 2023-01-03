@@ -67,7 +67,6 @@ class LoginPage extends ConsumerWidget {
                   onPressed: () async {
                     EasyLoading.show(status: 'Logging in...');
                     await ref.read(authProvider).signInWithFacebook();
-                    EasyLoading.dismiss();
                   },
                   text: "Log in with facebook",
                 ),
