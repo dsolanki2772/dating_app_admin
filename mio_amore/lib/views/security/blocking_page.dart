@@ -50,8 +50,8 @@ class BlockingPage extends ConsumerWidget {
                               onPressed: () async {
                                 await unblockUser(blockedModel.id)
                                     .then((value) {
-                                  ref.refresh(blockedUsersFutureProvider);
-                                  ref.refresh(otherUsersProvider);
+                                  ref.invalidate(blockedUsersFutureProvider);
+                                  ref.invalidate(otherUsersProvider);
                                 });
                               },
                               child: const Text('Unblock'),

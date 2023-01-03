@@ -593,8 +593,9 @@ class _ChatTopBarState extends ConsumerState<ChatTopBar> {
                                             await blockUser(
                                                     widget.otherUser.userId)
                                                 .then((value) {
-                                              ref.refresh(otherUsersProvider);
-                                              ref.refresh(
+                                              ref.invalidate(
+                                                  otherUsersProvider);
+                                              ref.invalidate(
                                                   blockedUsersFutureProvider);
                                               EasyLoading.dismiss();
                                               Navigator.of(context).pop();

@@ -60,7 +60,7 @@ class _FeedPostPageState extends ConsumerState<FeedPostPage> {
     await addFeed(feedModel).then((result) {
       if (result) {
         EasyLoading.showSuccess('Posted');
-        ref.refresh(getFeedsProvider);
+        ref.invalidate(getFeedsProvider);
         Navigator.pop(context);
       } else {
         EasyLoading.showError('Failed to post');

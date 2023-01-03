@@ -268,7 +268,7 @@ class _SingleFeedPostState extends State<SingleFeedPost> {
                                                     await deleteFeed(
                                                             widget.feed.id)
                                                         .then((value) {
-                                                      ref.refresh(
+                                                      ref.invalidate(
                                                           getFeedsProvider);
                                                       Navigator.of(context)
                                                           .pop();

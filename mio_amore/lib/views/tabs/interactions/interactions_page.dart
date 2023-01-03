@@ -47,7 +47,7 @@ class _InteractionsPageState extends ConsumerState<InteractionsPage> {
                 onPressed: () async {
                   Navigator.of(context).pop();
                   await deleteInteraction(id).then((value) {
-                    ref.refresh(interactionFutureProvider);
+                    ref.invalidate(interactionFutureProvider);
                   });
                 },
               ),

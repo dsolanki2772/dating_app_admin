@@ -199,7 +199,7 @@
 //                     .updateUserProfile(userProfileModel)
 //                     .then((value) {
 //                   EasyLoading.dismiss();
-//                   ref.refresh(userProfileFutureProvider);
+//                   ref.invalidate(userProfileFutureProvider);
 //                   Navigator.pop(context);
 //                 });
 //               },

@@ -608,7 +608,7 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
                   upSwipeAllowed: true,
                   matchEngine: _matchEngine,
                   onStackFinished: () {
-                    ref.refresh(interactionFutureProvider);
+                    ref.invalidate(interactionFutureProvider);
                   },
                   itemBuilder: (context, index) {
                     final user = _swipeItems[index].content as UserProfileModel;

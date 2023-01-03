@@ -307,7 +307,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                     .read(userProfileProvider)
                     .updateUserProfile(userProfileModel)
                     .then((value) {
-                  ref.refresh(userProfileFutureProvider);
+                  ref.invalidate(userProfileFutureProvider);
                   EasyLoading.dismiss();
                   Navigator.pop(context);
                 });

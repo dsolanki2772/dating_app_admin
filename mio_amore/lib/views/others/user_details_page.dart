@@ -230,7 +230,7 @@ class UserDetailsPage extends ConsumerWidget {
                             isDislike: true, createdAt: DateTime.now());
                         await createInteraction(newInteraction).then((value) {
                           Navigator.pop(context);
-                          ref.refresh(interactionFutureProvider);
+                          ref.invalidate(interactionFutureProvider);
                         });
                       },
                       onTapBolt: () async {
@@ -260,7 +260,7 @@ class UserDetailsPage extends ConsumerWidget {
                             });
                           }
 
-                          ref.refresh(interactionFutureProvider);
+                          ref.invalidate(interactionFutureProvider);
                         });
                       },
                       onTapHeart: () async {
@@ -290,7 +290,7 @@ class UserDetailsPage extends ConsumerWidget {
                             });
                           }
 
-                          ref.refresh(interactionFutureProvider);
+                          ref.invalidate(interactionFutureProvider);
                         });
                       },
                     ),
@@ -801,8 +801,8 @@ Future<void> showBlockDialog(BuildContext context, String userId) async {
                   EasyLoading.show(status: "Blocking...");
 
                   await blockUser(userId).then((value) {
-                    ref.refresh(otherUsersProvider);
-                    ref.refresh(blockedUsersFutureProvider);
+                    ref.invalidate(otherUsersProvider);
+                    ref.invalidate(blockedUsersFutureProvider);
                     EasyLoading.dismiss();
                     Navigator.of(context).pop();
                     Navigator.of(context).pop();

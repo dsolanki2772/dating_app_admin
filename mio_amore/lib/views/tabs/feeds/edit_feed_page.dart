@@ -55,7 +55,7 @@ class _EditFeedPageState extends ConsumerState<EditFeedPage> {
                   caption: _captionController.text,
                 );
                 await updateFeed(newFeed).then((value) {
-                  ref.refresh(getFeedsProvider);
+                  ref.invalidate(getFeedsProvider);
                   Navigator.pop(context);
                 });
               },

@@ -77,8 +77,8 @@ class _FirstTimeUserProfilePageState
     final result =
         await ref.read(userProfileProvider).createUserProfile(userProfileModel);
     if (result) {
-      ref.refresh(isUserAddedProvider);
-      ref.refresh(userProfileFutureProvider);
+      ref.invalidate(isUserAddedProvider);
+      ref.invalidate(userProfileFutureProvider);
     } else {}
   }
 

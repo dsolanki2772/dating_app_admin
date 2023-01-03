@@ -21,6 +21,8 @@ class VerificationProvider extends ChangeNotifier {
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .get()
         .then((value) {
+      print("Value: ${value.data()}");
+
       if (value.exists) {
         return GetVerifiedModel.fromMap(value.data()!);
       } else {
