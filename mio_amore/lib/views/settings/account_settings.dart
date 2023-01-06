@@ -191,7 +191,13 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                             AppConfig.initialMaximumDistanceInKM;
                   });
                 },
-                title: const Text("Anywhere"),
+                title: Text(
+                  "Anywhere",
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge!
+                      .copyWith(fontWeight: FontWeight.bold),
+                ),
               ),
             ),
             const SizedBox(height: AppConstants.defaultNumericValue * 2),

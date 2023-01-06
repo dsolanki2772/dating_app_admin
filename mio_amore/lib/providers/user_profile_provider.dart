@@ -128,17 +128,6 @@ class UserProfileProvider {
     });
     return imageUrl;
   }
-
-  // Future<bool> deleteUserProfile(UserProfileModel userProfileModel) async {
-  //   try {
-  //     await _userCollection
-  //         .doc(userProfileModel.id)
-  //         .delete();
-  //     return true;
-  //   } catch (e) {
-  //     return false;
-  //   }
-  // }
 }
 
 final isUserAddedProvider = FutureProvider<bool>((ref) async {

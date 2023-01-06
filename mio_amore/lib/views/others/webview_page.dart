@@ -1,5 +1,3 @@
-import 'dart:async';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -12,17 +10,40 @@ class WebViewPage extends StatefulWidget {
 }
 
 class _WebViewPageState extends State<WebViewPage> {
-  final Completer<WebViewController> _controller =
-      Completer<WebViewController>();
+  late WebViewController _webViewController;
 
   int _progress = 0;
 
   @override
   void initState() {
+    _webViewController = WebViewController()
+      ..loadRequest(Uri.parse(widget.url))
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(Colors.white)
+      ..addJavaScriptChannel(
+        "Toast",
+        onMessageReceived: (p0) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(p0.message)),
+          );
+        },
+      )
+      ..setNavigationDelegate(NavigationDelegate(
+        onProgress: (int progress) {
+          if (mounted) {
+            setState(() {
+              _progress = progress;
+            });
+          }
+        },
+        onPageStarted: (String url) {},
+        onPageFinished: (String url) {},
+        onWebResourceError: (WebResourceError error) {},
+        onNavigationRequest: (NavigationRequest request) {
+          return NavigationDecision.prevent;
+        },
+      ));
     super.initState();
-    if (Platform.isAndroid) {
-      WebView.platform = SurfaceAndroidWebView();
-    }
   }
 
   @override
@@ -36,42 +57,10 @@ class _WebViewPageState extends State<WebViewPage> {
                 )
               : const Divider(height: 0),
           Expanded(
-            child: WebView(
-              initialUrl: widget.url,
-              javascriptMode: JavascriptMode.unrestricted,
-              onWebViewCreated: (WebViewController webViewController) {
-                _controller.complete(webViewController);
-              },
-              onProgress: (int progress) {
-                setState(() {
-                  _progress = progress;
-                });
-              },
-              javascriptChannels: <JavascriptChannel>{
-                _toasterJavascriptChannel(context),
-              },
-              onPageStarted: (String url) {
-                debugPrint('Page started loading: $url');
-              },
-              onPageFinished: (String url) {
-                debugPrint('Page finished loading: $url');
-              },
-              gestureNavigationEnabled: true,
-              backgroundColor: Colors.white,
-            ),
+            child: WebViewWidget(controller: _webViewController),
           ),
         ],
       ),
     );
-  }
-
-  JavascriptChannel _toasterJavascriptChannel(BuildContext context) {
-    return JavascriptChannel(
-        name: 'Toaster',
-        onMessageReceived: (JavascriptMessage message) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(message.message)),
-          );
-        });
   }
 }
