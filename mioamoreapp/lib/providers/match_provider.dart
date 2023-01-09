@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/helpers/encrypt_helper.dart';
 import 'package:mioamoreapp/models/chat_item_model.dart';
 import 'package:mioamoreapp/models/match_model.dart';
+import 'package:mioamoreapp/providers/auth_providers.dart';
 import 'package:mioamoreapp/providers/interaction_provider.dart';
 
 final matchStreamProvider = StreamProvider<List<MatchModel>>((ref) {
@@ -12,7 +12,7 @@ final matchStreamProvider = StreamProvider<List<MatchModel>>((ref) {
       FirebaseFirestore.instance.collection(FirebaseConstants.matchCollection);
 
   return matchCollection
-      .where("userIds", arrayContains: FirebaseAuth.instance.currentUser!.uid)
+      .where("userIds", arrayContains: ref.watch(currentUserStateProvider)!.uid)
       .snapshots()
       .map((event) {
     return event.docs.map((doc) {

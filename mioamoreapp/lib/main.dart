@@ -107,10 +107,10 @@ class _LandingWidgetState extends ConsumerState<LandingWidget> {
   void initState() {
     _setupInteractedMessage();
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      showAwesomeNotification(message);
+      showNotification(message);
     });
     FirebaseMessaging.onMessage.listen((message) {
-      showAwesomeNotification(message);
+      showNotification(message);
     });
     super.initState();
   }
@@ -182,10 +182,10 @@ final _swatch = {
 
 Future<void> _handleBackgroundNotification(RemoteMessage message) async {
   await Firebase.initializeApp();
-  showAwesomeNotification(message);
+  showNotification(message);
 }
 
-void showAwesomeNotification(RemoteMessage message) {
+void showNotification(RemoteMessage message) {
   // if (!AwesomeStringUtils.isNullOrEmpty(message.notification?.title,
   //         considerWhiteSpaceAsEmpty: true) ||
   //     !AwesomeStringUtils.isNullOrEmpty(message.notification?.body,

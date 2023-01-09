@@ -1,6 +1,5 @@
 import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:mioamoreapp/models/match_model.dart';
 import 'package:mioamoreapp/models/notification_model.dart';
+import 'package:mioamoreapp/providers/auth_providers.dart';
 import 'package:mioamoreapp/providers/match_provider.dart';
 import 'package:mioamoreapp/providers/notifiaction_provider.dart';
 import 'package:mioamoreapp/views/tabs/home/notification_page.dart';
@@ -614,7 +614,7 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
                     final user = _swipeItems[index].content as UserProfileModel;
 
                     final String myUserId =
-                        FirebaseAuth.instance.currentUser!.uid;
+                        ref.watch(currentUserStateProvider)!.uid;
                     final String id = myUserId + user.id;
 
                     final UserInteractionModel interaction =
@@ -638,7 +638,7 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
                         await createInteraction(newInteraction)
                             .then((result) async {
                           if (result) {
-                            await getExistingInteraction(user.id)
+                            await getExistingInteraction(user.id, myUserId)
                                 .then((otherUserInteraction) {
                               if (otherUserInteraction != null) {
                                 showMatchingDialog(
@@ -669,7 +669,7 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
                         await createInteraction(newInteraction)
                             .then((result) async {
                           if (result) {
-                            await getExistingInteraction(user.id)
+                            await getExistingInteraction(user.id, myUserId)
                                 .then((otherUserInteraction) {
                               if (otherUserInteraction != null) {
                                 showMatchingDialog(

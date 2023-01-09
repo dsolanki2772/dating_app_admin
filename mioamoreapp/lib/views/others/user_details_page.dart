@@ -1,16 +1,17 @@
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/models/match_model.dart';
 import 'package:mioamoreapp/models/notification_model.dart';
 import 'package:mioamoreapp/models/user_interaction_model.dart';
 import 'package:mioamoreapp/models/user_profile_model.dart';
+import 'package:mioamoreapp/providers/auth_providers.dart';
 import 'package:mioamoreapp/providers/block_user_provider.dart';
 import 'package:mioamoreapp/providers/interaction_provider.dart';
 import 'package:mioamoreapp/providers/match_provider.dart';
@@ -154,7 +155,7 @@ class UserDetailsPage extends ConsumerWidget {
 
     final currentUserProfile = ref.watch(userProfileFutureProvider);
 
-    final String myUserId = FirebaseAuth.instance.currentUser!.uid;
+    final String myUserId = ref.watch(currentUserStateProvider)!.uid;
     final String id = myUserId + user.id;
 
     final UserInteractionModel interaction = UserInteractionModel(
@@ -175,7 +176,7 @@ class UserDetailsPage extends ConsumerWidget {
     return Scaffold(
       body: Stack(
         children: [
-          DetailsBody(user: user, matchId: matchId),
+          DetailsBody(user: user, matchId: matchId, myUserId: myUserId),
           if (matchId != null)
             Positioned(
               bottom: 0,
@@ -239,7 +240,7 @@ class UserDetailsPage extends ConsumerWidget {
                         await createInteraction(newInteraction)
                             .then((result) async {
                           if (result && currentUserProfileModel != null) {
-                            await getExistingInteraction(user.id)
+                            await getExistingInteraction(user.id, myUserId)
                                 .then((otherUserInteraction) async {
                               if (otherUserInteraction != null) {
                                 await showMatchingDialog(
@@ -269,7 +270,7 @@ class UserDetailsPage extends ConsumerWidget {
                         await createInteraction(newInteraction)
                             .then((result) async {
                           if (result && currentUserProfileModel != null) {
-                            await getExistingInteraction(user.id)
+                            await getExistingInteraction(user.id, myUserId)
                                 .then((otherUserInteraction) async {
                               if (otherUserInteraction != null) {
                                 await showMatchingDialog(
@@ -308,10 +309,12 @@ class DetailsBody extends StatefulWidget {
   const DetailsBody({
     Key? key,
     required this.user,
+    required this.myUserId,
     required this.matchId,
   }) : super(key: key);
 
   final UserProfileModel user;
+  final String myUserId;
   final String? matchId;
 
   @override
@@ -340,9 +343,9 @@ class _DetailsBodyState extends State<DetailsBody> {
                 child: const Text("Unmatch"),
                 onPressed: () async {
                   EasyLoading.show(status: "Unmatching...");
-                  final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+
                   await unMatchUser(
-                          widget.matchId!, widget.user.userId, currentUserId)
+                          widget.matchId!, widget.user.userId, widget.myUserId)
                       .then((value) {
                     EasyLoading.dismiss();
                     Navigator.of(context).pop();
@@ -427,6 +430,7 @@ class _DetailsBodyState extends State<DetailsBody> {
                       CustomIconButton(
                         icon: CupertinoIcons.chevron_back,
                         color: Colors.white,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         onPressed: () {
                           Navigator.pop(context);
                         },
@@ -474,7 +478,9 @@ class _DetailsBodyState extends State<DetailsBody> {
                                           onTap: () async {
                                             _moreMenuController.hideMenu();
                                             showBlockDialog(
-                                                context, widget.user.userId);
+                                                context,
+                                                widget.user.userId,
+                                                widget.myUserId);
                                           },
                                         ),
                                       ],
@@ -489,11 +495,16 @@ class _DetailsBodyState extends State<DetailsBody> {
                               arrowColor: Colors.white,
                               barrierColor:
                                   AppConstants.primaryColor.withOpacity(0.1),
-                              child: const CupertinoButton(
-                                padding: EdgeInsets.zero,
-                                onPressed: null,
-                                child: Icon(CupertinoIcons.ellipsis_vertical,
-                                    color: Colors.white),
+                              child: CustomIconButton(
+                                icon: CupertinoIcons.ellipsis,
+                                color: Colors.white,
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary,
+                                onPressed: () {
+                                  _moreMenuController.showMenu();
+                                },
+                                padding: const EdgeInsets.all(
+                                    AppConstants.defaultNumericValue / 1.5),
                               ),
                             ),
                     ],
@@ -526,7 +537,7 @@ class _DetailsBodyState extends State<DetailsBody> {
                     horizontal: AppConstants.defaultNumericValue),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Expanded(
                       child: Column(
@@ -552,31 +563,6 @@ class _DetailsBodyState extends State<DetailsBody> {
                                     color: CupertinoColors.activeGreen),
                             ],
                           ),
-                          const SizedBox(
-                              height: AppConstants.defaultNumericValue / 4),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Icon(Icons.location_on,
-                                  color: AppConstants.primaryColor, size: 16),
-                              const SizedBox(
-                                  width: AppConstants.defaultNumericValue / 4),
-                              Flexible(
-                                child: Text(
-                                    widget.user.userAccountSettingsModel
-                                        .location.addressText,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .subtitle2!
-                                        .copyWith(
-                                            color: AppConstants.primaryColor,
-                                            fontWeight: FontWeight.bold)),
-                              )
-                            ],
-                          )
                         ],
                       ),
                     ),
@@ -600,6 +586,63 @@ class _DetailsBodyState extends State<DetailsBody> {
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold)),
                     ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppConstants.defaultNumericValue / 2),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: AppConstants.defaultNumericValue,
+                    vertical: AppConstants.defaultNumericValue / 2),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Icon(Icons.location_on, color: AppConstants.primaryColor),
+                    const SizedBox(width: AppConstants.defaultNumericValue / 4),
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.user.userAccountSettingsModel.location
+                                .addressText,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context)
+                                .textTheme
+                                .subtitle2!
+                                .copyWith(
+                                    color: AppConstants.primaryColor,
+                                    fontWeight: FontWeight.bold),
+                          ),
+                          Consumer(
+                            builder: (context, ref, child) {
+                              final myProfile =
+                                  ref.watch(userProfileFutureProvider);
+                              return myProfile.when(
+                                  data: (data) {
+                                    if (data != null) {
+                                      return Text(
+                                        '${(Geolocator.distanceBetween(data.userAccountSettingsModel.location.latitude, data.userAccountSettingsModel.location.longitude, widget.user.userAccountSettingsModel.location.latitude, widget.user.userAccountSettingsModel.location.longitude) / 1000).toStringAsFixed(2)} km away',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .caption!
+                                            .copyWith(
+                                                fontWeight: FontWeight.bold),
+                                      );
+                                    } else {
+                                      return const SizedBox();
+                                    }
+                                  },
+                                  error: (_, __) => const SizedBox(),
+                                  loading: () => const SizedBox());
+                            },
+                          ),
+                        ],
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -780,7 +823,8 @@ class _DetailsBodyState extends State<DetailsBody> {
 //   }
 // }
 
-Future<void> showBlockDialog(BuildContext context, String userId) async {
+Future<void> showBlockDialog(
+    BuildContext context, String userId, String myUserId) async {
   await showDialog(
       context: context,
       builder: (context) {
@@ -800,7 +844,7 @@ Future<void> showBlockDialog(BuildContext context, String userId) async {
                 onPressed: () async {
                   EasyLoading.show(status: "Blocking...");
 
-                  await blockUser(userId).then((value) {
+                  await blockUser(userId, myUserId).then((value) {
                     ref.invalidate(otherUsersProvider);
                     ref.invalidate(blockedUsersFutureProvider);
                     EasyLoading.dismiss();

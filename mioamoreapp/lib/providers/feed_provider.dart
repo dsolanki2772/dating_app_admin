@@ -1,18 +1,18 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/models/feed_model.dart';
+import 'package:mioamoreapp/providers/auth_providers.dart';
 import 'package:mioamoreapp/providers/match_provider.dart';
 import 'package:mioamoreapp/providers/other_users_provider.dart';
 
 final getFeedsProvider = FutureProvider<List<FeedModel>>((ref) async {
   final feedsCollection =
       FirebaseFirestore.instance.collection(FirebaseConstants.feedsCollection);
-  final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+  final currentUserId = ref.watch(currentUserStateProvider)!.uid;
   final machingProvider = ref.watch(matchStreamProvider);
   final otherUsersRef = ref.watch(otherUsersProvider);
 

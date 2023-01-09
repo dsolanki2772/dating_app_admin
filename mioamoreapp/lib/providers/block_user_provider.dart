@@ -1,14 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/models/block_user_model.dart';
+import 'package:mioamoreapp/providers/auth_providers.dart';
 
-final currentUserId = FirebaseAuth.instance.currentUser!.uid;
 final blockUsersCollection = FirebaseFirestore.instance
     .collection(FirebaseConstants.blockedUsersCollection);
 
-Future<List<BlockUserModel>> getBlockUsers() async {
+Future<List<BlockUserModel>> getBlockUsers(String currentUserId) async {
   final blockUsers = await blockUsersCollection
       .where("blockedByUserId", isEqualTo: currentUserId)
       .get();
@@ -19,7 +18,7 @@ Future<List<BlockUserModel>> getBlockUsers() async {
   return blockUsersList;
 }
 
-Future<List<BlockUserModel>> getUsersWhoBlockedMe() async {
+Future<List<BlockUserModel>> getUsersWhoBlockedMe(String currentUserId) async {
   final blockUsers = await blockUsersCollection
       .where("blockedUserId", isEqualTo: currentUserId)
       .get();
@@ -32,10 +31,10 @@ Future<List<BlockUserModel>> getUsersWhoBlockedMe() async {
 
 final blockedUsersFutureProvider =
     FutureProvider<List<BlockUserModel>>((ref) async {
-  return await getBlockUsers();
+  return await getBlockUsers(ref.watch(currentUserStateProvider)!.uid);
 });
 
-Future<bool> blockUser(String userId) async {
+Future<bool> blockUser(String userId, String currentUserId) async {
   final id = userId + currentUserId;
   try {
     await blockUsersCollection.doc(id).set(

@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/models/report_model.dart';
+import 'package:mioamoreapp/providers/auth_providers.dart';
 
 final _reportsCollection =
     FirebaseFirestore.instance.collection(FirebaseConstants.reportsCollection);
@@ -62,7 +62,7 @@ Future<List<String>> _uploadReportImages(
 }
 
 final getMyReportsProvider = FutureProvider<List<ReportModel>>((ref) async {
-  final userId = FirebaseAuth.instance.currentUser!.uid;
+  final userId = ref.watch(currentUserStateProvider)!.uid;
   final reports = await _reportsCollection
       .where('reportedByUserId', isEqualTo: userId)
       .get();

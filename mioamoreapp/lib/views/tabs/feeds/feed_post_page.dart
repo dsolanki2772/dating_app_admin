@@ -1,11 +1,11 @@
 import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/models/feed_model.dart';
+import 'package:mioamoreapp/providers/auth_providers.dart';
 import 'package:mioamoreapp/providers/feed_provider.dart';
 import 'package:mioamoreapp/providers/user_profile_provider.dart';
 import 'package:mioamoreapp/views/tabs/home/home_page.dart';
@@ -36,7 +36,7 @@ class _FeedPostPageState extends ConsumerState<FeedPostPage> {
     EasyLoading.show(status: 'Posting...');
 
     final currentTime = DateTime.now();
-    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    final currentUserId = ref.watch(currentUserStateProvider)!.uid;
     final feedId =
         currentUserId + currentTime.millisecondsSinceEpoch.toString();
 
@@ -285,7 +285,7 @@ class CreateNewPostBottomButtons extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            title: const Text("Photo/Video"),
+            title: const Text("Gallery"),
             onTap: onPressedOpenGallery,
             leading: const Icon(Icons.photo_library, color: Colors.red),
           ),

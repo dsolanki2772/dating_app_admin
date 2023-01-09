@@ -7,6 +7,7 @@ class CustomIconButton extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
   final Color? color;
+  final Color? backgroundColor;
 
   const CustomIconButton({
     Key? key,
@@ -15,6 +16,7 @@ class CustomIconButton extends StatelessWidget {
     this.padding,
     this.margin,
     this.color,
+    this.backgroundColor,
   }) : super(key: key);
 
   @override
@@ -30,7 +32,9 @@ class CustomIconButton extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius:
                 BorderRadius.circular(AppConstants.defaultNumericValue),
-            color: color?.withOpacity(0.1) ?? Colors.black.withOpacity(0.07),
+            color: backgroundColor ??
+                color?.withOpacity(0.1) ??
+                Colors.black.withOpacity(0.07),
           ),
           child: Icon(
             icon,

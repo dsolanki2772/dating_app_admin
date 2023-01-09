@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/models/device_model.dart';
@@ -13,8 +12,7 @@ class DeviceTokenProvider {
     return deviceToken;
   }
 
-  Future<void> saveDeviceToken() async {
-    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+  Future<void> saveDeviceToken(String currentUserId) async {
     final token = await _getDeviceToken();
     if (token != null) {
       final DeviceTokenModel deviceToken = DeviceTokenModel(

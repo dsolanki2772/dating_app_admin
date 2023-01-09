@@ -7,6 +7,7 @@ import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/helpers/date_formater.dart';
 import 'package:mioamoreapp/models/notification_model.dart';
 import 'package:mioamoreapp/models/user_profile_model.dart';
+import 'package:mioamoreapp/providers/auth_providers.dart';
 import 'package:mioamoreapp/providers/notifiaction_provider.dart';
 import 'package:mioamoreapp/providers/other_users_provider.dart';
 import 'package:mioamoreapp/views/custom/custom_app_bar.dart';
@@ -16,19 +17,20 @@ import 'package:mioamoreapp/views/others/user_details_page.dart';
 import 'package:mioamoreapp/views/tabs/home/home_page.dart';
 import 'package:mioamoreapp/views/tabs/messages/components/chat_page.dart';
 
-class NotificationPage extends StatefulWidget {
+class NotificationPage extends ConsumerStatefulWidget {
   const NotificationPage({Key? key}) : super(key: key);
 
   @override
-  State<NotificationPage> createState() => _NotificationPageState();
+  ConsumerState<NotificationPage> createState() => _NotificationPageState();
 }
 
-class _NotificationPageState extends State<NotificationPage> {
+class _NotificationPageState extends ConsumerState<NotificationPage> {
   final CustomPopupMenuController _moreMenuController =
       CustomPopupMenuController();
 
   @override
   Widget build(BuildContext context) {
+    final currentUserRef = ref.watch(currentUserStateProvider);
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 0,
@@ -70,7 +72,7 @@ class _NotificationPageState extends State<NotificationPage> {
                             title: 'Mark all as read',
                             onTap: () async {
                               _moreMenuController.hideMenu();
-                              await markAllAsRead();
+                              await markAllAsRead(currentUserRef!.uid);
                             },
                           ),
                         ],

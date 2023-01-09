@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/models/user_interaction_model.dart';
+import 'package:mioamoreapp/providers/auth_providers.dart';
 
 final interactionFutureProvider =
     FutureProvider.autoDispose<List<UserInteractionModel>>((ref) async {
@@ -10,7 +10,7 @@ final interactionFutureProvider =
       .collection(FirebaseConstants.userInteractionCollection);
 
   return await interactionCollection
-      .where("userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+      .where("userId", isEqualTo: ref.watch(currentUserStateProvider)!.uid)
       .get()
       .then((snapshot) {
     final List<UserInteractionModel> interactionList = [];
@@ -42,13 +42,13 @@ Future<bool> deleteInteraction(String interactionId) async {
   }
 }
 
-Future<UserInteractionModel?> getExistingInteraction(String otherUserId) async {
+Future<UserInteractionModel?> getExistingInteraction(
+    String otherUserId, String currentUserId) async {
   final interactionCollection = FirebaseFirestore.instance
       .collection(FirebaseConstants.userInteractionCollection);
 
   return await interactionCollection
-      .where("id",
-          isEqualTo: otherUserId + FirebaseAuth.instance.currentUser!.uid)
+      .where("id", isEqualTo: otherUserId + currentUserId)
       .get()
       .then((snapshot) {
     if (snapshot.docs.isEmpty) {

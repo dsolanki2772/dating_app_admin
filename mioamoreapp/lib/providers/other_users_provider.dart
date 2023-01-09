@@ -1,12 +1,10 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/models/user_account_settings_model.dart';
 import 'package:mioamoreapp/models/user_profile_model.dart';
+import 'package:mioamoreapp/providers/auth_providers.dart';
 import 'package:mioamoreapp/providers/block_user_provider.dart';
 import 'package:mioamoreapp/providers/user_profile_provider.dart';
 
@@ -153,14 +151,17 @@ class ClosestUser {
 }
 
 final otherUsersProvider = FutureProvider<List<UserProfileModel>>((ref) async {
-  final allOtherUsers = await getAllOtherUsers();
+  final allOtherUsers =
+      await getAllOtherUsers(ref.watch(currentUserStateProvider)!.uid);
 
   final List<String> blockedUsersIds = [];
-  final usersIblocked = await getBlockUsers();
+  final usersIblocked =
+      await getBlockUsers(ref.watch(currentUserStateProvider)!.uid);
   for (var user in usersIblocked) {
     blockedUsersIds.add(user.blockedUserId);
   }
-  final usersWhoBlockedMe = await getUsersWhoBlockedMe();
+  final usersWhoBlockedMe =
+      await getUsersWhoBlockedMe(ref.watch(currentUserStateProvider)!.uid);
   for (var user in usersWhoBlockedMe) {
     blockedUsersIds.add(user.blockedByUserId);
   }
@@ -174,16 +175,15 @@ final otherUsersProvider = FutureProvider<List<UserProfileModel>>((ref) async {
 
 final otherUsersWithoutBlockedProvider =
     FutureProvider<List<UserProfileModel>>((ref) async {
-  return await getAllOtherUsers();
+  return await getAllOtherUsers(ref.watch(currentUserStateProvider)!.uid);
 });
 
-Future<List<UserProfileModel>> getAllOtherUsers() async {
+Future<List<UserProfileModel>> getAllOtherUsers(String currentUserId) async {
   final userCollection = FirebaseFirestore.instance
       .collection(FirebaseConstants.userProfileCollection);
-  final myUserId = FirebaseAuth.instance.currentUser!.uid;
 
   final otherUsers =
-      await userCollection.where("userId", isNotEqualTo: myUserId).get();
+      await userCollection.where("userId", isNotEqualTo: currentUserId).get();
 
   final allOtherUsers = otherUsers.docs.map((doc) {
     return UserProfileModel.fromMap(doc.data());

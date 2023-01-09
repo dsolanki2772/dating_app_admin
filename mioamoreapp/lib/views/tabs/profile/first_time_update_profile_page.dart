@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -52,7 +51,7 @@ class _FirstTimeUserProfilePageState
   }
 
   void _onSubmit() async {
-    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final userId = ref.watch(currentUserStateProvider)!.uid;
 
     final UserAccountSettingsModel userAccountSettingsModel =
         UserAccountSettingsModel(
@@ -69,8 +68,8 @@ class _FirstTimeUserProfilePageState
       interests: _interests,
       gender: _gender!,
       birthDay: _birthday!,
-      email: FirebaseAuth.instance.currentUser!.email,
-      phoneNumber: FirebaseAuth.instance.currentUser!.phoneNumber,
+      email: ref.watch(currentUserStateProvider)!.email,
+      phoneNumber: ref.watch(currentUserStateProvider)!.phoneNumber,
       userAccountSettingsModel: userAccountSettingsModel,
       isVerified: false,
     );

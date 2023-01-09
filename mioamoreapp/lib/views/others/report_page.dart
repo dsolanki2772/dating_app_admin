@@ -1,17 +1,18 @@
 import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/helpers/media_picker_helper.dart';
 import 'package:mioamoreapp/models/report_model.dart';
 import 'package:mioamoreapp/models/user_profile_model.dart';
+import 'package:mioamoreapp/providers/auth_providers.dart';
 import 'package:mioamoreapp/providers/report_provider.dart';
 import 'package:mioamoreapp/views/custom/custom_button.dart';
 import 'package:mioamoreapp/views/others/user_details_page.dart';
 import 'package:mioamoreapp/views/tabs/home/home_page.dart';
 
-class ReportPage extends StatefulWidget {
+class ReportPage extends ConsumerStatefulWidget {
   final UserProfileModel userProfileModel;
   const ReportPage({
     Key? key,
@@ -19,10 +20,10 @@ class ReportPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ReportPage> createState() => _ReportPageState();
+  ConsumerState<ReportPage> createState() => _ReportPageState();
 }
 
-class _ReportPageState extends State<ReportPage> {
+class _ReportPageState extends ConsumerState<ReportPage> {
   final _imagesScrollcontroller = ScrollController();
   final _formKey = GlobalKey<FormState>();
   final _reasonController = TextEditingController();
@@ -155,7 +156,7 @@ class _ReportPageState extends State<ReportPage> {
                         images: _imagePaths,
                         reason: _reasonController.text,
                         reportedByUserId:
-                            FirebaseAuth.instance.currentUser!.uid,
+                            ref.watch(currentUserStateProvider)!.uid,
                         reportingUserId: widget.userProfileModel.id,
                       );
 
@@ -176,8 +177,13 @@ class _ReportPageState extends State<ReportPage> {
                                       child: const Text('No')),
                                   TextButton(
                                       onPressed: () async {
-                                        await showBlockDialog(context,
-                                                widget.userProfileModel.userId)
+                                        await showBlockDialog(
+                                                context,
+                                                widget.userProfileModel.userId,
+                                                ref
+                                                    .watch(
+                                                        currentUserStateProvider)!
+                                                    .uid)
                                             .then((value) {
                                           Navigator.pop(context);
                                           Navigator.of(context).pop();

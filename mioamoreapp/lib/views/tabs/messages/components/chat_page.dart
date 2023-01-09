@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,6 +14,7 @@ import 'package:mioamoreapp/helpers/encrypt_helper.dart';
 import 'package:mioamoreapp/helpers/media_picker_helper.dart';
 import 'package:mioamoreapp/models/chat_item_model.dart';
 import 'package:mioamoreapp/models/user_profile_model.dart';
+import 'package:mioamoreapp/providers/auth_providers.dart';
 import 'package:mioamoreapp/providers/block_user_provider.dart';
 import 'package:mioamoreapp/providers/chat_provider.dart';
 import 'package:mioamoreapp/providers/other_users_provider.dart';
@@ -103,7 +103,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
         message: message,
         createdAt: currentTime,
         id: currentTime.millisecondsSinceEpoch.toString(),
-        userId: FirebaseAuth.instance.currentUser!.uid,
+        userId: ref.watch(currentUserStateProvider)!.uid,
         matchId: widget.matchId,
         isRead: false,
         image: imageUrl,
@@ -178,6 +178,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                 if (otherUser != null)
                   ChatTopBar(
                     otherUser: otherUser!,
+                    myUserId: ref.watch(currentUserStateProvider)!.uid,
                     matchId: widget.matchId,
                     onSearch: (query) {
                       setState(() {
@@ -373,12 +374,14 @@ class _ChatBodyState extends ConsumerState<ChatBody> {
 
 class ChatTopBar extends ConsumerStatefulWidget {
   final UserProfileModel otherUser;
+  final String myUserId;
   final Function(String?) onSearch;
 
   final String matchId;
   const ChatTopBar({
     Key? key,
     required this.otherUser,
+    required this.myUserId,
     required this.onSearch,
     required this.matchId,
   }) : super(key: key);
@@ -591,7 +594,8 @@ class _ChatTopBarState extends ConsumerState<ChatTopBar> {
                                                 status: "Blocking...");
 
                                             await blockUser(
-                                                    widget.otherUser.userId)
+                                                    widget.otherUser.userId,
+                                                    widget.myUserId)
                                                 .then((value) {
                                               ref.invalidate(
                                                   otherUsersProvider);
@@ -975,7 +979,7 @@ class MessageSingleTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final bool? isNotMe = chat.userId == null
         ? null
-        : chat.userId != FirebaseAuth.instance.currentUser?.uid;
+        : chat.userId != ref.watch(currentUserStateProvider)?.uid;
 
     if (isNotMe == null) {
       return Padding(
@@ -1182,7 +1186,7 @@ class VoiceRecorder extends ConsumerWidget {
                     ChatItemModel chatItem = ChatItemModel(
                       createdAt: currentTime,
                       id: currentTime.millisecondsSinceEpoch.toString(),
-                      userId: FirebaseAuth.instance.currentUser!.uid,
+                      userId: ref.watch(currentUserStateProvider)!.uid,
                       matchId: matchId,
                       isRead: false,
                       audio: audioUrl,

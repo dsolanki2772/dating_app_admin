@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -8,6 +7,7 @@ import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/helpers/date_formater.dart';
 import 'package:mioamoreapp/models/get_verified_model.dart';
 import 'package:mioamoreapp/models/user_profile_model.dart';
+import 'package:mioamoreapp/providers/auth_providers.dart';
 import 'package:mioamoreapp/providers/verification_provider.dart';
 import 'package:mioamoreapp/views/custom/custom_button.dart';
 import 'package:mioamoreapp/views/settings/verification/photo_id_page.dart';
@@ -27,6 +27,7 @@ class _GetVerifiedPageState extends ConsumerState<GetVerifiedPage> {
   @override
   Widget build(BuildContext context) {
     final verificationData = ref.watch(verificationProvider);
+    final currentUserRef = ref.watch(currentUserStateProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Verification'),
@@ -38,7 +39,8 @@ class _GetVerifiedPageState extends ConsumerState<GetVerifiedPage> {
                   child: Text('You are verified'),
                 )
               : FutureBuilder<GetVerifiedModel?>(
-                  future: verificationData.getVerifiedStatus(),
+                  future:
+                      verificationData.getVerifiedStatus(currentUserRef!.uid),
                   builder: (BuildContext context,
                       AsyncSnapshot<GetVerifiedModel?> snapshot) {
                     print(snapshot.error);
@@ -183,8 +185,8 @@ class _NotVerifiedPartState extends ConsumerState<_NotVerifiedPart> {
       return;
     } else {
       GetVerifiedModel form = GetVerifiedModel(
-        id: FirebaseAuth.instance.currentUser!.uid,
-        userId: FirebaseAuth.instance.currentUser!.uid,
+        id: ref.watch(currentUserStateProvider)!.uid,
+        userId: ref.watch(currentUserStateProvider)!.uid,
         photoIdFrontViewUrl: photoIdFrontPath,
         photoIdBackViewUrl: photoIdBackPath,
         selfieUrl: selfiePath,
@@ -205,7 +207,7 @@ class _NotVerifiedPartState extends ConsumerState<_NotVerifiedPart> {
   Future<String?> _savePictures(File file, String title) async {
     Reference storageReference = FirebaseStorage.instance
         .ref()
-        .child(FirebaseAuth.instance.currentUser!.uid)
+        .child(ref.watch(currentUserStateProvider)!.uid)
         .child("Verification Pictures")
         .child(title);
 

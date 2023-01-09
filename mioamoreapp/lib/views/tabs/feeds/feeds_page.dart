@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,6 +8,7 @@ import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/helpers/date_formater.dart';
 import 'package:mioamoreapp/models/feed_model.dart';
 import 'package:mioamoreapp/models/user_profile_model.dart';
+import 'package:mioamoreapp/providers/auth_providers.dart';
 import 'package:mioamoreapp/providers/feed_provider.dart';
 import 'package:mioamoreapp/providers/other_users_provider.dart';
 import 'package:mioamoreapp/providers/user_profile_provider.dart';
@@ -162,7 +162,7 @@ class CreateNewPostSection extends ConsumerWidget {
   }
 }
 
-class SingleFeedPost extends StatefulWidget {
+class SingleFeedPost extends ConsumerStatefulWidget {
   final FeedModel feed;
   final UserProfileModel user;
   const SingleFeedPost({
@@ -172,10 +172,10 @@ class SingleFeedPost extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<SingleFeedPost> createState() => _SingleFeedPostState();
+  ConsumerState<SingleFeedPost> createState() => _SingleFeedPostState();
 }
 
-class _SingleFeedPostState extends State<SingleFeedPost> {
+class _SingleFeedPostState extends ConsumerState<SingleFeedPost> {
   final CustomPopupMenuController _moreMenuController =
       CustomPopupMenuController();
 
@@ -218,7 +218,7 @@ class _SingleFeedPostState extends State<SingleFeedPost> {
                   ),
                 ),
                 if (widget.feed.userId ==
-                    FirebaseAuth.instance.currentUser!.uid)
+                    ref.watch(currentUserStateProvider)!.uid)
                   CustomPopupMenu(
                     menuBuilder: () => ClipRRect(
                       borderRadius: BorderRadius.circular(

@@ -27,6 +27,11 @@ class ProfilePage extends ConsumerWidget {
         backgroundColor: AppConstants.primaryColor,
         elevation: 0,
       ),
+      bottomNavigationBar: userProfileRef.when(
+        data: (data) {},
+        error: (error, stackTrace) => const SizedBox(),
+        loading: () => const SizedBox(),
+      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

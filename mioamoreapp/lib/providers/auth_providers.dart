@@ -8,7 +8,14 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mioamoreapp/providers/device_token_provider.dart';
 
 final authStateProvider = StreamProvider<User?>((ref) {
-  return FirebaseAuth.instance.authStateChanges();
+  return FirebaseAuth.instance.authStateChanges().map((user) {
+    ref.read(currentUserStateProvider.notifier).state = user;
+    return user;
+  });
+});
+
+final currentUserStateProvider = StateProvider<User?>((ref) {
+  return null;
 });
 
 final authProvider = Provider<AuthProvider>((ref) {
@@ -35,7 +42,7 @@ class AuthProvider {
       final userCred =
           await FirebaseAuth.instance.signInWithCredential(credential);
 
-      await _deviceTokenProvider.saveDeviceToken();
+      await _deviceTokenProvider.saveDeviceToken(userCred.user!.uid);
       return userCred.user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'account-exists-with-different-credential') {
@@ -43,6 +50,7 @@ class AuthProvider {
             'An account already exists with the same email address but different sign-in credentials. Sign in using a provider associated with this email address.');
       }
     } catch (e) {
+      print(e);
       EasyLoading.showError('Something went wrong.');
     }
     return null;
@@ -66,7 +74,7 @@ class AuthProvider {
         );
 
         log('FB User: ${userCred.user}');
-        await _deviceTokenProvider.saveDeviceToken();
+        await _deviceTokenProvider.saveDeviceToken(userCred.user!.uid);
         EasyLoading.showSuccess('Logged in successfully.');
 
         return userCred.user;
@@ -94,7 +102,7 @@ class AuthProvider {
       );
       final userCred =
           await FirebaseAuth.instance.signInWithCredential(credential);
-      await _deviceTokenProvider.saveDeviceToken();
+      await _deviceTokenProvider.saveDeviceToken(userCred.user!.uid);
       return userCred.user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-verification-code') {

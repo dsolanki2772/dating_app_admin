@@ -1,14 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/models/notification_model.dart';
+import 'package:mioamoreapp/providers/auth_providers.dart';
 
 final notificationsStreamProvider =
     StreamProvider<List<NotificationModel>>((ref) {
   const notificationCollection = FirebaseConstants.notificationsCollection;
 
-  final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+  final currentUserId = ref.watch(currentUserStateProvider)!.uid;
 
   return FirebaseFirestore.instance
       .collection(notificationCollection)
@@ -52,10 +52,8 @@ Future<bool> updateNotification(NotificationModel notificationModel) async {
 }
 
 // Mark All As Read Notification
-Future<bool> markAllAsRead() async {
+Future<bool> markAllAsRead(String currentUserId) async {
   try {
-    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
-
     await FirebaseFirestore.instance
         .collection(_notificationCollection)
         .where("receiverId", isEqualTo: currentUserId)

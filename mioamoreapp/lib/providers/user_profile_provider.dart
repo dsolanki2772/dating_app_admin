@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/models/user_profile_model.dart';
+import 'package:mioamoreapp/providers/auth_providers.dart';
 
 final userProfileFutureProvider =
     FutureProvider<UserProfileModel?>((ref) async {
@@ -14,7 +14,7 @@ final userProfileFutureProvider =
       .collection(FirebaseConstants.userProfileCollection);
 
   return userCollection
-      .where("userId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+      .where("userId", isEqualTo: ref.watch(currentUserStateProvider)!.uid)
       .get()
       .then((data) {
     if (data.docs.isEmpty) {
@@ -41,8 +41,8 @@ class UserProfileProvider {
         if (Uri.parse(userProfileModel.profilePicture!).isAbsolute) {
           newUserProfile = userProfileModel;
         } else {
-          final profileURL =
-              await _uploadProfilePicture(userProfileModel.profilePicture!);
+          final profileURL = await _uploadProfilePicture(
+              userProfileModel.profilePicture!, userProfileModel.userId);
           newUserProfile =
               userProfileModel.copyWith(profilePicture: profileURL);
         }
@@ -67,8 +67,8 @@ class UserProfileProvider {
         } else if (userProfileModel.profilePicture == "") {
           newUserProfile = userProfileModel.copyWith(profilePicture: "");
         } else {
-          final profileURL =
-              await _uploadProfilePicture(userProfileModel.profilePicture!);
+          final profileURL = await _uploadProfilePicture(
+              userProfileModel.profilePicture!, userProfileModel.userId);
           newUserProfile =
               userProfileModel.copyWith(profilePicture: profileURL);
         }
@@ -83,7 +83,8 @@ class UserProfileProvider {
         } else if (media == "") {
           debugPrint("Media is empty");
         } else {
-          final mediaURL = await _uploadUserMediaFiles(media);
+          final mediaURL =
+              await _uploadUserMediaFiles(media, userProfileModel.userId);
           if (mediaURL != null) {
             mediaURLs.add(mediaURL);
           }
@@ -102,9 +103,9 @@ class UserProfileProvider {
     }
   }
 
-  Future<String?> _uploadProfilePicture(String imagePath) async {
+  Future<String?> _uploadProfilePicture(String imagePath, String userId) async {
     final storageRef = FirebaseStorage.instance.ref();
-    final userId = FirebaseAuth.instance.currentUser!.uid;
+
     final imageRef = storageRef.child("user_profile_pictures/$userId");
     final uploadTask = imageRef.putFile(File(imagePath));
 
@@ -115,9 +116,9 @@ class UserProfileProvider {
     return imageUrl;
   }
 
-  Future<String?> _uploadUserMediaFiles(String path) async {
+  Future<String?> _uploadUserMediaFiles(String path, String userId) async {
     final storageRef = FirebaseStorage.instance.ref();
-    final userId = FirebaseAuth.instance.currentUser!.uid;
+
     final imageRef =
         storageRef.child("user_media_files/$userId/${path.split("/").last}");
     final uploadTask = imageRef.putFile(File(path));
@@ -128,12 +129,19 @@ class UserProfileProvider {
     });
     return imageUrl;
   }
+
+  //Delete Account and all data
+  Future<void> deleteAccount() async {
+    //TODO: Delete all data request to admin panel - 30 days to delete all data
+    //If login again, in 30 days, all data will be restored
+    //If not login again, in 30 days, all data will be deleted permanently
+  }
 }
 
 final isUserAddedProvider = FutureProvider<bool>((ref) async {
   final userCollection = FirebaseFirestore.instance
       .collection(FirebaseConstants.userProfileCollection);
-  final userId = FirebaseAuth.instance.currentUser!.uid;
+  final userId = ref.watch(currentUserStateProvider)!.uid;
   bool isUserAdded = false;
   await userCollection.where("userId", isEqualTo: userId).get().then((event) {
     if (event.docs.isNotEmpty) {

@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:badges/badges.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +10,7 @@ import 'package:mioamoreapp/helpers/encrypt_helper.dart';
 import 'package:mioamoreapp/models/chat_item_model.dart';
 import 'package:mioamoreapp/models/match_model.dart';
 import 'package:mioamoreapp/models/user_profile_model.dart';
+import 'package:mioamoreapp/providers/auth_providers.dart';
 import 'package:mioamoreapp/providers/chat_provider.dart';
 import 'package:mioamoreapp/providers/match_provider.dart';
 import 'package:mioamoreapp/providers/other_users_provider.dart';
@@ -236,7 +236,7 @@ class ConversationTile extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               if (messageViewModel.lastMessage.userId ==
-                  FirebaseAuth.instance.currentUser!.uid)
+                  ref.watch(currentUserStateProvider)!.uid)
                 const Text('You: '),
               if (messageViewModel.lastMessage.image != null)
                 Icon(
@@ -360,10 +360,10 @@ class MessageViewModel {
 
 List<MessageViewModel> getAllMessages(WidgetRef ref, List<MatchModel> data) {
   final otherUserIds = data.map((e) {
-    return e.userIds
-            .any((element) => element != FirebaseAuth.instance.currentUser!.uid)
+    return e.userIds.any(
+            (element) => element != ref.watch(currentUserStateProvider)!.uid)
         ? e.userIds.firstWhere(
-            (element) => element != FirebaseAuth.instance.currentUser!.uid)
+            (element) => element != ref.watch(currentUserStateProvider)!.uid)
         : null;
   }).toList();
 
@@ -382,12 +382,12 @@ List<MessageViewModel> getAllMessages(WidgetRef ref, List<MatchModel> data) {
     chatProvider.whenData((value) {
       final UserProfileModel otherUser = matchedUsers.firstWhere((element) =>
           element.userId ==
-          match.userIds.firstWhere(
-              (element) => element != FirebaseAuth.instance.currentUser!.uid));
+          match.userIds.firstWhere((element) =>
+              element != ref.watch(currentUserStateProvider)!.uid));
 
       int unreadCount = 0;
       for (var message in value) {
-        if (message.userId != FirebaseAuth.instance.currentUser!.uid) {
+        if (message.userId != ref.watch(currentUserStateProvider)!.uid) {
           if (message.isRead == false) {
             unreadCount++;
           }
