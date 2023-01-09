@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:mioamoreapp/config/config.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/models/user_account_settings_model.dart';
 import 'package:mioamoreapp/models/user_profile_model.dart';
@@ -188,6 +189,22 @@ Future<List<UserProfileModel>> getAllOtherUsers(String currentUserId) async {
   final allOtherUsers = otherUsers.docs.map((doc) {
     return UserProfileModel.fromMap(doc.data());
   }).toList();
+
+  if (!AppConfig.userProfileShowWithoutImages) {
+    print("Removing users without profile picture");
+    allOtherUsers.removeWhere((element) {
+      bool isNotProfilePicture =
+          element.profilePicture == null || element.profilePicture!.isEmpty;
+      bool isOtherPicturesEmpty = element.mediaFiles.isEmpty;
+
+      print("isNotProfilePicture: $isNotProfilePicture");
+      print("isOtherOicturesEmpty: $isOtherPicturesEmpty");
+
+      return isNotProfilePicture || isOtherPicturesEmpty;
+    });
+  }
+
+  print("allOtherUsers: ${allOtherUsers.length}");
 
   return allOtherUsers;
 }

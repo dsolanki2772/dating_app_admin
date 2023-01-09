@@ -80,6 +80,9 @@ class AppConfig {
 
 // Other Settings
   static const bool canChangeName = true; //!! Can user change name?
+  static const bool userProfileShowWithoutImages =
+      true; //!! Can user see other user profile without images?
+
   static const int minimumAgeRequired =
       18; //!! Minimum age required to use the app
   static const int maxNumOfMedia =

@@ -43,8 +43,6 @@ class _GetVerifiedPageState extends ConsumerState<GetVerifiedPage> {
                       verificationData.getVerifiedStatus(currentUserRef!.uid),
                   builder: (BuildContext context,
                       AsyncSnapshot<GetVerifiedModel?> snapshot) {
-                    print(snapshot.error);
-
                     return snapshot.hasError
                         ? const Center(
                             child: Text('Error'),

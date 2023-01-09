@@ -17,8 +17,6 @@ class VerificationProvider extends ChangeNotifier {
   //Verification
   Future<GetVerifiedModel?> getVerifiedStatus(String currentUserId) async {
     return _verificationCollection.doc(currentUserId).get().then((value) {
-      print("Value: ${value.data()}");
-
       if (value.exists) {
         return GetVerifiedModel.fromMap(value.data()!);
       } else {

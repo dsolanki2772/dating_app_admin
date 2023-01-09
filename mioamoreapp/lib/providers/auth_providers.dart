@@ -50,7 +50,6 @@ class AuthProvider {
             'An account already exists with the same email address but different sign-in credentials. Sign in using a provider associated with this email address.');
       }
     } catch (e) {
-      print(e);
       EasyLoading.showError('Something went wrong.');
     }
     return null;
