@@ -27,11 +27,6 @@ class ProfilePage extends ConsumerWidget {
         backgroundColor: AppConstants.primaryColor,
         elevation: 0,
       ),
-      bottomNavigationBar: userProfileRef.when(
-        data: (data) {},
-        error: (error, stackTrace) => const SizedBox(),
-        loading: () => const SizedBox(),
-      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -369,6 +364,7 @@ class UserAboutView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        const ProfileCompletenessWidget(),
         ListTile(
           title: const Text("Phone Number"),
           subtitle: Text(data.phoneNumber == null || data.phoneNumber!.isEmpty
@@ -511,4 +507,89 @@ class UserFeedsView extends ConsumerWidget {
       ),
     );
   }
+}
+
+class ProfileCompletenessWidget extends ConsumerWidget {
+  const ProfileCompletenessWidget({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(userProfileFutureProvider);
+    return user.when(
+      data: (data) {
+        int percentageComplete = _getProfilePercentageComplete(data!);
+
+        return percentageComplete == 100
+            ? const SizedBox()
+            : Card(
+                elevation: 0,
+                margin: const EdgeInsets.all(AppConstants.defaultNumericValue),
+                child: ListTile(
+                  dense: true,
+                  title: const Text("Profile Completeness:"),
+                  subtitle: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Expanded(
+                          child: LinearProgressIndicator(
+                              value: percentageComplete / 100)),
+                      const SizedBox(
+                          width: AppConstants.defaultNumericValue / 2),
+                      Text(
+                        "$percentageComplete%",
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(
+                          width: AppConstants.defaultNumericValue / 2),
+                    ],
+                  ),
+                  trailing: percentageComplete == 100
+                      ? const SizedBox()
+                      : ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    EditProfilePage(userProfileModel: data),
+                              ),
+                            );
+                          },
+                          child: const Text("Complete")),
+                ),
+              );
+      },
+      error: (error, stackTrace) => const SizedBox(),
+      loading: () => const SizedBox(),
+    );
+  }
+}
+
+int _getProfilePercentageComplete(UserProfileModel profile) {
+  int total = 100;
+
+  if (profile.about == null || profile.about!.isEmpty) {
+    total -= 10;
+  }
+
+  if ((profile.phoneNumber == null || profile.phoneNumber!.isEmpty) &&
+      (profile.email == null || profile.email!.isEmpty)) {
+    total -= 10;
+  }
+
+  // Images
+  if (profile.mediaFiles.isEmpty) {
+    total -= 10;
+  }
+
+  // Interests
+  if (profile.interests.isEmpty) {
+    total -= 10;
+  }
+
+  //Profile Picture
+  if (profile.profilePicture == null || profile.profilePicture!.isEmpty) {
+    total -= 10;
+  }
+
+  return total;
 }

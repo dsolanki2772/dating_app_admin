@@ -92,6 +92,7 @@ class AppDrawer extends ConsumerWidget {
             child: SingleChildScrollView(
               child: Column(
                 children: [
+                  const ProfileCompletenessWidget(),
                   DrawerItem(
                     onPressed: () {
                       Navigator.push(

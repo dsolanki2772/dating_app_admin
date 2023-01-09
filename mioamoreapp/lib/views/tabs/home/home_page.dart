@@ -156,39 +156,6 @@ class _HomePageState extends State<HomePage> {
       ),
     );
 
-    // _targets.add(
-    //   TargetFocus(
-    //     identify: "Interaction",
-    //     keyTarget: _interactionKey,
-    //     shape: ShapeLightFocus.RRect,
-    //     contents: [
-    //       TargetContent(
-    //         align: ContentAlign.top,
-    //         child: Column(
-    //           mainAxisSize: MainAxisSize.min,
-    //           crossAxisAlignment: CrossAxisAlignment.start,
-    //           children: const [
-    //             Text(
-    //               "Interactions",
-    //               style: TextStyle(
-    //                   fontWeight: FontWeight.bold,
-    //                   color: Colors.black,
-    //                   fontSize: 20.0),
-    //             ),
-    //             Padding(
-    //               padding: EdgeInsets.only(top: 10.0),
-    //               child: Text(
-    //                 "Here you can see users as per your settings. You can view their profiles and interact with them...\n\nIf you don't want to interact just swipe the card to the right or left. \n\n There are 3 buttons on the bottom of the card.\n\n 1. ${AppConfig.dislikeButtonText}\n 2. ${AppConfig.showInteractionButtonText}\n 3. ${AppConfig.likeButtonText}",
-    //                 style: TextStyle(color: Colors.black),
-    //               ),
-    //             )
-    //           ],
-    //         ),
-    //       )
-    //     ],
-    //   ),
-    // );
-
     TutorialCoachMark(
       targets: _targets,
       colorShadow: AppConstants.primaryColor,
