@@ -1,12 +1,10 @@
 import 'dart:ui';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mioamoreapp/config/config.dart';
-
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/models/user_profile_model.dart';
 import 'package:mioamoreapp/providers/user_profile_provider.dart';
@@ -49,23 +47,15 @@ class _UserCardWidgetState extends State<UserCardWidget> {
   @override
   Widget build(BuildContext context) {
     return GridTile(
-      header: _pageController.hasClients
-          ? Align(
+      header: widget.user.isOnline
+          ? const Align(
               alignment: Alignment.topRight,
-              child: Container(
-                margin: const EdgeInsets.only(
-                    top: AppConstants.defaultNumericValue / 2,
-                    right: AppConstants.defaultNumericValue / 2),
-                padding:
-                    const EdgeInsets.all(AppConstants.defaultNumericValue / 2),
-                child: Text(
-                  "${_pageController.page!.round() + 1}/${_images.length}",
-                  style: const TextStyle(
-                      color: Colors.white60, fontWeight: FontWeight.bold),
-                ),
+              child: Padding(
+                padding: EdgeInsets.all(8),
+                child: OnlineStatus(),
               ),
             )
-          : null,
+          : const SizedBox(),
       footer: GestureDetector(
         onTap: () {
           Navigator.push(
@@ -104,17 +94,20 @@ class _UserCardWidgetState extends State<UserCardWidget> {
                                   fontSize: 21,
                                 ),
                               ),
-                              TextSpan(
-                                text: (DateTime.now()
-                                            .difference(widget.user.birthDay)
-                                            .inDays ~/
-                                        365)
-                                    .toString(),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
+                              if (widget
+                                      .user.userAccountSettingsModel.showAge !=
+                                  false)
+                                TextSpan(
+                                  text: (DateTime.now()
+                                              .difference(widget.user.birthDay)
+                                              .inDays ~/
+                                          365)
+                                      .toString(),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
                             ],
                           ),
                         ),
@@ -238,8 +231,8 @@ class _UserCardWidgetState extends State<UserCardWidget> {
                         child: CachedNetworkImage(
                           imageUrl: e,
                           fit: BoxFit.cover,
-                          placeholder: (context, url) =>
-                              const Center(child: CupertinoActivityIndicator()),
+                          placeholder: (context, url) => const Center(
+                              child: CircularProgressIndicator.adaptive()),
                           errorWidget: (context, url, error) {
                             return const Center(
                                 child: Icon(CupertinoIcons.photo));
@@ -384,6 +377,44 @@ class UserLikeActions extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class OnlineStatus extends StatelessWidget {
+  const OnlineStatus({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 3, 200, 10),
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            spreadRadius: 0,
+            blurRadius: 2,
+            offset: Offset(0, 1), // changes position of shadow
+          ),
+        ],
+      ),
+      child: Text(
+        'Online',
+        style: Theme.of(context).textTheme.caption!.copyWith(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 11,
+          shadows: [
+            const Shadow(
+              blurRadius: 2.0,
+              color: Colors.black26,
+              offset: Offset(1.0, 1.0),
+            ),
+          ],
+        ),
       ),
     );
   }

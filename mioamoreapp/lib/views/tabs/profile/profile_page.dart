@@ -202,7 +202,8 @@ class ProfilePage extends ConsumerWidget {
                                                 placeholder: (context, url) =>
                                                     const Center(
                                                         child:
-                                                            CircularProgressIndicator()),
+                                                            CircularProgressIndicator
+                                                                .adaptive()),
                                                 errorWidget: (context, url,
                                                         error) =>
                                                     const Center(
@@ -268,7 +269,8 @@ class ProfilePage extends ConsumerWidget {
               error: (_, e) =>
                   const Center(child: Text("Something went wrong!")),
               loading: () => const Center(
-                  child: CircularProgressIndicator(color: Colors.white)),
+                child: CircularProgressIndicator.adaptive(),
+              ),
             ),
           ),
         ],
@@ -454,8 +456,8 @@ class UserGalleryView extends StatelessWidget {
                   child: CachedNetworkImage(
                       imageUrl: e,
                       fit: BoxFit.cover,
-                      placeholder: (context, url) =>
-                          const Center(child: CupertinoActivityIndicator()),
+                      placeholder: (context, url) => const Center(
+                          child: CircularProgressIndicator.adaptive()),
                       errorWidget: (context, url, error) {
                         return const Center(
                             child: Icon(Icons.image_not_supported));
@@ -523,10 +525,15 @@ class ProfileCompletenessWidget extends ConsumerWidget {
             ? const SizedBox()
             : Card(
                 elevation: 0,
-                margin: const EdgeInsets.all(AppConstants.defaultNumericValue),
+                margin:
+                    const EdgeInsets.all(AppConstants.defaultNumericValue / 2),
                 child: ListTile(
                   dense: true,
-                  title: const Text("Profile Completeness:"),
+                  title: Text("Profile Completeness:",
+                      style: Theme.of(context)
+                          .textTheme
+                          .caption!
+                          .copyWith(fontWeight: FontWeight.bold)),
                   subtitle: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -546,6 +553,17 @@ class ProfileCompletenessWidget extends ConsumerWidget {
                   trailing: percentageComplete == 100
                       ? const SizedBox()
                       : ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal:
+                                    AppConstants.defaultNumericValue / 2,
+                                vertical: AppConstants.defaultNumericValue / 4),
+                            textStyle:
+                                Theme.of(context).textTheme.caption!.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                          ),
                           onPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
@@ -554,7 +572,8 @@ class ProfileCompletenessWidget extends ConsumerWidget {
                               ),
                             );
                           },
-                          child: const Text("Complete")),
+                          child: const Text("Complete"),
+                        ),
                 ),
               );
       },

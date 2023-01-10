@@ -116,7 +116,8 @@ class _SelectCountryPageState extends ConsumerState<SelectCountryPage> {
             );
           },
           error: (_, __) => const Center(child: Text("Error")),
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () =>
+              const Center(child: CircularProgressIndicator.adaptive()),
         ),
       ),
     );

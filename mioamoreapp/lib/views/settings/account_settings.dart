@@ -47,6 +47,9 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
   late double _minimumAge;
   late double _maximumAge;
   String? _interestedIn;
+  bool? _showAge;
+  bool? _showLocation;
+  bool? _showOnlineStatus;
 
   @override
   void initState() {
@@ -60,6 +63,10 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
     _maximumAge = widget.user.userAccountSettingsModel.maximumAge.toDouble();
 
     _maxDistanceInKm = AppConfig.initialMaximumDistanceInKM;
+
+    _showAge = widget.user.userAccountSettingsModel.showAge;
+    _showLocation = widget.user.userAccountSettingsModel.showLocation;
+    _showOnlineStatus = widget.user.userAccountSettingsModel.showOnlineStatus;
 
     super.initState();
   }
@@ -291,6 +298,74 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                 });
               },
             ),
+            const SizedBox(height: AppConstants.defaultNumericValue),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Show Age",
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline6!
+                        .copyWith(fontWeight: FontWeight.bold)),
+                Switch.adaptive(
+                  value: _showAge ?? true,
+                  onChanged: (value) {
+                    setState(() {
+                      _showAge = value;
+                    });
+                  },
+                ),
+              ],
+            ),
+            Text('If not enabled, your age will be hidden from others.',
+                style: Theme.of(context).textTheme.caption),
+            const SizedBox(height: AppConstants.defaultNumericValue * 2),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Show Location",
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline6!
+                        .copyWith(fontWeight: FontWeight.bold)),
+                Switch.adaptive(
+                  value: _showLocation ?? true,
+                  onChanged: (value) {
+                    setState(() {
+                      _showLocation = value;
+                    });
+                  },
+                ),
+              ],
+            ),
+            Text('If not enabled, your location will be hidden from others.',
+                style: Theme.of(context).textTheme.caption),
+
+            const SizedBox(height: AppConstants.defaultNumericValue * 2),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Show Online Status",
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline6!
+                        .copyWith(fontWeight: FontWeight.bold)),
+                Switch.adaptive(
+                  value: _showOnlineStatus ?? true,
+                  onChanged: (value) {
+                    setState(() {
+                      _showOnlineStatus = value;
+                    });
+                  },
+                ),
+              ],
+            ),
+            Text(
+                'If not enabled, your online status will be hidden from others.',
+                style: Theme.of(context).textTheme.caption),
+
             const SizedBox(height: AppConstants.defaultNumericValue * 2),
             CustomButton(
               onPressed: () async {
@@ -302,10 +377,14 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                   minimumAge: _minimumAge.toInt(),
                   maximumAge: _maximumAge.toInt(),
                   location: _userLocation,
+                  showAge: _showAge,
+                  showLocation: _showLocation,
+                  showOnlineStatus: _showOnlineStatus,
                 );
 
                 final userProfileModel = widget.user.copyWith(
                   userAccountSettingsModel: userAccountSettingsModel,
+                  isOnline: _showOnlineStatus == false ? false : true,
                 );
                 EasyLoading.show(status: 'Updating...');
 

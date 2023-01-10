@@ -6,12 +6,18 @@ class UserAccountSettingsModel {
   String? interestedIn;
   int minimumAge;
   int maximumAge;
+  bool? showAge;
+  bool? showLocation;
+  bool? showOnlineStatus;
   UserAccountSettingsModel({
     required this.location,
     this.distanceInKm,
     this.interestedIn,
     required this.minimumAge,
     required this.maximumAge,
+    this.showAge,
+    this.showLocation,
+    this.showOnlineStatus,
   });
 
   UserAccountSettingsModel copyWith({
@@ -20,13 +26,19 @@ class UserAccountSettingsModel {
     String? interestedIn,
     int? minimumAge,
     int? maximumAge,
+    bool? showAge,
+    bool? showLocation,
+    bool? showOnlineStatus,
   }) {
     return UserAccountSettingsModel(
       location: location ?? this.location,
-      distanceInKm: distanceInKm,
+      distanceInKm: distanceInKm ?? this.distanceInKm,
       interestedIn: interestedIn ?? this.interestedIn,
       minimumAge: minimumAge ?? this.minimumAge,
       maximumAge: maximumAge ?? this.maximumAge,
+      showAge: showAge ?? this.showAge,
+      showLocation: showLocation ?? this.showLocation,
+      showOnlineStatus: showOnlineStatus ?? this.showOnlineStatus,
     );
   }
 
@@ -37,12 +49,20 @@ class UserAccountSettingsModel {
     if (distanceInKm != null) {
       result.addAll({'distanceInKm': distanceInKm});
     }
-
     if (interestedIn != null) {
       result.addAll({'interestedIn': interestedIn});
     }
     result.addAll({'minimumAge': minimumAge});
     result.addAll({'maximumAge': maximumAge});
+    if (showAge != null) {
+      result.addAll({'showAge': showAge});
+    }
+    if (showLocation != null) {
+      result.addAll({'showLocation': showLocation});
+    }
+    if (showOnlineStatus != null) {
+      result.addAll({'showOnlineStatus': showOnlineStatus});
+    }
 
     return result;
   }
@@ -54,6 +74,9 @@ class UserAccountSettingsModel {
       interestedIn: map['interestedIn'],
       minimumAge: map['minimumAge']?.toInt() ?? 0,
       maximumAge: map['maximumAge']?.toInt() ?? 0,
+      showAge: map['showAge'],
+      showLocation: map['showLocation'],
+      showOnlineStatus: map['showOnlineStatus'],
     );
   }
 
@@ -64,7 +87,7 @@ class UserAccountSettingsModel {
 
   @override
   String toString() {
-    return 'UserAccountSettingsModel(location: $location, distanceInKm: $distanceInKm, interestedIn: $interestedIn, minimumAge: $minimumAge, maximumAge: $maximumAge)';
+    return 'UserAccountSettingsModel(location: $location, distanceInKm: $distanceInKm, interestedIn: $interestedIn, minimumAge: $minimumAge, maximumAge: $maximumAge, showAge: $showAge, showLocation: $showLocation, showOnlineStatus: $showOnlineStatus)';
   }
 
   @override
@@ -76,7 +99,10 @@ class UserAccountSettingsModel {
         other.distanceInKm == distanceInKm &&
         other.interestedIn == interestedIn &&
         other.minimumAge == minimumAge &&
-        other.maximumAge == maximumAge;
+        other.maximumAge == maximumAge &&
+        other.showAge == showAge &&
+        other.showLocation == showLocation &&
+        other.showOnlineStatus == showOnlineStatus;
   }
 
   @override
@@ -85,7 +111,10 @@ class UserAccountSettingsModel {
         distanceInKm.hashCode ^
         interestedIn.hashCode ^
         minimumAge.hashCode ^
-        maximumAge.hashCode;
+        maximumAge.hashCode ^
+        showAge.hashCode ^
+        showLocation.hashCode ^
+        showOnlineStatus.hashCode;
   }
 }
 

@@ -20,6 +20,7 @@ import 'package:mioamoreapp/views/custom/custom_headline.dart';
 import 'package:mioamoreapp/views/custom/custom_icon_button.dart';
 import 'package:mioamoreapp/views/others/error_page.dart';
 import 'package:mioamoreapp/views/others/loading_page.dart';
+import 'package:mioamoreapp/views/others/user_card_widget.dart';
 import 'package:mioamoreapp/views/tabs/home/home_page.dart';
 import 'package:mioamoreapp/views/tabs/messages/components/chat_page.dart';
 
@@ -206,7 +207,8 @@ class ConversationTile extends ConsumerWidget {
                     .subtitle1!
                     .copyWith(fontWeight: FontWeight.bold),
               ),
-              const SizedBox(width: AppConstants.defaultNumericValue / 2),
+              if (messageViewModel.unreadCount > 0)
+                const SizedBox(width: AppConstants.defaultNumericValue / 2),
               if (messageViewModel.unreadCount > 0)
                 Badge(
                   badgeColor: AppConstants.primaryColor,
@@ -216,6 +218,9 @@ class ConversationTile extends ConsumerWidget {
                         color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                 ),
+              if (messageViewModel.matchedUser.isOnline)
+                const SizedBox(width: AppConstants.defaultNumericValue / 2),
+              if (messageViewModel.matchedUser.isOnline) const OnlineStatus()
             ],
           ),
           trailing: Column(

@@ -20,6 +20,7 @@ import 'package:mioamoreapp/providers/chat_provider.dart';
 import 'package:mioamoreapp/providers/other_users_provider.dart';
 import 'package:mioamoreapp/views/others/photo_view_page.dart';
 import 'package:mioamoreapp/views/others/report_page.dart';
+import 'package:mioamoreapp/views/others/user_card_widget.dart';
 import 'package:mioamoreapp/views/others/user_details_page.dart';
 import 'package:mioamoreapp/views/others/video_player_page.dart';
 import 'package:mioamoreapp/views/tabs/home/home_page.dart';
@@ -415,14 +416,23 @@ class _ChatTopBarState extends ConsumerState<ChatTopBar> {
           );
         },
         contentPadding: const EdgeInsets.only(bottom: 4),
-        title: Text(
-          widget.otherUser.fullName,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: Theme.of(context).textTheme.subtitle1!.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+        title: Row(
+          children: [
+            Text(
+              widget.otherUser.fullName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+            ),
+            if (widget.otherUser.isOnline)
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                child: OnlineStatus(),
               ),
+          ],
         ),
         leading: Row(
           mainAxisSize: MainAxisSize.min,

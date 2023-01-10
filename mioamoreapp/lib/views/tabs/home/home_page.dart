@@ -214,6 +214,17 @@ class _HomePageState extends State<HomePage> {
                   final user = ref.watch(userProfileFutureProvider);
                   return user.when(
                       data: (data) {
+                        print("Online Status: ${data?.isOnline}");
+
+                        if (data?.userAccountSettingsModel.showOnlineStatus !=
+                            false) {
+                          if (data?.isOnline == false) {
+                            print("Updating online status to true");
+                            ref.read(userProfileProvider).updateUserProfile(
+                                data!.copyWith(isOnline: true));
+                          }
+                        }
+
                         return data == null
                             ? const SizedBox()
                             : GestureDetector(
@@ -286,7 +297,7 @@ class _HomePageState extends State<HomePage> {
                       child: Text("Something Went Wrong!"),
                     ),
                     loading: () => const Center(
-                      child: CircularProgressIndicator(),
+                      child: CircularProgressIndicator.adaptive(),
                     ),
                   );
                 },
@@ -389,7 +400,7 @@ class FilterInteraction extends ConsumerWidget {
         child: Text("Something Went Wrong!"),
       ),
       loading: () => const Center(
-        child: CircularProgressIndicator(),
+        child: CircularProgressIndicator.adaptive(),
       ),
     );
   }
@@ -702,7 +713,7 @@ class UserCirlePicture extends StatelessWidget {
               : CachedNetworkImage(
                   imageUrl: imageUrl!,
                   placeholder: (context, url) =>
-                      const Center(child: CircularProgressIndicator()),
+                      const Center(child: CircularProgressIndicator.adaptive()),
                   errorWidget: (context, url, error) =>
                       const Center(child: Icon(Icons.error)),
                   fit: BoxFit.cover,

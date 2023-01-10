@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/models/user_profile_model.dart';
+import 'package:mioamoreapp/views/others/user_card_widget.dart';
 import 'package:mioamoreapp/views/others/user_details_page.dart';
 
 class UserImageCard extends StatelessWidget {
@@ -59,23 +60,22 @@ class UserImageCard extends StatelessWidget {
           ),
         ),
         header: matchId != null
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Icon(CupertinoIcons.heart_solid,
+            ? Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    const Icon(CupertinoIcons.heart_solid,
                         color: CupertinoColors.destructiveRed,
                         size: AppConstants.defaultNumericValue * 1.5),
-                  ),
-                  if (user.isVerified)
-                    const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Icon(Icons.verified_user,
+                    const Spacer(),
+                    if (user.isVerified)
+                      const Icon(Icons.verified_user,
                           color: CupertinoColors.activeGreen,
                           size: AppConstants.defaultNumericValue * 1.5),
-                    ),
-                ],
+                    if (user.isOnline) const SizedBox(width: 4),
+                    if (user.isOnline) const OnlineStatus(),
+                  ],
+                ),
               )
             : null,
         child: Container(
@@ -95,8 +95,8 @@ class UserImageCard extends StatelessWidget {
                     ? CachedNetworkImage(
                         imageUrl: user.profilePicture!,
                         fit: BoxFit.cover,
-                        placeholder: (context, url) =>
-                            const Center(child: CupertinoActivityIndicator()),
+                        placeholder: (context, url) => const Center(
+                            child: CircularProgressIndicator.adaptive()),
                         errorWidget: (context, url, error) {
                           return const Center(
                               child: Icon(CupertinoIcons.photo));
@@ -112,7 +112,7 @@ class UserImageCard extends StatelessWidget {
                                 : '',
                             fit: BoxFit.cover,
                             placeholder: (context, url) => const Center(
-                                child: CupertinoActivityIndicator()),
+                                child: CircularProgressIndicator.adaptive()),
                             errorWidget: (context, url, error) {
                               return const Center(
                                   child: Icon(CupertinoIcons.photo));

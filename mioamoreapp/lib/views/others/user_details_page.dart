@@ -404,7 +404,7 @@ class _DetailsBodyState extends State<DetailsBody> {
                                       : '',
                               fit: BoxFit.cover,
                               placeholder: (context, url) => const Center(
-                                  child: CupertinoActivityIndicator()),
+                                  child: CircularProgressIndicator.adaptive()),
                               errorWidget: (context, url, error) {
                                 return const Center(
                                     child: Icon(CupertinoIcons.photo));
@@ -547,6 +547,7 @@ class _DetailsBodyState extends State<DetailsBody> {
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
+                              const SizedBox(width: 8),
                               Flexible(
                                 child: Text(widget.user.fullName,
                                     maxLines: 2,
@@ -561,30 +562,41 @@ class _DetailsBodyState extends State<DetailsBody> {
                               if (widget.user.isVerified)
                                 const Icon(Icons.verified_user,
                                     color: CupertinoColors.activeGreen),
+                              widget.user.isOnline
+                                  ? const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 4),
+                                      child: OnlineStatus(),
+                                    )
+                                  : const SizedBox(),
                             ],
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(width: AppConstants.defaultNumericValue),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: AppConstants.defaultNumericValue,
-                          vertical: AppConstants.defaultNumericValue / 2),
-                      decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(AppConstants.defaultNumericValue),
+                    const SizedBox(width: AppConstants.defaultNumericValue / 2),
+                    Visibility(
+                      visible:
+                          widget.user.userAccountSettingsModel.showAge != false,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: AppConstants.defaultNumericValue,
+                            vertical: AppConstants.defaultNumericValue / 2),
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(AppConstants.defaultNumericValue),
+                          ),
+                          gradient: AppConstants.defaultGradient,
                         ),
-                        gradient: AppConstants.defaultGradient,
+                        child: Text(
+                            "${DateTime.now().difference(widget.user.birthDay).inDays ~/ 365} Years",
+                            style: Theme.of(context)
+                                .textTheme
+                                .subtitle1!
+                                .copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold)),
                       ),
-                      child: Text(
-                          "${DateTime.now().difference(widget.user.birthDay).inDays ~/ 365} Years",
-                          style: Theme.of(context)
-                              .textTheme
-                              .subtitle1!
-                              .copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold)),
                     ),
                   ],
                 ),
@@ -605,39 +617,43 @@ class _DetailsBodyState extends State<DetailsBody> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            widget.user.userAccountSettingsModel.location
-                                .addressText,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context)
-                                .textTheme
-                                .subtitle2!
-                                .copyWith(
-                                    color: AppConstants.primaryColor,
-                                    fontWeight: FontWeight.bold),
-                          ),
+                          if (widget
+                                  .user.userAccountSettingsModel.showLocation !=
+                              false)
+                            Text(
+                              widget.user.userAccountSettingsModel.location
+                                  .addressText,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .subtitle2!
+                                  .copyWith(
+                                      color: AppConstants.primaryColor,
+                                      fontWeight: FontWeight.bold),
+                            ),
                           Consumer(
                             builder: (context, ref, child) {
                               final myProfile =
                                   ref.watch(userProfileFutureProvider);
                               return myProfile.when(
-                                  data: (data) {
-                                    if (data != null) {
-                                      return Text(
-                                        '${(Geolocator.distanceBetween(data.userAccountSettingsModel.location.latitude, data.userAccountSettingsModel.location.longitude, widget.user.userAccountSettingsModel.location.latitude, widget.user.userAccountSettingsModel.location.longitude) / 1000).toStringAsFixed(2)} km away',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .caption!
-                                            .copyWith(
-                                                fontWeight: FontWeight.bold),
-                                      );
-                                    } else {
-                                      return const SizedBox();
-                                    }
-                                  },
-                                  error: (_, __) => const SizedBox(),
-                                  loading: () => const SizedBox());
+                                data: (data) {
+                                  if (data != null) {
+                                    return Text(
+                                      '${(Geolocator.distanceBetween(data.userAccountSettingsModel.location.latitude, data.userAccountSettingsModel.location.longitude, widget.user.userAccountSettingsModel.location.latitude, widget.user.userAccountSettingsModel.location.longitude) / 1000).toStringAsFixed(2)} km away',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .caption!
+                                          .copyWith(
+                                              fontWeight: FontWeight.bold),
+                                    );
+                                  } else {
+                                    return const SizedBox();
+                                  }
+                                },
+                                error: (_, __) => const SizedBox(),
+                                loading: () => const SizedBox(),
+                              );
                             },
                           ),
                         ],
@@ -770,7 +786,8 @@ class _DetailsBodyState extends State<DetailsBody> {
                                   imageUrl: e,
                                   fit: BoxFit.cover,
                                   placeholder: (context, url) => const Center(
-                                      child: CupertinoActivityIndicator()),
+                                      child:
+                                          CircularProgressIndicator.adaptive()),
                                   errorWidget: (context, url, error) {
                                     return const Center(
                                         child: Icon(Icons.image_not_supported));

@@ -344,7 +344,8 @@ class _InteractionsPageState extends ConsumerState<InteractionsPage> {
                 error: (_, __) => const Center(
                   child: Text('Something went wrong!'),
                 ),
-                loading: () => const Center(child: CircularProgressIndicator()),
+                loading: () =>
+                    const Center(child: CircularProgressIndicator.adaptive()),
               ),
             ),
           ],

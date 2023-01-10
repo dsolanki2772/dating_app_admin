@@ -112,6 +112,7 @@ class _LandingWidgetState extends ConsumerState<LandingWidget> {
     FirebaseMessaging.onMessage.listen((message) {
       showNotification(message);
     });
+
     super.initState();
   }
 
@@ -152,17 +153,18 @@ class _LandingWidgetState extends ConsumerState<LandingWidget> {
     final authState = ref.watch(authStateProvider);
 
     return authState.when(
-        data: (data) {
-          if (data != null) {
-            return const BottomNavBarPage();
-          } else {
-            return const LoginPage();
-          }
-        },
-        error: (_, e) {
-          return const ErrorPage();
-        },
-        loading: () => const LoadingPage());
+      data: (data) {
+        if (data != null) {
+          return const BottomNavBarPage();
+        } else {
+          return const LoginPage();
+        }
+      },
+      error: (_, e) {
+        return const ErrorPage();
+      },
+      loading: () => const LoadingPage(),
+    );
   }
 }
 

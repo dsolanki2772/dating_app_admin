@@ -1,9 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive_flutter/adapters.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/models/user_profile_model.dart';
 import 'package:mioamoreapp/providers/match_provider.dart';
@@ -15,7 +13,6 @@ import 'package:mioamoreapp/views/tabs/feeds/feeds_page.dart';
 import 'package:mioamoreapp/views/tabs/home/home_page.dart';
 import 'package:mioamoreapp/views/tabs/interactions/interactions_page.dart';
 import 'package:mioamoreapp/views/tabs/messages/messages_page.dart';
-import 'package:mioamoreapp/views/tabs/profile/edit_profile_page.dart';
 import 'package:mioamoreapp/views/tabs/profile/first_time_update_profile_page.dart';
 
 class BottomNavBarPage extends ConsumerStatefulWidget {
@@ -25,76 +22,57 @@ class BottomNavBarPage extends ConsumerStatefulWidget {
   ConsumerState<BottomNavBarPage> createState() => _BottomNavBarPageState();
 }
 
-class _BottomNavBarPageState extends ConsumerState<BottomNavBarPage> {
+class _BottomNavBarPageState extends ConsumerState<BottomNavBarPage>
+    with WidgetsBindingObserver {
   int _currentIndex = 0;
 
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
   }
 
-  void showCompleteProfile() async {
-    SchedulerBinding.instance.addPostFrameCallback((_) async {
-      final userRef = ref.read(userProfileFutureProvider);
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      setUserOnlineStatus(true);
+    } else if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached) {
+      setUserOnlineStatus(false);
+    }
 
-      UserProfileModel? userProfile;
+    super.didChangeAppLifecycleState(state);
+  }
 
-      userRef.whenData((value) {
-        userProfile = value;
-      });
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
-      if (userProfile != null) {
-        final showCompleteDialog = Hive.box(HiveConstants.hiveBox)
-            .get(HiveConstants.showCompleteDialog, defaultValue: false) as bool;
+  void setUserOnlineStatus(bool status) async {
+    final userRef = ref.watch(userProfileFutureProvider);
 
-        if (!showCompleteDialog) {
-          if (userProfile!.profilePicture == null) {
-            await Future.delayed(const Duration(seconds: 3), () async {
-              if (mounted) {
-                await showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: const Text('Complete your profile'),
-                        content: const Text(
-                            'Please set your profile picture. You can also edit your profile after you have set your profile picture. Add some other photos to your profile to make it more interesting.'),
-                        actions: <Widget>[
-                          TextButton(
-                            child: const Text('Cancel'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          TextButton(
-                            child: const Text('Okay'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => EditProfilePage(
-                                      userProfileModel: userProfile!),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                      );
-                    }).then((value) {
-                  Hive.box(HiveConstants.hiveBox)
-                      .put(HiveConstants.showCompleteDialog, true);
-                });
-              }
-            });
-          }
+    UserProfileModel? newModel;
+
+    userRef.whenData((value) {
+      if (value != null) {
+        if (value.userAccountSettingsModel.showOnlineStatus != false) {
+          print("User Online Status: ${value.isOnline}");
+          newModel = value.copyWith(isOnline: status);
         }
       }
     });
+
+    if (newModel != null) {
+      print("Updating user online status to $status");
+
+      await ref.read(userProfileProvider).updateUserProfile(newModel!);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // _showCompleteProfile();
-
     final isUserAdded = ref.watch(isUserAddedProvider);
 
     return isUserAdded.when(

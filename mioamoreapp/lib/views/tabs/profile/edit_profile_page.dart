@@ -166,7 +166,8 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                   ? CachedNetworkImage(
                                       imageUrl: _profilePicture!,
                                       placeholder: (context, url) =>
-                                          const CircularProgressIndicator(),
+                                          const CircularProgressIndicator
+                                              .adaptive(),
                                       errorWidget: (context, url, error) =>
                                           const Icon(Icons.error),
                                       fit: BoxFit.cover,
@@ -355,8 +356,8 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                                         imageUrl: image,
                                         placeholder: (context, url) =>
                                             const Center(
-                                                child:
-                                                    CircularProgressIndicator()),
+                                                child: CircularProgressIndicator
+                                                    .adaptive()),
                                         errorWidget: (context, url, error) =>
                                             const Center(
                                                 child:

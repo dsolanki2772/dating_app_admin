@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:collection/collection.dart';
 import 'package:mioamoreapp/models/user_account_settings_model.dart';
 
@@ -16,6 +17,7 @@ class UserProfileModel {
   List<String> interests;
   UserAccountSettingsModel userAccountSettingsModel;
   bool isVerified;
+  bool isOnline;
   UserProfileModel({
     required this.id,
     required this.userId,
@@ -30,6 +32,7 @@ class UserProfileModel {
     required this.interests,
     required this.userAccountSettingsModel,
     required this.isVerified,
+    this.isOnline = false,
   });
 
   UserProfileModel copyWith({
@@ -46,6 +49,7 @@ class UserProfileModel {
     List<String>? interests,
     UserAccountSettingsModel? userAccountSettingsModel,
     bool? isVerified,
+    bool? isOnline,
   }) {
     return UserProfileModel(
       id: id ?? this.id,
@@ -62,6 +66,7 @@ class UserProfileModel {
       userAccountSettingsModel:
           userAccountSettingsModel ?? this.userAccountSettingsModel,
       isVerified: isVerified ?? this.isVerified,
+      isOnline: isOnline ?? this.isOnline,
     );
   }
 
@@ -90,6 +95,7 @@ class UserProfileModel {
     result
         .addAll({'userAccountSettingsModel': userAccountSettingsModel.toMap()});
     result.addAll({'isVerified': isVerified});
+    result.addAll({'isOnline': isOnline});
 
     return result;
   }
@@ -110,6 +116,7 @@ class UserProfileModel {
       userAccountSettingsModel:
           UserAccountSettingsModel.fromMap(map['userAccountSettingsModel']),
       isVerified: map['isVerified'] ?? false,
+      isOnline: map['isOnline'] ?? false,
     );
   }
 
@@ -120,7 +127,7 @@ class UserProfileModel {
 
   @override
   String toString() {
-    return 'UserProfileModel(id: $id, userId: $userId, fullName: $fullName, email: $email, profilePicture: $profilePicture, phoneNumber: $phoneNumber, gender: $gender, about: $about, birthDay: $birthDay, mediaFiles: $mediaFiles, interests: $interests, userAccountSettingsModel: $userAccountSettingsModel, isVerified: $isVerified)';
+    return 'UserProfileModel(id: $id, userId: $userId, fullName: $fullName, email: $email, profilePicture: $profilePicture, phoneNumber: $phoneNumber, gender: $gender, about: $about, birthDay: $birthDay, mediaFiles: $mediaFiles, interests: $interests, userAccountSettingsModel: $userAccountSettingsModel, isVerified: $isVerified, isOnline: $isOnline)';
   }
 
   @override
@@ -141,7 +148,8 @@ class UserProfileModel {
         listEquals(other.mediaFiles, mediaFiles) &&
         listEquals(other.interests, interests) &&
         other.userAccountSettingsModel == userAccountSettingsModel &&
-        other.isVerified == isVerified;
+        other.isVerified == isVerified &&
+        other.isOnline == isOnline;
   }
 
   @override
@@ -158,6 +166,7 @@ class UserProfileModel {
         mediaFiles.hashCode ^
         interests.hashCode ^
         userAccountSettingsModel.hashCode ^
-        isVerified.hashCode;
+        isVerified.hashCode ^
+        isOnline.hashCode;
   }
 }

@@ -20,7 +20,7 @@ class LoadingPage extends StatelessWidget {
                 width: MediaQuery.of(context).size.width * 0.4,
               ),
               const Spacer(),
-              CircularProgressIndicator(
+              CircularProgressIndicator.adaptive(
                 valueColor:
                     AlwaysStoppedAnimation<Color>(AppConstants.primaryColor),
               ),
