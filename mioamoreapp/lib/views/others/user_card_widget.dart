@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mioamoreapp/config/config.dart';
@@ -113,22 +114,16 @@ class _UserCardWidgetState extends State<UserCardWidget> {
                         ),
                       ),
                       widget.user.isVerified
-                          ? Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: AppConstants.defaultNumericValue),
-                              child: Column(
-                                children: [
-                                  const Icon(Icons.verified_user,
-                                      color: CupertinoColors.activeGreen),
-                                  Text(
-                                    'Verified',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .caption!
-                                        .copyWith(
-                                            color: CupertinoColors.activeGreen),
-                                  ),
-                                ],
+                          ? GestureDetector(
+                              onTap: () {
+                                EasyLoading.showToast('Verified User!');
+                              },
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal:
+                                        AppConstants.defaultNumericValue),
+                                child: Icon(Icons.verified_user,
+                                    color: CupertinoColors.activeGreen),
                               ),
                             )
                           : const SizedBox(),

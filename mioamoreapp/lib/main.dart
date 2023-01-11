@@ -34,7 +34,12 @@ void main() async {
 
   await Hive.initFlutter();
   await Hive.openBox(HiveConstants.hiveBox);
-  configLoading();
+
+  configLoading(
+    isDarkMode: false,
+    foregroundColor: AppConstants.primaryColor,
+    backgroundColor: Colors.white,
+  );
 
   runApp(const ProviderScope(child: MyApp()));
 }

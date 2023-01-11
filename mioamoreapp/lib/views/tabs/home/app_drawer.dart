@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreapp/config/config.dart';
 
@@ -24,12 +25,12 @@ class AppDrawer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    final userProfileProvider = ref.watch(userProfileFutureProvider);
+    final userProfileRef = ref.watch(userProfileFutureProvider);
     return Drawer(
       backgroundColor: AppConstants.primaryColor,
       child: Column(
         children: [
-          userProfileProvider.when(
+          userProfileRef.when(
               data: (data) {
                 return data == null
                     ? const SizedBox()
@@ -92,7 +93,7 @@ class AppDrawer extends ConsumerWidget {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  const ProfileCompletenessWidget(),
+                  const ProfileCompletenessAndGetVerifiedWidget(),
                   DrawerItem(
                     onPressed: () {
                       Navigator.push(
@@ -261,8 +262,16 @@ class AppDrawer extends ConsumerWidget {
           DrawerItem(
             leadingIcon: CupertinoIcons.power,
             onPressed: () async {
-              await setShowCompleteDialog(false);
+              EasyLoading.show(status: 'Logging out...');
+              final currentUserId = ref.read(currentUserStateProvider)?.uid;
+
+              if (currentUserId != null) {
+                await ref
+                    .read(userProfileNotifier)
+                    .updateOnlineStatus(isOnline: false, userId: currentUserId);
+              }
               await ref.read(authProvider).signOut();
+              EasyLoading.dismiss();
             },
             title: 'Log Out',
           ),

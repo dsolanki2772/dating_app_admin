@@ -12,7 +12,11 @@ import 'package:mioamoreapp/views/others/loading_page.dart';
 import 'package:mioamoreapp/views/others/set_user_location_page.dart';
 
 class AccountSettingsLandingWidget extends ConsumerWidget {
-  const AccountSettingsLandingWidget({Key? key}) : super(key: key);
+  final Widget Function(UserProfileModel data)? builder;
+  const AccountSettingsLandingWidget({
+    Key? key,
+    this.builder,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,7 +26,9 @@ class AccountSettingsLandingWidget extends ConsumerWidget {
       data: (data) {
         return data == null
             ? const ErrorPage()
-            : AccountSettingsPage(user: data);
+            : builder == null
+                ? AccountSettingsPage(user: data)
+                : builder!(data);
       },
       error: (_, __) => const ErrorPage(),
       loading: () => const LoadingPage(),
@@ -367,40 +373,44 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                 style: Theme.of(context).textTheme.caption),
 
             const SizedBox(height: AppConstants.defaultNumericValue * 2),
-            CustomButton(
-              onPressed: () async {
-                final UserAccountSettingsModel userAccountSettingsModel =
-                    UserAccountSettingsModel(
-                  distanceInKm:
-                      _isWorldWide ? null : _distanceInKm.toInt().toDouble(),
-                  interestedIn: _interestedIn,
-                  minimumAge: _minimumAge.toInt(),
-                  maximumAge: _maximumAge.toInt(),
-                  location: _userLocation,
-                  showAge: _showAge,
-                  showLocation: _showLocation,
-                  showOnlineStatus: _showOnlineStatus,
-                );
-
-                final userProfileModel = widget.user.copyWith(
-                  userAccountSettingsModel: userAccountSettingsModel,
-                  isOnline: _showOnlineStatus == false ? false : true,
-                );
-                EasyLoading.show(status: 'Updating...');
-
-                await ref
-                    .read(userProfileProvider)
-                    .updateUserProfile(userProfileModel)
-                    .then((value) {
-                  ref.invalidate(userProfileFutureProvider);
-                  EasyLoading.dismiss();
-                  Navigator.pop(context);
-                });
-              },
-              text: 'Apply',
-            ),
-            const SizedBox(height: AppConstants.defaultNumericValue * 2),
           ],
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(AppConstants.defaultNumericValue),
+          child: CustomButton(
+            onPressed: () async {
+              final UserAccountSettingsModel userAccountSettingsModel =
+                  UserAccountSettingsModel(
+                distanceInKm:
+                    _isWorldWide ? null : _distanceInKm.toInt().toDouble(),
+                interestedIn: _interestedIn,
+                minimumAge: _minimumAge.toInt(),
+                maximumAge: _maximumAge.toInt(),
+                location: _userLocation,
+                showAge: _showAge,
+                showLocation: _showLocation,
+                showOnlineStatus: _showOnlineStatus,
+              );
+
+              final userProfileModel = widget.user.copyWith(
+                userAccountSettingsModel: userAccountSettingsModel,
+                isOnline: _showOnlineStatus == false ? false : true,
+              );
+              EasyLoading.show(status: 'Updating...');
+
+              await ref
+                  .read(userProfileNotifier)
+                  .updateUserProfile(userProfileModel)
+                  .then((value) {
+                ref.invalidate(userProfileFutureProvider);
+                EasyLoading.dismiss();
+                Navigator.pop(context);
+              });
+            },
+            text: 'Apply',
+          ),
         ),
       ),
     );

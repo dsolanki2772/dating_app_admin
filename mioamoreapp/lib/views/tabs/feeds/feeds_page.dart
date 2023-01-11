@@ -15,6 +15,7 @@ import 'package:mioamoreapp/providers/user_profile_provider.dart';
 import 'package:mioamoreapp/views/ads/banner_ads.dart';
 import 'package:mioamoreapp/views/custom/custom_app_bar.dart';
 import 'package:mioamoreapp/views/custom/custom_headline.dart';
+import 'package:mioamoreapp/views/custom/lottie/no_item_found_widget.dart';
 import 'package:mioamoreapp/views/others/photo_view_page.dart';
 import 'package:mioamoreapp/views/tabs/feeds/edit_feed_page.dart';
 import 'package:mioamoreapp/views/tabs/feeds/feed_post_page.dart';
@@ -94,8 +95,10 @@ class FeedsBody extends ConsumerWidget {
               return data.isEmpty
                   ? [
                       SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.5,
-                          child: const Center(child: Text('No Feeds Yet')))
+                          height: MediaQuery.of(context).size.height * 0.2),
+                      const NoItemFoundWidget(text: 'No Feeds Found'),
+                      SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.1),
                     ]
                   : data.map((e) {
                       final user = feedsUsers

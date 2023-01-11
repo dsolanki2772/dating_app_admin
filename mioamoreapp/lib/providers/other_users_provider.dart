@@ -50,7 +50,7 @@ final filteredOtherUsersProvider =
         bool isWorldWide = mySettings.distanceInKm == null;
 
         bool isDistanceOk = isWorldWide ||
-            (mySettings.distanceInKm! >= distanceBetweenMeAndUser);
+            (mySettings.distanceInKm! >= (distanceBetweenMeAndUser / 1000));
 
         if (userAge >= mySettings.minimumAge &&
             userAge <= mySettings.maximumAge &&
@@ -76,7 +76,7 @@ final filteredOtherUsersProvider =
   return filteredUserList;
 });
 
-final notShowingUsersProvider = Provider<String>((ref) {
+final closestUsersProvider = Provider<List<ClosestUser>>((ref) {
   List<UserProfileModel> usersList = [];
 
   final otherUsers = ref.watch(otherUsersProvider);
@@ -95,51 +95,22 @@ final notShowingUsersProvider = Provider<String>((ref) {
           value.userAccountSettingsModel;
 
       for (var user in usersList) {
-        bool willBeShown = false;
-        bool isBoth = false;
-
-        final userAge = DateTime.now().difference(user.birthDay).inDays ~/ 365;
         final userLocation = user.userAccountSettingsModel.location;
-        final userGender = user.gender;
 
         double distanceBetweenMeAndUser = Geolocator.distanceBetween(
                 mySettings.location.latitude,
                 mySettings.location.longitude,
                 userLocation.latitude,
                 userLocation.longitude) /
-            1000;
+            1;
 
-        if (mySettings.interestedIn == null) {
-          isBoth = true;
-        }
-
-        if (userAge >= mySettings.minimumAge &&
-            userAge <= mySettings.maximumAge) {
-          if (isBoth) {
-            willBeShown = true;
-          } else {
-            if (mySettings.interestedIn == userGender) {
-              willBeShown = true;
-            } else {
-              willBeShown = false;
-            }
-          }
-        }
-
-        if (willBeShown) {
-          closestUsers
-              .add(ClosestUser(user: user, distance: distanceBetweenMeAndUser));
-        }
+        closestUsers
+            .add(ClosestUser(user: user, distance: distanceBetweenMeAndUser));
       }
     }
   });
 
-  closestUsers.sort((a, b) => a.distance.compareTo(b.distance));
-
-  String returnText = closestUsers.isEmpty
-      ? "There are no users that match your criteria"
-      : "There are no users that match your criteria. But you can still see other users nearby. So many other users who are ${closestUsers.first.distance.toStringAsFixed(0)} KM away waiting for you to meet them. Explore and find them!";
-  return returnText;
+  return closestUsers;
 });
 
 class ClosestUser {

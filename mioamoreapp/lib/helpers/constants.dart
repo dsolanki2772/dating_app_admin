@@ -44,7 +44,13 @@ class HiveConstants {
   static const String guidedTour = "guidedTour";
 }
 
+///Json
 const String countryCodeJson = "assets/json/country_code.json";
+
+/// Lottie Json
+const String lottieNoItemFound = "assets/json/lottie/no_item_found.json";
+
+///Images
 const String appleLogo = "assets/logos/apple.png";
 const String facebookLogo = "assets/logos/facebook.png";
 const String googleLogo = "assets/logos/google.png";

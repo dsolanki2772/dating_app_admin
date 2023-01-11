@@ -65,7 +65,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       EasyLoading.show(status: "Saving...");
 
       await ref
-          .read(userProfileProvider)
+          .read(userProfileNotifier)
           .updateUserProfile(newUserProfileModel)
           .then((value) {
         EasyLoading.dismiss();

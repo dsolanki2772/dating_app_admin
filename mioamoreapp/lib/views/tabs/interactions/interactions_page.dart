@@ -12,6 +12,7 @@ import 'package:mioamoreapp/providers/other_users_provider.dart';
 import 'package:mioamoreapp/views/custom/custom_app_bar.dart';
 import 'package:mioamoreapp/views/custom/custom_headline.dart';
 import 'package:mioamoreapp/views/custom/custom_icon_button.dart';
+import 'package:mioamoreapp/views/custom/lottie/no_item_found_widget.dart';
 
 import 'package:mioamoreapp/views/others/user_image_card.dart';
 
@@ -253,7 +254,10 @@ class _InteractionsPageState extends ConsumerState<InteractionsPage> {
                           // physics: const NeverScrollableScrollPhysics(),
                           children: [
                             likedUsers.isEmpty
-                                ? const Center(child: Text('No liked users'))
+                                ? const Center(
+                                    child: NoItemFoundWidget(
+                                        text: 'No liked user found!'),
+                                  )
                                 : GridView.builder(
                                     itemCount: likedUsers.length,
                                     padding: const EdgeInsets.all(
@@ -280,7 +284,9 @@ class _InteractionsPageState extends ConsumerState<InteractionsPage> {
                                   ),
                             superLikedUsers.isEmpty
                                 ? const Center(
-                                    child: Text('No Superliked users'))
+                                    child: NoItemFoundWidget(
+                                        text: 'No superliked user found!'),
+                                  )
                                 : GridView.builder(
                                     itemCount: superLikedUsers.length,
                                     padding: const EdgeInsets.all(
@@ -308,7 +314,9 @@ class _InteractionsPageState extends ConsumerState<InteractionsPage> {
                                     },
                                   ),
                             dislikedUsers.isEmpty
-                                ? const Center(child: Text('No Disliked users'))
+                                ? const Center(
+                                    child: NoItemFoundWidget(
+                                        text: 'No disliked user found!'))
                                 : GridView.builder(
                                     itemCount: dislikedUsers.length,
                                     padding: const EdgeInsets.all(

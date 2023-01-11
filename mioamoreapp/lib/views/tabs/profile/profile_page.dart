@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreapp/providers/feed_provider.dart';
+import 'package:mioamoreapp/views/settings/verification/verification_steps.dart';
 import 'package:mioamoreapp/views/tabs/feeds/feeds_page.dart';
 import 'package:mioamoreapp/views/tabs/profile/edit_profile_page.dart';
 import 'package:intl/intl.dart';
@@ -366,7 +367,7 @@ class UserAboutView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const ProfileCompletenessWidget(),
+        const ProfileCompletenessAndGetVerifiedWidget(),
         ListTile(
           title: const Text("Phone Number"),
           subtitle: Text(data.phoneNumber == null || data.phoneNumber!.isEmpty
@@ -511,8 +512,8 @@ class UserFeedsView extends ConsumerWidget {
   }
 }
 
-class ProfileCompletenessWidget extends ConsumerWidget {
-  const ProfileCompletenessWidget({super.key});
+class ProfileCompletenessAndGetVerifiedWidget extends ConsumerWidget {
+  const ProfileCompletenessAndGetVerifiedWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -522,7 +523,46 @@ class ProfileCompletenessWidget extends ConsumerWidget {
         int percentageComplete = _getProfilePercentageComplete(data!);
 
         return percentageComplete == 100
-            ? const SizedBox()
+            ? data.isVerified
+                ? const SizedBox()
+                : Card(
+                    elevation: 0,
+                    margin: const EdgeInsets.all(
+                        AppConstants.defaultNumericValue / 2),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: AppConstants.defaultNumericValue,
+                          vertical: AppConstants.defaultNumericValue / 2),
+                      dense: true,
+                      title: Text("You are almost there!",
+                          style: Theme.of(context)
+                              .textTheme
+                              .caption!
+                              .copyWith(fontWeight: FontWeight.bold)),
+                      subtitle: Text("Get yourself as a verified user!",
+                          style: Theme.of(context).textTheme.caption),
+                      trailing: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: AppConstants.defaultNumericValue / 2,
+                              vertical: AppConstants.defaultNumericValue / 4),
+                          textStyle:
+                              Theme.of(context).textTheme.caption!.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => GetVerifiedPage(user: data),
+                            ),
+                          );
+                        },
+                        child: const Text("Get Verified"),
+                      ),
+                    ),
+                  )
             : Card(
                 elevation: 0,
                 margin:
@@ -550,30 +590,26 @@ class ProfileCompletenessWidget extends ConsumerWidget {
                           width: AppConstants.defaultNumericValue / 2),
                     ],
                   ),
-                  trailing: percentageComplete == 100
-                      ? const SizedBox()
-                      : ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal:
-                                    AppConstants.defaultNumericValue / 2,
-                                vertical: AppConstants.defaultNumericValue / 4),
-                            textStyle:
-                                Theme.of(context).textTheme.caption!.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                  trailing: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: AppConstants.defaultNumericValue / 2,
+                          vertical: AppConstants.defaultNumericValue / 4),
+                      textStyle: Theme.of(context).textTheme.caption!.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
                           ),
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    EditProfilePage(userProfileModel: data),
-                              ),
-                            );
-                          },
-                          child: const Text("Complete"),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              EditProfilePage(userProfileModel: data),
                         ),
+                      );
+                    },
+                    child: const Text("Complete"),
+                  ),
                 ),
               );
       },

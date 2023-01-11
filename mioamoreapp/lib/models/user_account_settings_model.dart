@@ -32,7 +32,7 @@ class UserAccountSettingsModel {
   }) {
     return UserAccountSettingsModel(
       location: location ?? this.location,
-      distanceInKm: distanceInKm ?? this.distanceInKm,
+      distanceInKm: distanceInKm,
       interestedIn: interestedIn ?? this.interestedIn,
       minimumAge: minimumAge ?? this.minimumAge,
       maximumAge: maximumAge ?? this.maximumAge,

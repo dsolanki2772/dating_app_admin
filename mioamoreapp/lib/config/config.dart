@@ -72,9 +72,9 @@ class AppConfig {
 
 // Base settings for a user!
   static const double initialDistanceInKM =
-      1000; //!! Initial Distance in KM to filter users
+      100; //!! Initial Distance in KM to filter users
   static const double initialMaximumDistanceInKM =
-      5000; //!! Initial Maximum Distance in KM to filter users
+      500; //!! Initial Maximum Distance in KM to filter users
 
   static const int maximumUserAge = 99; //!! Maximum default age to filter users
 

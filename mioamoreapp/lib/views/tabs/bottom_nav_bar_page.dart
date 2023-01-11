@@ -8,7 +8,7 @@ import 'package:mioamoreapp/providers/match_provider.dart';
 import 'package:mioamoreapp/providers/user_profile_provider.dart';
 import 'package:mioamoreapp/views/others/error_page.dart';
 import 'package:mioamoreapp/views/others/loading_page.dart';
-import 'package:mioamoreapp/views/tabs/favourites/favourites_page.dart';
+import 'package:mioamoreapp/views/tabs/matches/matches_page.dart';
 import 'package:mioamoreapp/views/tabs/feeds/feeds_page.dart';
 import 'package:mioamoreapp/views/tabs/home/home_page.dart';
 import 'package:mioamoreapp/views/tabs/interactions/interactions_page.dart';
@@ -67,7 +67,7 @@ class _BottomNavBarPageState extends ConsumerState<BottomNavBarPage>
     if (newModel != null) {
       print("Updating user online status to $status");
 
-      await ref.read(userProfileProvider).updateUserProfile(newModel!);
+      await ref.read(userProfileNotifier).updateUserProfile(newModel!);
     }
   }
 

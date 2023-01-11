@@ -10,6 +10,7 @@ import 'package:mioamoreapp/providers/other_users_provider.dart';
 import 'package:mioamoreapp/views/custom/custom_app_bar.dart';
 import 'package:mioamoreapp/views/custom/custom_headline.dart';
 import 'package:mioamoreapp/views/custom/custom_icon_button.dart';
+import 'package:mioamoreapp/views/custom/lottie/no_item_found_widget.dart';
 import 'package:mioamoreapp/views/others/error_page.dart';
 import 'package:mioamoreapp/views/others/loading_page.dart';
 import 'package:mioamoreapp/views/others/user_image_card.dart';
@@ -27,10 +28,7 @@ class MatchesConsumerPage extends ConsumerWidget {
       data: (data) {
         if (data.isEmpty) {
           return const Center(
-            child: Text(
-              'No users found',
-              textAlign: TextAlign.center,
-            ),
+            child: NoItemFoundWidget(text: 'No users found'),
           );
         } else {
           return matchedUsersProvider.when(
@@ -168,10 +166,7 @@ class _MatchBodyState extends ConsumerState<MatchesPage> {
                 searchedUsers.isEmpty
                     ? const Expanded(
                         child: Center(
-                          child: Text(
-                            'No users found',
-                            textAlign: TextAlign.center,
-                          ),
+                          child: NoItemFoundWidget(text: 'No matches found'),
                         ),
                       )
                     : Expanded(

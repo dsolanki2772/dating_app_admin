@@ -18,6 +18,7 @@ import 'package:mioamoreapp/views/ads/banner_ads.dart';
 import 'package:mioamoreapp/views/custom/custom_app_bar.dart';
 import 'package:mioamoreapp/views/custom/custom_headline.dart';
 import 'package:mioamoreapp/views/custom/custom_icon_button.dart';
+import 'package:mioamoreapp/views/custom/lottie/no_item_found_widget.dart';
 import 'package:mioamoreapp/views/others/error_page.dart';
 import 'package:mioamoreapp/views/others/loading_page.dart';
 import 'package:mioamoreapp/views/others/user_card_widget.dart';
@@ -156,7 +157,9 @@ class _MessagesPageState extends ConsumerState<MessagesPage> {
                     : const SizedBox(height: 0),
                 Expanded(
                   child: searchedMessages.isEmpty
-                      ? const Center(child: Text('No messages found'))
+                      ? const Center(
+                          child: NoItemFoundWidget(text: 'No messages found'),
+                        )
                       : ListView.builder(
                           itemCount: searchedMessages.length,
                           itemBuilder: (context, index) {

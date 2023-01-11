@@ -25,11 +25,11 @@ final userProfileFutureProvider =
   });
 });
 
-final userProfileProvider = Provider<UserProfileProvider>((ref) {
-  return UserProfileProvider();
+final userProfileNotifier = Provider<UserProfileNotifier>((ref) {
+  return UserProfileNotifier();
 });
 
-class UserProfileProvider {
+class UserProfileNotifier {
   final _userCollection = FirebaseFirestore.instance
       .collection(FirebaseConstants.userProfileCollection);
 
@@ -130,6 +130,14 @@ class UserProfileProvider {
     return imageUrl;
   }
 
+  //Update Online Status
+  Future<void> updateOnlineStatus({
+    required bool isOnline,
+    required String userId,
+  }) async {
+    await _userCollection.doc(userId).update({"isOnline": isOnline});
+  }
+
   //Delete Account and all data
   Future<void> deleteAccount() async {
     //TODO: Delete all data request to admin panel - 30 days to delete all data
@@ -150,11 +158,6 @@ final isUserAddedProvider = FutureProvider<bool>((ref) async {
   });
   return isUserAdded;
 });
-
-Future<void> setShowCompleteDialog(bool value) async {
-  final box = Hive.box(HiveConstants.hiveBox);
-  await box.put(HiveConstants.showCompleteDialog, value);
-}
 
 //Show Guided Tour
 Future<void> setShowGuidedTour(bool value) async {

@@ -3,13 +3,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:mioamoreapp/config/config.dart';
 import 'package:mioamoreapp/models/match_model.dart';
 import 'package:mioamoreapp/models/notification_model.dart';
+import 'package:mioamoreapp/models/user_account_settings_model.dart';
 import 'package:mioamoreapp/providers/auth_providers.dart';
 import 'package:mioamoreapp/providers/match_provider.dart';
 import 'package:mioamoreapp/providers/notifiaction_provider.dart';
+import 'package:mioamoreapp/views/custom/custom_button.dart';
+import 'package:mioamoreapp/views/custom/lottie/no_item_found_widget.dart';
 import 'package:mioamoreapp/views/tabs/home/notification_page.dart';
 import 'package:mioamoreapp/views/tabs/messages/components/chat_page.dart';
 import 'package:swipe_cards/swipe_cards.dart';
@@ -220,7 +225,7 @@ class _HomePageState extends State<HomePage> {
                             false) {
                           if (data?.isOnline == false) {
                             print("Updating online status to true");
-                            ref.read(userProfileProvider).updateUserProfile(
+                            ref.read(userProfileNotifier).updateUserProfile(
                                 data!.copyWith(isOnline: true));
                           }
                         }
@@ -263,13 +268,6 @@ class _HomePageState extends State<HomePage> {
                                                 fontWeight: FontWeight.bold),
                                       ),
                                     ),
-                                    // const SizedBox(
-                                    //     width:
-                                    //         AppConstants.defaultNumericValue / 3),
-                                    // Icon(
-                                    //   Icons.keyboard_arrow_down,
-                                    //   color: AppConstants.primaryColor,
-                                    // ),
                                   ],
                                 ),
                               );
@@ -287,11 +285,11 @@ class _HomePageState extends State<HomePage> {
 
                   return filteredUsers.when(
                     data: (data) {
+                      print("Filtered Users: ${data.length}");
+
                       return data.isEmpty
-                          ? const Center(child: Text("Nothing found"))
-                          : FilterInteraction(
-                              users: data,
-                            );
+                          ? const HomePageNoUsersFoundWidget()
+                          : FilterInteraction(users: data);
                     },
                     error: (_, __) => const Center(
                       child: Text("Something Went Wrong!"),
@@ -390,11 +388,11 @@ class FilterInteraction extends ConsumerWidget {
           }
         }
 
+        print("Filtered Users: ${filteredUsers.length}");
+
         return filteredUsers.isEmpty
-            ? const NotFoundUsersWidget()
-            : HomeBody(
-                users: filteredUsers,
-              );
+            ? const NoItemFoundWidget(text: "No users found")
+            : HomeBody(users: filteredUsers);
       },
       error: (_, __) => const Center(
         child: Text("Something Went Wrong!"),
@@ -724,21 +722,202 @@ class UserCirlePicture extends StatelessWidget {
   }
 }
 
-class NotFoundUsersWidget extends ConsumerWidget {
-  const NotFoundUsersWidget({Key? key}) : super(key: key);
+class HomePageNoUsersFoundWidget extends ConsumerWidget {
+  const HomePageNoUsersFoundWidget({
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final notFoundUsersFuture = ref.watch(notShowingUsersProvider);
-    return Center(
-        child: Padding(
-      padding: const EdgeInsets.symmetric(
-          horizontal: AppConstants.defaultNumericValue * 2),
-      child: Text(
-        notFoundUsersFuture,
-        textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.headline6,
+    final interactions = ref.watch(interactionFutureProvider);
+    final closestUsers = ref.watch(closestUsersProvider);
+
+    return interactions.when(
+      data: (data) {
+        final users = closestUsers
+            .where((element) => !data.any((interaction) =>
+                interaction.intractToUserId == element.user.id))
+            .toList();
+
+        users.sort((a, b) => a.distance.compareTo(b.distance));
+
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: AppConstants.defaultNumericValue * 2),
+            child: users.isEmpty
+                ? const NoItemFoundWidget(
+                    text: "No users found with your preferences")
+                : AccountSettingsLandingWidget(
+                    builder: (data) {
+                      return ChangeRadiusFromHomePageWidget(
+                        closestUsersDistanceInKM: users.first.distance / 1000,
+                        user: data,
+                      );
+                    },
+                  ),
+          ),
+        );
+      },
+      error: (_, __) => const SizedBox(),
+      loading: () => const Center(
+        child: CircularProgressIndicator.adaptive(),
       ),
-    ));
+    );
+  }
+}
+
+class ChangeRadiusFromHomePageWidget extends ConsumerStatefulWidget {
+  final double closestUsersDistanceInKM;
+  final UserProfileModel user;
+  const ChangeRadiusFromHomePageWidget({
+    super.key,
+    required this.closestUsersDistanceInKM,
+    required this.user,
+  });
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _ChangeRadiusFromHomePageWidgetState();
+}
+
+class _ChangeRadiusFromHomePageWidgetState
+    extends ConsumerState<ChangeRadiusFromHomePageWidget> {
+  late double _distanceInKm;
+  late bool _isWorldWide;
+  late double _maxDistanceInKm;
+
+  @override
+  void initState() {
+    _distanceInKm = widget.user.userAccountSettingsModel.distanceInKm ??
+        AppConfig.initialMaximumDistanceInKM;
+    _isWorldWide = widget.user.userAccountSettingsModel.distanceInKm == null;
+    _maxDistanceInKm = AppConfig.initialMaximumDistanceInKM;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const NoItemFoundWidget(
+              text: "No users found in your area right now", isSmall: true),
+          Text.rich(
+            TextSpan(
+              children: [
+                const TextSpan(
+                  text:
+                      "But you can change your radius to find more users. There are lots of users are waiting for you in just ",
+                ),
+                TextSpan(
+                  text:
+                      "${widget.closestUsersDistanceInKM.toStringAsFixed(0)} km",
+                  style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                        color: AppConstants.primaryColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const TextSpan(text: " away!"),
+              ],
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: AppConstants.defaultNumericValue),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: AppConstants.defaultNumericValue),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Radius',
+                    style: Theme.of(context)
+                        .textTheme
+                        .subtitle2!
+                        .copyWith(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                if (!_isWorldWide)
+                  Text(
+                    '${_distanceInKm.toInt()} km',
+                    style: Theme.of(context).textTheme.headline6!.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppConstants.primaryColor),
+                  ),
+              ],
+            ),
+          ),
+          if (_isWorldWide)
+            const SizedBox(height: AppConstants.defaultNumericValue / 2),
+          if (!_isWorldWide)
+            Slider(
+              value: _distanceInKm,
+              min: 1,
+              max: _maxDistanceInKm,
+              onChanged: (value) {
+                setState(() {
+                  _distanceInKm = value;
+                });
+              },
+            ),
+          Card(
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius:
+                  BorderRadius.circular(AppConstants.defaultNumericValue),
+            ),
+            borderOnForeground: true,
+            child: CheckboxListTile(
+              value: _isWorldWide,
+              controlAffinity: ListTileControlAffinity.leading,
+              onChanged: (value) {
+                setState(() {
+                  _isWorldWide = value!;
+                  _distanceInKm = value
+                      ? AppConfig.initialMaximumDistanceInKM
+                      : widget.user.userAccountSettingsModel.distanceInKm ??
+                          AppConfig.initialMaximumDistanceInKM;
+                });
+              },
+              title: Text(
+                "Anywhere",
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyLarge!
+                    .copyWith(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          const SizedBox(height: AppConstants.defaultNumericValue),
+          CustomButton(
+            onPressed: () async {
+              final UserAccountSettingsModel newSettingsModel =
+                  widget.user.userAccountSettingsModel.copyWith(
+                distanceInKm:
+                    _isWorldWide ? null : _distanceInKm.toInt().toDouble(),
+              );
+
+              final userProfileModel = widget.user
+                  .copyWith(userAccountSettingsModel: newSettingsModel);
+
+              EasyLoading.show(status: 'Updating...');
+
+              await ref
+                  .read(userProfileNotifier)
+                  .updateUserProfile(userProfileModel)
+                  .then((value) {
+                ref.invalidate(userProfileFutureProvider);
+                EasyLoading.dismiss();
+              });
+            },
+            text: 'Apply',
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -515,7 +515,7 @@ class _DetailsBodyState extends State<DetailsBody> {
                 bottom: 0,
                 child: Container(
                   width: MediaQuery.of(context).size.width,
-                  height: AppConstants.defaultNumericValue * 2,
+                  height: AppConstants.defaultNumericValue,
                   decoration: BoxDecoration(
                     color: Theme.of(context).scaffoldBackgroundColor,
                     borderRadius: const BorderRadius.only(
@@ -534,7 +534,7 @@ class _DetailsBodyState extends State<DetailsBody> {
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: AppConstants.defaultNumericValue),
+                    horizontal: AppConstants.defaultNumericValue / 2),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -592,7 +592,7 @@ class _DetailsBodyState extends State<DetailsBody> {
                             "${DateTime.now().difference(widget.user.birthDay).inDays ~/ 365} Years",
                             style: Theme.of(context)
                                 .textTheme
-                                .subtitle1!
+                                .subtitle2!
                                 .copyWith(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold)),
@@ -601,7 +601,6 @@ class _DetailsBodyState extends State<DetailsBody> {
                   ],
                 ),
               ),
-              const SizedBox(height: AppConstants.defaultNumericValue / 2),
               Padding(
                 padding: const EdgeInsets.symmetric(
                     horizontal: AppConstants.defaultNumericValue,
@@ -662,7 +661,7 @@ class _DetailsBodyState extends State<DetailsBody> {
                   ],
                 ),
               ),
-              const SizedBox(height: AppConstants.defaultNumericValue),
+              const Divider(),
               Padding(
                 padding: const EdgeInsets.symmetric(
                     horizontal: AppConstants.defaultNumericValue),

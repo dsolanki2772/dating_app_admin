@@ -74,7 +74,7 @@ class _FirstTimeUserProfilePageState
       isVerified: false,
     );
     final result =
-        await ref.read(userProfileProvider).createUserProfile(userProfileModel);
+        await ref.read(userProfileNotifier).createUserProfile(userProfileModel);
     if (result) {
       ref.invalidate(isUserAddedProvider);
       ref.invalidate(userProfileFutureProvider);
