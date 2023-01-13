@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <!--! Change the facebook app name -->
-  <string name="app_name">mio amore</string> 
+  <string name="app_name">appName</string> 
   <!--! Change the facebook app id -->
-  <string name="facebook_app_id">752318719243949</string>
+  <string name="facebook_app_id">appID</string>
 
   <!--! Change facebook login protocol  -->
-  <string name="fb_login_protocol_scheme">fb752318719243949</string>
+  <string name="fb_login_protocol_scheme">fb[appID]</string>
 
   <!--! Change facebook client token  -->
-  <string name="facebook_client_token">114bdb99fa3b33de1160263e65ada833</string>
+  <string name="facebook_client_token">clientToken</string>
 </resources>

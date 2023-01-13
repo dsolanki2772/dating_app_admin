@@ -54,7 +54,7 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
 
         // ! Change the application Id
-        applicationId "com.incevio.mioamore"
+        applicationId "your_app_bundle_id"
 
         // Don't change anything below
         minSdkVersion 23

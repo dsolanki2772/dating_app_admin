@@ -11,7 +11,7 @@ class AppConfig {
   ///
 
 //!!App Name. Change this to your app name
-  static const String appName = "mio amore";
+  static const String appName = "appName";
 
 //!! App Primary Color. Change this to your app primary color
   static HexColor primaryColor = HexColor("#EC1E79");
@@ -100,10 +100,10 @@ class AppConfig {
   ///
 
   //!! Initial Distance in KM to filter users
-  static const double initialDistanceInKM = 100;
+  static const double initialDistanceInKM = 500;
 
   //!! Initial Maximum Distance in KM to filter users
-  static const double initialMaximumDistanceInKM = 500;
+  static const double initialMaximumDistanceInKM = 1000;
 
   //!! Maximum default age to filter users
   static const int maximumUserAge = 99;
@@ -171,10 +171,10 @@ const bool isPhoneAuthAvailable = true;
 // ? Must Have These Two
 
 //!! Terms and Conditions Page. You should use your own page or use this one.
-const String termsAndConditionsUrl = "https://incevio.com/page/terms-of-use";
+const String termsAndConditionsUrl = "";
 
 //!! Privacy Policy Page. You should use your own page or use this one.
-const String privacyPolicyUrl = "https://incevio.com/page/privacy-policy";
+const String privacyPolicyUrl = "";
 
 // ? These are optional
 
@@ -188,13 +188,13 @@ const bool isCompanyHasAbout = true;
 const bool isCompanyHasContact = true;
 
 //! FAQ Page URL
-const String faqUrl = "https://incevio.com/faqs";
+const String faqUrl = "";
 
 //! Contact Page URL
-const String contactUsUrl = "https://incevio.com/contact";
+const String contactUsUrl = "";
 
 //! About Page URL
-const String aboutUsUrl = "https://incevio.com/page/about-us";
+const String aboutUsUrl = "";
 
 ///
 /// Location Settings
@@ -202,7 +202,7 @@ const String aboutUsUrl = "https://incevio.com/page/about-us";
 
 //!! Create this place api key from google cloud platform and paste here!
 //!! Link: https://!console.cloud.google.com/apis/credentials
-const String locationApiKey = "AIzaSyDvkwrf9abC92F6SFdYEDmmYIgdvBrLi9o";
+const String locationApiKey = "Location API Key";
 
 ///
 /// Ads Settings
@@ -215,32 +215,30 @@ class AndroidAdUnits {
   AndroidAdUnits._();
 
   //! Admob Android App Id
-  static const String appId = "ca-app-pub-3940256099942544~3347511713";
+  static const String appId = "admob_android_app_id";
 
   //! Admob Android Banner Ad Id
-  static const String bannerId = "ca-app-pub-3940256099942544/6300978111";
+  static const String bannerId = "admob_android_banner_id";
 
   //! Admob Android Interstitial Ad Id
-  static const String interstitialId = "ca-app-pub-3940256099942544/1033173712";
+  static const String interstitialId = "admob_android_interstitial_id";
 
   //! Admob Android Rewarded Video Ad Id
-  static const String rewardedVideoId =
-      "ca-app-pub-3940256099942544/5224354917";
+  static const String rewardedVideoId = "admob_android_rewarded_video_id";
 }
 
 class IOSAdUnits {
   IOSAdUnits._();
 
   //! Admob iOS App Id
-  static const String appId = "ca-app-pub-3940256099942544~1458002511";
+  static const String appId = "admob_ios_app_id";
 
   //! Admob iOS Banner Ad Id
-  static const String bannerId = "ca-app-pub-3940256099942544/2934735716";
+  static const String bannerId = "admob_ios_banner_id";
 
   //! Admob iOS Interstitial Ad Id
-  static const String interstitialId = "ca-app-pub-3940256099942544/4411468910";
+  static const String interstitialId = "admob_ios_interstitial_id";
 
   //! Admob iOS Rewarded Video Ad Id
-  static const String rewardedVideoId =
-      "ca-app-pub-3940256099942544/1712485313";
+  static const String rewardedVideoId = "admob_ios_rewarded_video_id";
 }

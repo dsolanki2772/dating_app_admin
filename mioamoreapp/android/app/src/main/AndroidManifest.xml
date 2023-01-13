@@ -1,7 +1,7 @@
 
 <!--! Change the application Id -> package -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.incevio.mioamore">
+    package="your_app_bundle_id">
 
     <!-- App Permissions and Requirements -->
     <!-- Don't change anything below -->
@@ -48,7 +48,7 @@
   <!--! Change the app name -> android:label -->
 
    <application
-        android:label="mio amore" 
+        android:label="appName" 
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
@@ -86,7 +86,7 @@
         <activity android:name="com.facebook.FacebookActivity"
         android:configChanges=
                 "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-        android:label="mio amore" />
+        android:label="appName" />
 
         <activity
             android:name="com.facebook.CustomTabActivity"
@@ -108,7 +108,7 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713"/>
+            android:value="APPLICATION_ID"/>
 
 
     </application>

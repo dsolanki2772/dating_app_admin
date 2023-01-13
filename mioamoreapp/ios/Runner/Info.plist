@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>mio amore</string>
+	<string>appName</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -29,21 +29,21 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.705774753844-imnlfb746eondqb3vo2ttvm46toatqpu</string>
-				<string>fb752318719243949</string>
+				<string>google_reserved_id</string>
+				<string>fb[facebook_app_id]</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>FacebookAppID</key>
-	<string>752318719243949</string>
+	<string>[facebook_app_id]</string>
 	<key>FacebookClientToken</key>
-	<string>114bdb99fa3b33de1160263e65ada833</string>
+	<string>[facebook_client_token]</string>
 	<key>FacebookDisplayName</key>
-	<string>mio amore</string>
+	<string>[facebook_app_name]</string>
 	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<string>[admob_ios_app_id]</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>https</string>

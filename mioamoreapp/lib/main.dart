@@ -25,6 +25,7 @@ void main() async {
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   await Firebase.initializeApp(
+    //! Generate Firebase options from https://console.firebase.google.com/ and paste it here. You can also use the default options below.
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
