@@ -187,7 +187,7 @@ class _SetUserLocationState extends ConsumerState<SetUserLocation> {
 
 Future<LocationComponents?> getLocationFromPlaceID(String placeId) async {
   final url = Uri.parse(
-      "https://maps.googleapis.com/maps/api/place/details/json?placeid=$placeId&key=${AppConfig.locationApiKey}");
+      "https://maps.googleapis.com/maps/api/place/details/json?placeid=$placeId&key=$locationApiKey");
 
   var response = await http.get(url, headers: {"Accept": "application/json"});
 

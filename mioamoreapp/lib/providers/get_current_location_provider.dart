@@ -8,7 +8,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 
 String getLocationApiString(double lat, double long) {
-  return "https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$long&key=${AppConfig.locationApiKey}";
+  return "https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$long&key=$locationApiKey";
 }
 
 final getCurrentLocationProviderProvider =
