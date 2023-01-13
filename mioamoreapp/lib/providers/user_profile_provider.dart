@@ -59,7 +59,7 @@ class UserProfileNotifier {
 
   Future<bool> updateUserProfile(UserProfileModel userProfileModel) async {
     try {
-      UserProfileModel? newUserProfile;
+      UserProfileModel newUserProfile = userProfileModel;
 
       if (userProfileModel.profilePicture != null) {
         if (Uri.parse(userProfileModel.profilePicture!).isAbsolute) {
@@ -72,8 +72,6 @@ class UserProfileNotifier {
           newUserProfile =
               userProfileModel.copyWith(profilePicture: profileURL);
         }
-      } else {
-        newUserProfile = userProfileModel;
       }
 
       List<String> mediaURLs = [];

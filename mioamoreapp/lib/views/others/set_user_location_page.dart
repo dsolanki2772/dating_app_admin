@@ -47,6 +47,12 @@ class _SetUserLocationState extends ConsumerState<SetUserLocation> {
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final currentLocationProviderProvider =
         ref.watch(getCurrentLocationProviderProvider);

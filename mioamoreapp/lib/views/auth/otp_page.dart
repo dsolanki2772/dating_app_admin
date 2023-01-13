@@ -143,7 +143,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         appBar: AppBar(
           title: Text("Login With Phone".toUpperCase()),
         ),
-        body: Padding(
+        body: SingleChildScrollView(
           padding: const EdgeInsets.all(AppConstants.defaultNumericValue),
           child: Form(
             key: _formKey,

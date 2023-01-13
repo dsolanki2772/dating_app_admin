@@ -67,7 +67,12 @@ class AppDrawer extends ConsumerWidget {
                                 ),
                               ),
                               subtitle: Text(
-                                data.email ?? data.phoneNumber ?? '',
+                                (data.email == null || data.email!.isEmpty)
+                                    ? (data.phoneNumber == null ||
+                                            data.phoneNumber!.isEmpty)
+                                        ? 'Add Email or Phone Number'
+                                        : data.phoneNumber!
+                                    : data.email!,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(color: Colors.white70),

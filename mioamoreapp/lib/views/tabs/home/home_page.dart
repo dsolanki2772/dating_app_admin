@@ -470,10 +470,11 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
     await addNotification(notificationModel);
   }
 
-  void showMatchingDialog(
-      {required BuildContext context,
-      required UserProfileModel currentUser,
-      required UserProfileModel otherUser}) async {
+  void showMatchingDialog({
+    required BuildContext context,
+    required UserProfileModel currentUser,
+    required UserProfileModel otherUser,
+  }) async {
     final MatchModel matchModel = MatchModel(
       id: currentUser.userId + otherUser.userId,
       userIds: [currentUser.userId, otherUser.userId],
@@ -624,7 +625,8 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
                               } else {
                                 createInteractionNotification(
                                     title: "You have a new Interaction!",
-                                    body: "Someone has super liked you!",
+                                    body:
+                                        "${user.fullName} has super liked you!",
                                     receiverId: user.id,
                                     currentUser: data);
                               }
@@ -655,7 +657,7 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
                               } else {
                                 createInteractionNotification(
                                     title: "You have a new Interaction!",
-                                    body: "Someone has liked you!",
+                                    body: "${user.fullName} has liked you!",
                                     receiverId: user.id,
                                     currentUser: data);
                               }
@@ -688,6 +690,8 @@ class UserCirlePicture extends StatelessWidget {
   Widget build(BuildContext context) {
     final newSize = size ?? AppConstants.defaultNumericValue * 5;
     return Container(
+      width: newSize,
+      height: newSize,
       decoration: BoxDecoration(
         borderRadius:
             BorderRadius.circular(AppConstants.defaultNumericValue * 10),
@@ -696,27 +700,23 @@ class UserCirlePicture extends StatelessWidget {
       child: ClipRRect(
         borderRadius:
             BorderRadius.circular(AppConstants.defaultNumericValue * 10),
-        child: SizedBox(
-          width: size,
-          height: size,
-          child: imageUrl == null || imageUrl!.isEmpty
-              ? CircleAvatar(
-                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                  child: Icon(
-                    CupertinoIcons.person_fill,
-                    color: AppConstants.primaryColor,
-                    size: newSize * 0.8,
-                  ),
-                )
-              : CachedNetworkImage(
-                  imageUrl: imageUrl!,
-                  placeholder: (context, url) =>
-                      const Center(child: CircularProgressIndicator.adaptive()),
-                  errorWidget: (context, url, error) =>
-                      const Center(child: Icon(Icons.error)),
-                  fit: BoxFit.cover,
+        child: imageUrl == null || imageUrl!.isEmpty
+            ? CircleAvatar(
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                child: Icon(
+                  CupertinoIcons.person_fill,
+                  color: AppConstants.primaryColor,
+                  size: newSize * 0.8,
                 ),
-        ),
+              )
+            : CachedNetworkImage(
+                imageUrl: imageUrl!,
+                placeholder: (context, url) =>
+                    const Center(child: CircularProgressIndicator.adaptive()),
+                errorWidget: (context, url, error) =>
+                    const Center(child: Icon(Icons.error)),
+                fit: BoxFit.cover,
+              ),
       ),
     );
   }
