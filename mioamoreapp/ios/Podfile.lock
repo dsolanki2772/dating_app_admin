@@ -643,7 +643,7 @@ PODS:
   - Firebase/Storage (10.3.0):
     - Firebase/CoreOnly
     - FirebaseStorage (~> 10.3.0)
-  - firebase_auth (4.2.5):
+  - firebase_auth (4.2.2):
     - Firebase/Auth (= 10.3.0)
     - firebase_core
     - Flutter
@@ -1029,7 +1029,7 @@ SPEC CHECKSUMS:
   FBSDKCoreKit_Basics: 92d6b26c0bed30ab09bbdd96dccaa26e6c9978d1
   FBSDKLoginKit: 4e275d30cf90e92bdf3a7c82857a8642abf23037
   Firebase: f92fc551ead69c94168d36c2b26188263860acd9
-  firebase_auth: 3bab991fe1df91c2f948156e9dee976e01a19ab9
+  firebase_auth: d1a0302ad8f1d642fc1cb53c43d25a951d70e190
   firebase_core: bf59c32d2e53814f558efa20840c1902fa2fe461
   firebase_messaging: ee597229fc260f8fa491fa8f2d4a32dfbfa406fa
   firebase_storage: 8b85bf19de50a1886f9387924fbddf066a718965
@@ -1074,7 +1074,7 @@ SPEC CHECKSUMS:
   PromisesObjC: ab77feca74fa2823e7af4249b8326368e61014cb
   record: 7ee2393532f8553bbb09fa19e95478323b7c0a99
   share_plus: 056a1e8ac890df3e33cb503afffaf1e9b4fbae68
-  shared_preferences_foundation: 3d2c799fb2ff809e53f07a8517d24c441ad22e65
+  shared_preferences_foundation: 297b3ebca31b34ec92be11acd7fb0ba932c822ca
   sign_in_with_apple: f3bf75217ea4c2c8b91823f225d70230119b8440
   sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
   url_launcher_ios: 839c58cdb4279282219f5e248c3321761ff3c4de
