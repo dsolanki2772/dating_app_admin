@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
-import 'package:mioamoreapp/models/get_verified_model.dart';
+import 'package:mioamoreapp/models/verification_form_model.dart';
 
 final verificationProvider =
     ChangeNotifierProvider<VerificationProvider>((ref) {
@@ -15,17 +15,17 @@ class VerificationProvider extends ChangeNotifier {
       .collection(FirebaseConstants.verificationFormsCollection);
 
   //Verification
-  Future<GetVerifiedModel?> getVerifiedStatus(String currentUserId) async {
+  Future<VerificationFormModel?> getVerifiedStatus(String currentUserId) async {
     return _verificationCollection.doc(currentUserId).get().then((value) {
       if (value.exists) {
-        return GetVerifiedModel.fromMap(value.data()!);
+        return VerificationFormModel.fromMap(value.data()!);
       } else {
         return null;
       }
     });
   }
 
-  Future<void> submitVerificationForm(GetVerifiedModel model) async {
+  Future<void> submitVerificationForm(VerificationFormModel model) async {
     try {
       await _verificationCollection.doc(model.userId).set(model.toMap());
       notifyListeners();
@@ -34,7 +34,7 @@ class VerificationProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> updateVerificationForm(GetVerifiedModel model) async {
+  Future<void> updateVerificationForm(VerificationFormModel model) async {
     try {
       await _verificationCollection.doc(model.userId).update(model.toMap());
       notifyListeners();

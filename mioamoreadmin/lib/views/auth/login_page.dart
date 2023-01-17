@@ -1,0 +1,135 @@
+import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/material.dart' as material;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mioamoreadmin/config/config.dart';
+import 'package:mioamoreadmin/providers/admin_provider.dart';
+import 'package:mioamoreadmin/providers/auth_provider.dart';
+
+class LoginPage extends ConsumerStatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends ConsumerState<LoginPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  bool _showPassword = false;
+  @override
+  Widget build(BuildContext context) {
+    return NavigationView(
+      content: Center(
+        child: SizedBox(
+          width: 350,
+          child: Card(
+            borderRadius: BorderRadius.circular(8),
+            padding: const EdgeInsets.all(24),
+            child: Form(
+              key: _formKey,
+              child: AutofillGroup(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 16),
+                    Text(
+                      AppConstants.appName,
+                      textAlign: TextAlign.center,
+                      style: FluentTheme.of(context).typography.bodyStrong,
+                    ),
+                    const SizedBox(height: 32),
+                    Text(
+                      'Login',
+                      textAlign: TextAlign.center,
+                      style: FluentTheme.of(context).typography.bodyStrong,
+                    ),
+                    const SizedBox(height: 24),
+                    material.TextFormField(
+                      controller: _emailController,
+                      autofillHints: const <String>[AutofillHints.email],
+                      textInputAction: TextInputAction.next,
+                      decoration: material.InputDecoration(
+                        labelText: 'Email',
+                        labelStyle: FluentTheme.of(context).typography.body,
+                        border: material.OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your email';
+                        } else if (!value.contains('@') ||
+                            !value.contains('.')) {
+                          return 'Please enter a valid email';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    material.TextFormField(
+                      controller: _passwordController,
+                      autofillHints: const <String>[AutofillHints.password],
+                      textInputAction: TextInputAction.done,
+                      obscureText: !_showPassword,
+                      decoration: material.InputDecoration(
+                        labelText: 'Password',
+                        labelStyle: FluentTheme.of(context).typography.body,
+                        border: material.OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _showPassword
+                                ? material.Icons.visibility
+                                : material.Icons.visibility_off,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _showPassword = !_showPassword;
+                            });
+                          },
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter your password';
+                        } else if (value.length < 6) {
+                          return 'Password must be at least 6 characters';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 24),
+                    FilledButton(
+                      child: const Padding(
+                        padding: EdgeInsets.all(16 / 2),
+                        child: Text("Login"),
+                      ),
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          await AuthProvider.loginWithEmailAndPass(
+                            email: _emailController.text.trim(),
+                            password: _passwordController.text.trim(),
+                          ).then((value) {
+                            if (value != null) {
+                              ref.invalidate(isUserAdminProvider(value.uid));
+                            }
+                          });
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

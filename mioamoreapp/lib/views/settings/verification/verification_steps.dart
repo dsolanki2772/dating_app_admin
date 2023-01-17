@@ -5,7 +5,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/helpers/date_formater.dart';
-import 'package:mioamoreapp/models/get_verified_model.dart';
+import 'package:mioamoreapp/models/verification_form_model.dart';
 import 'package:mioamoreapp/models/user_profile_model.dart';
 import 'package:mioamoreapp/providers/auth_providers.dart';
 import 'package:mioamoreapp/providers/verification_provider.dart';
@@ -38,11 +38,11 @@ class _GetVerifiedPageState extends ConsumerState<GetVerifiedPage> {
               ? const Center(
                   child: Text('You are verified'),
                 )
-              : FutureBuilder<GetVerifiedModel?>(
+              : FutureBuilder<VerificationFormModel?>(
                   future:
                       verificationData.getVerifiedStatus(currentUserRef!.uid),
                   builder: (BuildContext context,
-                      AsyncSnapshot<GetVerifiedModel?> snapshot) {
+                      AsyncSnapshot<VerificationFormModel?> snapshot) {
                     return snapshot.hasError
                         ? const Center(
                             child: Text('Error'),
@@ -64,7 +64,7 @@ class _GetVerifiedPageState extends ConsumerState<GetVerifiedPage> {
 }
 
 class _VerifiedPart extends StatelessWidget {
-  final GetVerifiedModel data;
+  final VerificationFormModel data;
   final VoidCallback onPressedSubmitAgain;
   const _VerifiedPart({
     Key? key,
@@ -182,7 +182,7 @@ class _NotVerifiedPartState extends ConsumerState<_NotVerifiedPart> {
       EasyLoading.showInfo("Something went wrong. Please try again later.");
       return;
     } else {
-      GetVerifiedModel form = GetVerifiedModel(
+      VerificationFormModel form = VerificationFormModel(
         id: ref.watch(currentUserStateProvider)!.uid,
         userId: ref.watch(currentUserStateProvider)!.uid,
         photoIdFrontViewUrl: photoIdFrontPath,
