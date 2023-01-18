@@ -40,8 +40,26 @@ class NormalLandingWidget extends ConsumerWidget {
           final isUserAdminRef = ref.watch(isUserAdminProvider(data.uid));
 
           return isUserAdminRef.when(
-            data: (data) {
-              return data ? const Wrapper() : const NotAdminWidget();
+            data: (isAdmin) {
+              if (isAdmin) {
+                final isEmailVerifiedRef = ref.watch(isEmailVerifiedProvider);
+
+                return isEmailVerifiedRef.when(
+                  data: (isEmailVerified) {
+                    if (isEmailVerified) {
+                      return const Wrapper();
+                    } else {
+                      return const NotEmailVerifiedWidget();
+                    }
+                  },
+                  error: (error, stackTrace) => const MyErrorWidget(),
+                  loading: () => const MyLoadingWidget(),
+                );
+              } else {
+                return const NotAdminWidget();
+              }
+
+              // return data ? const Wrapper() : const NotAdminWidget();
             },
             error: (error, stackTrace) => const MyErrorWidget(),
             loading: () => const MyLoadingWidget(),

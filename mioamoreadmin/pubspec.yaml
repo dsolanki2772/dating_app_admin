@@ -45,7 +45,7 @@ dependencies:
   firebase_ui_firestore: ^1.2.3
   collection: ^1.16.0
   intl: ^0.17.0
-  system_theme: ^2.1.0
+  data_table_2: ^2.3.10
 
 dev_dependencies:
   flutter_test:

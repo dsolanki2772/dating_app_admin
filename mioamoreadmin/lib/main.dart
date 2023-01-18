@@ -6,7 +6,6 @@ import 'package:mioamoreadmin/config/config.dart';
 import 'package:mioamoreadmin/firebase_options.dart';
 import 'package:mioamoreadmin/helpers/config_loading.dart';
 import 'package:mioamoreadmin/views/wrapper/landing_widget.dart';
-import 'package:system_theme/system_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,7 +31,6 @@ class MyApp extends StatelessWidget {
     return FluentApp(
       debugShowCheckedModeBanner: false,
       title: AppConstants.appName,
-      theme: SystemTheme.isDarkMode ? ThemeData.dark() : ThemeData.light(),
       home: const SuperAdminLandingWidget(),
       builder: EasyLoading.init(),
     );

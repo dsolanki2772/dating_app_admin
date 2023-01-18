@@ -1,9 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mioamoreadmin/config/config.dart';
 import 'package:mioamoreadmin/models/admin_model.dart';
 import 'package:mioamoreadmin/providers/admin_provider.dart';
-import 'package:mioamoreadmin/providers/auth_provider.dart';
 import 'package:mioamoreadmin/views/others/other_widgets.dart';
 import 'package:mioamoreadmin/views/tabs/admins/admins_page.dart';
 import 'package:mioamoreadmin/views/tabs/dashboard/dashboard_page.dart';
@@ -54,13 +52,6 @@ class _WrapperState extends ConsumerState<Wrapper> {
                       body: const DashboardPage(),
                     ),
 
-                    //Users
-                    PaneItem(
-                      icon: const Icon(FluentIcons.people),
-                      title: const Text('Users'),
-                      body: const UsersPage(),
-                    ),
-
                     // Admins
 
                     if (user.isSuperAdmin)
@@ -69,6 +60,13 @@ class _WrapperState extends ConsumerState<Wrapper> {
                         title: const Text('Admins'),
                         body: const AdminsPage(),
                       ),
+
+                    //Users
+                    PaneItem(
+                      icon: const Icon(FluentIcons.people),
+                      title: const Text('Users'),
+                      body: const UsersPage(),
+                    ),
 
                     // Verifications
                     if (user.permissions.contains(verificationPermission))

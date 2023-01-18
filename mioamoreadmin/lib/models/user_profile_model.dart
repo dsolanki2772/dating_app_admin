@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:collection/collection.dart';
 import 'package:mioamoreadmin/models/user_account_settings_model.dart';
 
@@ -167,5 +168,99 @@ class UserProfileModel {
         userAccountSettingsModel.hashCode ^
         isVerified.hashCode ^
         isOnline.hashCode;
+  }
+}
+
+class UserProfileShortModel {
+  String id;
+  String userId;
+  String fullName;
+  String? profilePicture;
+  String gender;
+  bool isVerified;
+  UserProfileShortModel({
+    required this.id,
+    required this.userId,
+    required this.fullName,
+    this.profilePicture,
+    required this.gender,
+    required this.isVerified,
+  });
+
+  UserProfileShortModel copyWith({
+    String? id,
+    String? userId,
+    String? fullName,
+    String? profilePicture,
+    String? gender,
+    bool? isVerified,
+  }) {
+    return UserProfileShortModel(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      fullName: fullName ?? this.fullName,
+      profilePicture: profilePicture ?? this.profilePicture,
+      gender: gender ?? this.gender,
+      isVerified: isVerified ?? this.isVerified,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    final result = <String, dynamic>{};
+
+    result.addAll({'id': id});
+    result.addAll({'userId': userId});
+    result.addAll({'fullName': fullName});
+    if (profilePicture != null) {
+      result.addAll({'profilePicture': profilePicture});
+    }
+    result.addAll({'gender': gender});
+    result.addAll({'isVerified': isVerified});
+
+    return result;
+  }
+
+  factory UserProfileShortModel.fromMap(Map<String, dynamic> map) {
+    return UserProfileShortModel(
+      id: map['id'] ?? '',
+      userId: map['userId'] ?? '',
+      fullName: map['fullName'] ?? '',
+      profilePicture: map['profilePicture'],
+      gender: map['gender'] ?? '',
+      isVerified: map['isVerified'] ?? false,
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory UserProfileShortModel.fromJson(String source) =>
+      UserProfileShortModel.fromMap(json.decode(source));
+
+  @override
+  String toString() {
+    return 'UserProfileShortModel(id: $id, userId: $userId, fullName: $fullName, profilePicture: $profilePicture, gender: $gender, isVerified: $isVerified)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is UserProfileShortModel &&
+        other.id == id &&
+        other.userId == userId &&
+        other.fullName == fullName &&
+        other.profilePicture == profilePicture &&
+        other.gender == gender &&
+        other.isVerified == isVerified;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        userId.hashCode ^
+        fullName.hashCode ^
+        profilePicture.hashCode ^
+        gender.hashCode ^
+        isVerified.hashCode;
   }
 }
