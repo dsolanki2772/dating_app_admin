@@ -5,6 +5,7 @@ import 'package:mioamoreadmin/providers/devices_provider.dart';
 import 'package:mioamoreadmin/providers/interactions_provider.dart';
 import 'package:mioamoreadmin/providers/matches_provider.dart';
 import 'package:mioamoreadmin/providers/user_profiles_provider.dart';
+import 'package:mioamoreadmin/providers/user_reports_provider.dart';
 import 'package:mioamoreadmin/views/tabs/dashboard/dashboard_card.dart';
 
 class DashboardPage extends ConsumerWidget {
@@ -16,6 +17,7 @@ class DashboardPage extends ConsumerWidget {
     final totalInteractionsRef = ref.watch(totalInteractionsProvider);
     final totalMatchesRef = ref.watch(totalMatchesProvider);
     final totalDevicesRef = ref.watch(totalDevicesProvider);
+    final allReportsRef = ref.watch(allReportsProvider);
     return NavigationView(
       appBar: const NavigationAppBar(
         title: Text('Dashboard'),
@@ -50,6 +52,26 @@ class DashboardPage extends ConsumerWidget {
                 loading: () => const SizedBox(),
                 error: (error, stack) => const SizedBox(),
               ),
+
+              // Total verified users
+              totalUsersRef.when(
+                data: (totalUsers) {
+                  final verified = totalUsers
+                      .where((element) => element.isVerified)
+                      .toList();
+                  return DashboardCard(
+                    title: 'Total Verified Users',
+                    value: NumberFormatter.formatNumber(verified.length),
+                    icon: FluentIcons.people,
+                    color: Colors.green.light,
+                    subtitle:
+                        "Verified: ${NumberFormatter.formatNumber(verified.length)}",
+                  );
+                },
+                loading: () => const SizedBox(),
+                error: (error, stack) => const SizedBox(),
+              ),
+
               totalInteractionsRef.when(
                 data: (totalInteractions) {
                   final likes = totalInteractions
@@ -69,7 +91,7 @@ class DashboardPage extends ConsumerWidget {
                     value:
                         NumberFormatter.formatNumber(totalInteractions.length),
                     icon: FluentIcons.add_connection,
-                    color: Colors.teal,
+                    color: Colors.red.light,
                     subtitle:
                         "Likes: ${NumberFormatter.formatNumber(likes.length)} | Dislikes: ${NumberFormatter.formatNumber(dislikes.length)} | Super Likes: ${NumberFormatter.formatNumber(superLikes.length)}",
                   );
@@ -94,6 +116,20 @@ class DashboardPage extends ConsumerWidget {
                   icon: FluentIcons.cell_phone,
                   color: Colors.orange,
                 ),
+                loading: () => const SizedBox(),
+                error: (error, stack) => const SizedBox(),
+              ),
+              //Total reported Users
+
+              allReportsRef.when(
+                data: (allReports) {
+                  return DashboardCard(
+                    title: 'Total Reported Users',
+                    value: NumberFormatter.formatNumber(allReports.length),
+                    icon: FluentIcons.people,
+                    color: Colors.red,
+                  );
+                },
                 loading: () => const SizedBox(),
                 error: (error, stack) => const SizedBox(),
               ),

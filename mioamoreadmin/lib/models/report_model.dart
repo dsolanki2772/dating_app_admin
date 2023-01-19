@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:collection/collection.dart';
 
 class ReportModel {
@@ -36,30 +37,33 @@ class ReportModel {
   }
 
   Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'id': id,
-      'reportingUserId': reportingUserId,
-      'reportedByUserId': reportedByUserId,
-      'reason': reason,
-      'createdAt': createdAt.millisecondsSinceEpoch,
-      'images': images,
-    };
+    final result = <String, dynamic>{};
+
+    result.addAll({'id': id});
+    result.addAll({'reportingUserId': reportingUserId});
+    result.addAll({'reportedByUserId': reportedByUserId});
+    result.addAll({'reason': reason});
+    result.addAll({'createdAt': createdAt.millisecondsSinceEpoch});
+    result.addAll({'images': images});
+
+    return result;
   }
 
   factory ReportModel.fromMap(Map<String, dynamic> map) {
     return ReportModel(
-        id: map['id'] as String,
-        reportingUserId: map['reportingUserId'] as String,
-        reportedByUserId: map['reportedByUserId'] as String,
-        reason: map['reason'] as String,
-        createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt'] as int),
-        images: List<String>.from((map['images'] as List<String>)));
+      id: map['id'] ?? '',
+      reportingUserId: map['reportingUserId'] ?? '',
+      reportedByUserId: map['reportedByUserId'] ?? '',
+      reason: map['reason'] ?? '',
+      createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt']),
+      images: List<String>.from(map['images']),
+    );
   }
 
   String toJson() => json.encode(toMap());
 
   factory ReportModel.fromJson(String source) =>
-      ReportModel.fromMap(json.decode(source) as Map<String, dynamic>);
+      ReportModel.fromMap(json.decode(source));
 
   @override
   String toString() {
