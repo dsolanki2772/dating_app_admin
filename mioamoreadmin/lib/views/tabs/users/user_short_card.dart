@@ -31,7 +31,7 @@ class UserShortCard extends ConsumerWidget {
               const SizedBox(width: 8),
               user.isVerified
                   ? Icon(
-                      FluentIcons.check_mark,
+                      FluentIcons.verified_brand_solid,
                       color: Colors.green,
                       size: 14,
                     )

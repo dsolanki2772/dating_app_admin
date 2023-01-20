@@ -202,7 +202,7 @@ class UserDetailsProfileCard extends StatelessWidget {
                   children: [
                     Icon(
                       profile.isVerified
-                          ? FluentIcons.check_mark
+                          ? FluentIcons.verified_brand_solid
                           : FluentIcons.clear,
                       color: profile.isVerified ? Colors.green : Colors.red,
                     ),

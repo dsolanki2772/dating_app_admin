@@ -25,3 +25,18 @@ final usersShortStreamProvider =
       .map((doc) => UserProfileShortModel.fromMap(doc.data()))
       .toList());
 });
+
+class UserProfileProvider {
+  static Future<bool> verifyUser(String userId) async {
+    final userProfileCollection = FirebaseFirestore.instance
+        .collection(FirebaseConstants.userProfileCollection);
+
+    try {
+      await userProfileCollection.doc(userId).update({'isVerified': true});
+      return true;
+    } on Exception catch (e) {
+      print(e);
+      return false;
+    }
+  }
+}

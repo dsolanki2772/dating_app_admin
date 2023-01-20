@@ -76,75 +76,86 @@ class _VerifiedPart extends StatelessWidget {
   Widget build(BuildContext context) {
     bool isNotApproved = data.isPending == false && data.isApproved == false;
 
+    bool isVerified = data.isPending == false && data.isApproved == true;
+
     return Padding(
       padding: const EdgeInsets.all(AppConstants.defaultNumericValue),
       child: Center(
-        child: Column(
-          children: [
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: isVerified
+            ? const Text(
+                "Your account is verified\nRestart the app to see the changes!",
+                textAlign: TextAlign.center,
+              )
+            : Column(
                 children: [
-                  isNotApproved
-                      ? Icon(
-                          Icons.warning,
-                          color: Colors.red,
-                          size: MediaQuery.of(context).size.width * 0.15,
-                        )
-                      : Icon(
-                          Icons.hourglass_bottom,
-                          color: Colors.blue,
-                          size: MediaQuery.of(context).size.width * 0.15,
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        isNotApproved
+                            ? Icon(
+                                Icons.warning,
+                                color: Colors.red,
+                                size: MediaQuery.of(context).size.width * 0.15,
+                              )
+                            : Icon(
+                                Icons.hourglass_bottom,
+                                color: Colors.blue,
+                                size: MediaQuery.of(context).size.width * 0.15,
+                              ),
+                        const SizedBox(
+                            height: AppConstants.defaultNumericValue),
+                        Text(
+                          isNotApproved
+                              ? 'Not Approved'
+                              : 'Your account is pending verification',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline6!
+                              .copyWith(fontWeight: FontWeight.bold),
                         ),
-                  const SizedBox(height: AppConstants.defaultNumericValue),
-                  Text(
-                    isNotApproved
-                        ? 'Not Approved'
-                        : 'Your account is pending verification',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline6!
-                        .copyWith(fontWeight: FontWeight.bold),
+                        const SizedBox(
+                            height: AppConstants.defaultNumericValue),
+                        Text(
+                          isNotApproved
+                              ? data.statusMessage ??
+                                  "Your account is not approved. Please submit your documents again to verify your account."
+                              : "You have submitted your documents.\nWe will verify your documents and update the status of your account.",
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(
+                            height: AppConstants.defaultNumericValue),
+                        isNotApproved
+                            ? CustomButton(
+                                text: "Submit again",
+                                onPressed: onPressedSubmitAgain,
+                              )
+                            : const SizedBox(),
+                        const Divider(height: AppConstants.defaultNumericValue),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: AppConstants.defaultNumericValue),
-                  Text(
-                    isNotApproved
-                        ? data.statusMessage ??
-                            "Your account is not approved. Please submit your documents again to verify your account."
-                        : "You have submitted your documents.\nWe will verify your documents and update the status of your account.",
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: AppConstants.defaultNumericValue),
-                  isNotApproved
-                      ? CustomButton(
-                          text: "Submit again",
-                          onPressed: onPressedSubmitAgain,
-                        )
-                      : const SizedBox(),
-                  const Divider(height: AppConstants.defaultNumericValue),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                          "Submitted at: ${DateFormatter.toWholeDate(data.createdAt)}",
+                          style: Theme.of(context).textTheme.caption!.copyWith(
+                                fontWeight: FontWeight.bold,
+                              )),
+                      const SizedBox(
+                          height: AppConstants.defaultNumericValue / 4),
+                      Text(
+                          "Last Updated at: ${DateFormatter.toWholeDate(data.updatedAt)}",
+                          style: Theme.of(context).textTheme.caption!.copyWith(
+                                fontWeight: FontWeight.bold,
+                              )),
+                    ],
+                  )
                 ],
               ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                    "Submitted at: ${DateFormatter.toWholeDate(data.createdAt)}",
-                    style: Theme.of(context).textTheme.caption!.copyWith(
-                          fontWeight: FontWeight.bold,
-                        )),
-                const SizedBox(height: AppConstants.defaultNumericValue / 4),
-                Text(
-                    "Last Updated at: ${DateFormatter.toWholeDate(data.updatedAt)}",
-                    style: Theme.of(context).textTheme.caption!.copyWith(
-                          fontWeight: FontWeight.bold,
-                        )),
-              ],
-            )
-          ],
-        ),
       ),
     );
   }

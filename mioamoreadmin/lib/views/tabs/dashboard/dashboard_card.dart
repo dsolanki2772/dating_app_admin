@@ -29,17 +29,20 @@ class DashboardCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(
                     icon,
                     color: Colors.white,
                   ),
                   const SizedBox(width: 8),
-                  Text(
-                    title,
-                    style: Theme.of(context).textTheme.subtitle1!.copyWith(
-                          color: Colors.white,
-                        ),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                            color: Colors.white,
+                          ),
+                    ),
                   ),
                 ],
               ),

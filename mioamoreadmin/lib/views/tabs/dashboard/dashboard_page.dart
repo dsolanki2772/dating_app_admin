@@ -6,6 +6,7 @@ import 'package:mioamoreadmin/providers/interactions_provider.dart';
 import 'package:mioamoreadmin/providers/matches_provider.dart';
 import 'package:mioamoreadmin/providers/user_profiles_provider.dart';
 import 'package:mioamoreadmin/providers/user_reports_provider.dart';
+import 'package:mioamoreadmin/providers/user_verification_forms_provider.dart';
 import 'package:mioamoreadmin/views/tabs/dashboard/dashboard_card.dart';
 
 class DashboardPage extends ConsumerWidget {
@@ -18,6 +19,7 @@ class DashboardPage extends ConsumerWidget {
     final totalMatchesRef = ref.watch(totalMatchesProvider);
     final totalDevicesRef = ref.watch(totalDevicesProvider);
     final allReportsRef = ref.watch(allReportsProvider);
+    final verificationsref = ref.watch(pendingVerificationFormsStreamProvider);
     return NavigationView(
       appBar: const NavigationAppBar(
         title: Text('Dashboard'),
@@ -128,6 +130,20 @@ class DashboardPage extends ConsumerWidget {
                     value: NumberFormatter.formatNumber(allReports.length),
                     icon: FluentIcons.people,
                     color: Colors.red,
+                  );
+                },
+                loading: () => const SizedBox(),
+                error: (error, stack) => const SizedBox(),
+              ),
+
+              // Pending Verification Forms
+              verificationsref.when(
+                data: (verifications) {
+                  return DashboardCard(
+                    title: 'Pending Verification Forms',
+                    value: NumberFormatter.formatNumber(verifications.length),
+                    icon: FluentIcons.verified_brand,
+                    color: Colors.blue.dark,
                   );
                 },
                 loading: () => const SizedBox(),
