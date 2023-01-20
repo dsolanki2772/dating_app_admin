@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreadmin/helpers/firebase_constants.dart';
 import 'package:mioamoreadmin/models/report_model.dart';
-import 'package:mioamoreadmin/models/user_profile_model.dart';
 
 final userReportsProvider =
     FutureProvider.family<List<ReportModel>, String>((ref, userId) async {

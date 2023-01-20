@@ -46,6 +46,7 @@ dependencies:
   collection: ^1.16.0
   intl: ^0.17.0
   data_table_2: ^2.3.10
+  restart_app: ^1.1.1+1
 
 dev_dependencies:
   flutter_test:

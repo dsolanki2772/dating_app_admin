@@ -7,6 +7,7 @@ import 'package:mioamoreadmin/views/others/other_widgets.dart';
 import 'package:mioamoreadmin/views/tabs/settings/change_email.dart';
 import 'package:mioamoreadmin/views/tabs/settings/change_name.dart';
 import 'package:mioamoreadmin/views/tabs/settings/change_password.dart';
+import 'package:restart_app/restart_app.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -90,7 +91,13 @@ class SettingsPage extends ConsumerWidget {
                         trailing: const Icon(FluentIcons.chevron_right),
                         onPressed: () async {
                           EasyLoading.show(status: 'Logging out...');
-                          await AuthProvider.logout();
+
+                          await AuthProvider.logout().then((value) async {
+                            if (value) {
+                              await Restart.restartApp();
+                            }
+                          });
+
                           EasyLoading.dismiss();
                         },
                       ),

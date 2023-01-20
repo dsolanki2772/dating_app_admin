@@ -47,7 +47,11 @@ class ReportsPage extends ConsumerWidget {
             },
           );
         },
-        error: (error, stackTrace) => const MyErrorWidget(),
+        error: (error, stackTrace) {
+          print(stackTrace);
+          print(error);
+          return const MyErrorWidget();
+        },
         loading: () => const MyLoadingWidget(),
       ),
     );

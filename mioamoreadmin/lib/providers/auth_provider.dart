@@ -8,6 +8,7 @@ import 'package:mioamoreadmin/firebase_options.dart';
 final authstateChangesProvider = StreamProvider<User?>((ref) {
   return FirebaseAuth.instance.authStateChanges().map((event) {
     ref.read(currentUserProvider.notifier).state = event;
+
     return event;
   });
 });
