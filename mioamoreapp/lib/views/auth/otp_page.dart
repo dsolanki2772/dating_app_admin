@@ -156,40 +156,30 @@ class _OtpPageState extends ConsumerState<OtpPage> {
                     secondPartColor: AppConstants.primaryColor),
                 const SizedBox(height: AppConstants.defaultNumericValue),
                 const SizedBox(height: 140),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _otpController,
-                        keyboardType: TextInputType.phone,
-                        // autovalidateMode: AutovalidateMode.,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
-                        textAlign: TextAlign.center,
-                        maxLength: 6,
-                        style: Theme.of(context)
-                            .textTheme
-                            .headline6!
-                            .copyWith(fontWeight: FontWeight.bold),
-                        decoration: const InputDecoration(hintText: "******"),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Please enter the code";
-                          } else if (value.length != 6) {
-                            return "Please enter the correct code";
-                          }
-                          return null;
-                        },
-                        onChanged: (value) {
-                          if (value.length == 6) {
-                            _onOtpVerification();
-                          }
-                        },
-                      ),
-                    )
-                  ],
+                TextFormField(
+                  controller: _otpController,
+                  keyboardType: TextInputType.phone,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  textAlign: TextAlign.center,
+                  maxLength: 6,
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline6!
+                      .copyWith(fontWeight: FontWeight.bold),
+                  decoration: const InputDecoration(hintText: "******"),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "Please enter the code";
+                    } else if (value.length != 6) {
+                      return "Please enter the correct code";
+                    }
+                    return null;
+                  },
+                  onChanged: (value) {
+                    if (value.length == 6) {
+                      _onOtpVerification();
+                    }
+                  },
                 ),
                 const SizedBox(height: AppConstants.defaultNumericValue),
                 const Text(

@@ -3,7 +3,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -21,14 +20,15 @@ import 'package:mioamoreapp/views/tabs/home/notification_page.dart';
 import 'package:mioamoreapp/views/tabs/messages/components/chat_page.dart';
 
 void main() async {
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  await MobileAds.instance.initialize();
+  if (isAdmobAvailable) {
+    await MobileAds.instance.initialize();
+  }
 
   FirebaseMessaging.onBackgroundMessage(_handleBackgroundNotification);
 
@@ -82,7 +82,6 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     Future.delayed(const Duration(seconds: 2), () {
-      FlutterNativeSplash.remove();
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -193,35 +192,6 @@ Future<void> _handleBackgroundNotification(RemoteMessage message) async {
 }
 
 void showNotification(RemoteMessage message) {
-  // if (!AwesomeStringUtils.isNullOrEmpty(message.notification?.title,
-  //         considerWhiteSpaceAsEmpty: true) ||
-  //     !AwesomeStringUtils.isNullOrEmpty(message.notification?.body,
-  //         considerWhiteSpaceAsEmpty: true)) {
-  //   String? imageUrl;
-  //   imageUrl ??= message.notification!.android?.imageUrl;
-  //   imageUrl ??= message.notification!.apple?.imageUrl;
-
-  //   Map<String, dynamic> notificationAdapter = {
-  //     NOTIFICATION_CHANNEL_KEY: 'basic_notification',
-  //     NOTIFICATION_ID: message.data[NOTIFICATION_CONTENT]?[NOTIFICATION_ID] ??
-  //         message.messageId ??
-  //         Random().nextInt(2147483647),
-  //     NOTIFICATION_TITLE: message.data[NOTIFICATION_CONTENT]
-  //             ?[NOTIFICATION_TITLE] ??
-  //         message.notification?.title,
-  //     NOTIFICATION_BODY: message.data[NOTIFICATION_CONTENT]
-  //             ?[NOTIFICATION_BODY] ??
-  //         message.notification?.body,
-  //     NOTIFICATION_LAYOUT:
-  //         AwesomeStringUtils.isNullOrEmpty(imageUrl) ? 'Default' : 'BigPicture',
-  //     NOTIFICATION_BIG_PICTURE: imageUrl
-  //   };
-
-  //   AwesomeNotifications().createNotificationFromJsonData(notificationAdapter);
-  // } else {
-  //   AwesomeNotifications().createNotificationFromJsonData(message.data);
-  // }
-
   debugPrint("Notification type: ${message.data["type"]}");
   debugPrint("Other User Id ${message.data["userId"]}");
   debugPrint("MatchId ${message.data["matchId"]}");
