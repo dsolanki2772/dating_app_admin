@@ -1,6 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreadmin/helpers/number_formatter.dart';
+import 'package:mioamoreadmin/providers/account_delete_request_provider.dart';
 import 'package:mioamoreadmin/providers/devices_provider.dart';
 import 'package:mioamoreadmin/providers/interactions_provider.dart';
 import 'package:mioamoreadmin/providers/matches_provider.dart';
@@ -20,6 +21,8 @@ class DashboardPage extends ConsumerWidget {
     final totalDevicesRef = ref.watch(totalDevicesProvider);
     final allReportsRef = ref.watch(allReportsProvider);
     final verificationsref = ref.watch(pendingVerificationFormsStreamProvider);
+    final allAccountDeleteRequests = ref.watch(accountDeleteRequestsProvider);
+
     return NavigationView(
       appBar: const NavigationAppBar(
         title: Text('Dashboard'),
@@ -54,8 +57,6 @@ class DashboardPage extends ConsumerWidget {
                 loading: () => const SizedBox(),
                 error: (error, stack) => const SizedBox(),
               ),
-
-              // Total verified users
               totalUsersRef.when(
                 data: (totalUsers) {
                   final verified = totalUsers
@@ -73,7 +74,6 @@ class DashboardPage extends ConsumerWidget {
                 loading: () => const SizedBox(),
                 error: (error, stack) => const SizedBox(),
               ),
-
               totalInteractionsRef.when(
                 data: (totalInteractions) {
                   final likes = totalInteractions
@@ -121,8 +121,6 @@ class DashboardPage extends ConsumerWidget {
                 loading: () => const SizedBox(),
                 error: (error, stack) => const SizedBox(),
               ),
-              //Total reported Users
-
               allReportsRef.when(
                 data: (allReports) {
                   return DashboardCard(
@@ -135,8 +133,6 @@ class DashboardPage extends ConsumerWidget {
                 loading: () => const SizedBox(),
                 error: (error, stack) => const SizedBox(),
               ),
-
-              // Pending Verification Forms
               verificationsref.when(
                 data: (verifications) {
                   return DashboardCard(
@@ -144,6 +140,19 @@ class DashboardPage extends ConsumerWidget {
                     value: NumberFormatter.formatNumber(verifications.length),
                     icon: FluentIcons.verified_brand,
                     color: Colors.blue.dark,
+                  );
+                },
+                loading: () => const SizedBox(),
+                error: (error, stack) => const SizedBox(),
+              ),
+              allAccountDeleteRequests.when(
+                data: (allAccountDeleteRequests) {
+                  return DashboardCard(
+                    title: 'Account Delete Requests',
+                    value: NumberFormatter.formatNumber(
+                        allAccountDeleteRequests.length),
+                    icon: FluentIcons.delete,
+                    color: Colors.red.dark,
                   );
                 },
                 loading: () => const SizedBox(),

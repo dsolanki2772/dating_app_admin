@@ -135,13 +135,6 @@ class UserProfileNotifier {
   }) async {
     await _userCollection.doc(userId).update({"isOnline": isOnline});
   }
-
-  //Delete Account and all data
-  Future<void> deleteAccount() async {
-    //TODO: Delete all data request to admin panel - 30 days to delete all data
-    //If login again, in 30 days, all data will be restored
-    //If not login again, in 30 days, all data will be deleted permanently
-  }
 }
 
 final isUserAddedProvider = FutureProvider<bool>((ref) async {

@@ -39,4 +39,18 @@ class UserProfileProvider {
       return false;
     }
   }
+
+  //delete user profile
+  static Future<bool> deleteUser(String userId) async {
+    final userProfileCollection = FirebaseFirestore.instance
+        .collection(FirebaseConstants.userProfileCollection);
+
+    try {
+      await userProfileCollection.doc(userId).delete();
+      return true;
+    } on Exception catch (e) {
+      print(e);
+      return false;
+    }
+  }
 }

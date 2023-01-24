@@ -41,3 +41,24 @@ final allReportsProvider =
     return usersReports;
   });
 });
+
+class UserReportsProvider {
+  static Future<bool> deleteReports(String userId) async {
+    final collection = FirebaseFirestore.instance
+        .collection(FirebaseConstants.reportsCollection);
+
+    try {
+      await collection
+          .where('reportingUserId', isEqualTo: userId)
+          .get()
+          .then((value) {
+        for (var element in value.docs) {
+          element.reference.delete();
+        }
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+}

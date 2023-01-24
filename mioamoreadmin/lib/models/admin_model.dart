@@ -3,8 +3,13 @@ import 'package:collection/collection.dart';
 
 const String verificationPermission = "Verfication";
 const String reportPermission = "Report";
+const String accountDeletePermission = "Account Delete";
 
-const List<String> permissions = [verificationPermission, reportPermission];
+const List<String> permissions = [
+  verificationPermission,
+  reportPermission,
+  accountDeletePermission,
+];
 
 class AdminModel {
   String id;

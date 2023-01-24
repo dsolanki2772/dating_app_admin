@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreadmin/models/admin_model.dart';
 import 'package:mioamoreadmin/providers/admin_provider.dart';
 import 'package:mioamoreadmin/views/others/other_widgets.dart';
+import 'package:mioamoreadmin/views/tabs/account_delete_requests/account_delete_requests_page.dart';
 import 'package:mioamoreadmin/views/tabs/admins/admins_page.dart';
 import 'package:mioamoreadmin/views/tabs/dashboard/dashboard_page.dart';
 import 'package:mioamoreadmin/views/tabs/reports/reports_page.dart';
@@ -83,6 +84,12 @@ class _WrapperState extends ConsumerState<Wrapper> {
                         icon: const Icon(FluentIcons.list),
                         title: const Text('Reports'),
                         body: const ReportsPage(),
+                      ),
+                    if (user.permissions.contains(accountDeletePermission))
+                      PaneItem(
+                        icon: const Icon(FluentIcons.delete),
+                        title: const Text('Account Delete Requests'),
+                        body: const AccountDeleteRequestsPage(),
                       ),
                   ],
                   footerItems: [

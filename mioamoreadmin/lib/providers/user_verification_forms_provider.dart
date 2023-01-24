@@ -31,4 +31,17 @@ class VerificationProvider {
       return false;
     }
   }
+
+  static Future<bool> deleteForm(String id) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection(FirebaseConstants.verificationFormsCollection)
+          .doc(id)
+          .delete();
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
 }

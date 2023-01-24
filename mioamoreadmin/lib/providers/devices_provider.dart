@@ -10,3 +10,21 @@ final totalDevicesProvider = StreamProvider<int>((ref) {
     return snapshot.docs.length;
   });
 });
+
+class DevicesProvider {
+  static Future<bool> deleteDevices(String userId) async {
+    final collection = FirebaseFirestore.instance
+        .collection(FirebaseConstants.deviceTokensCollection);
+
+    try {
+      await collection.where('userId', isEqualTo: userId).get().then((value) {
+        for (DocumentSnapshot ds in value.docs) {
+          ds.reference.delete();
+        }
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+}
