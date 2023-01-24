@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreadmin/helpers/firebase_constants.dart';
 import 'package:mioamoreadmin/models/report_model.dart';
@@ -56,6 +57,15 @@ class UserReportsProvider {
           element.reference.delete();
         }
       });
+
+      final userReportsImages =
+          FirebaseStorage.instance.ref().child("reports").child(userId);
+      await userReportsImages.listAll().then((value) {
+        for (var element in value.items) {
+          element.delete();
+        }
+      });
+
       return true;
     } catch (e) {
       return false;

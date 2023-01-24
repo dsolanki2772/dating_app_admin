@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreadmin/helpers/firebase_constants.dart';
 import 'package:mioamoreadmin/models/user_profile_model.dart';
@@ -47,6 +48,27 @@ class UserProfileProvider {
 
     try {
       await userProfileCollection.doc(userId).delete();
+
+      final userProfilePicture = FirebaseStorage.instance
+          .ref()
+          .child("user_profile_pictures")
+          .child(userId);
+      await userProfilePicture.listAll().then((value) async {
+        for (var item in value.items) {
+          await item.delete();
+        }
+      });
+
+      final userMediaFiles = FirebaseStorage.instance
+          .ref()
+          .child("user_media_files")
+          .child(userId);
+      await userMediaFiles.listAll().then((value) async {
+        for (var item in value.items) {
+          await item.delete();
+        }
+      });
+
       return true;
     } on Exception catch (e) {
       print(e);

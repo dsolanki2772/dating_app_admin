@@ -1,4 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreadmin/helpers/date_formater.dart';
 import 'package:mioamoreadmin/providers/account_delete_request_provider.dart';
@@ -64,16 +65,56 @@ class AccountDeleteRequestsPage extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      if (daysRemaining <= 0)
-                        FilledButton(
-                          style: ButtonStyle(
-                            backgroundColor: ButtonState.all(Colors.red),
-                          ),
-                          child: const Text("Delete"),
-                          onPressed: () {
-                            // TODO: Delete user account completely!
-                          },
+                      // if (daysRemaining <= 0)
+                      FilledButton(
+                        style: ButtonStyle(
+                          backgroundColor: ButtonState.all(Colors.red),
                         ),
+                        child: const Text("Delete"),
+                        onPressed: () async {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return ContentDialog(
+                                title: const Text('Delete user'),
+                                content: const Text(
+                                    'Are you sure you want to delete this user?'),
+                                actions: [
+                                  TextButton(
+                                    child: const Text('Cancel'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: const Text('Delete'),
+                                    onPressed: () async {
+                                      await AccountDeleteRequestProvider
+                                              .deleteUser(userReports.userId)
+                                          .then((value) async {
+                                        if (value) {
+                                          EasyLoading.show(
+                                              status:
+                                                  'Deleting account delete request...');
+                                          await AccountDeleteRequestProvider
+                                                  .deleteRequest(
+                                                      userReports.userId)
+                                              .then((value) {
+                                            EasyLoading.dismiss();
+                                            ref.invalidate(
+                                                accountDeleteRequestsProvider);
+                                            Navigator.of(context).pop();
+                                          });
+                                        }
+                                      });
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      ),
                       const SizedBox(width: 16),
                     ],
                   ),

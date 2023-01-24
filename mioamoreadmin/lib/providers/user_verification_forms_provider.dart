@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreadmin/helpers/firebase_constants.dart';
 import 'package:mioamoreadmin/models/verification_form_model.dart';
@@ -38,6 +39,14 @@ class VerificationProvider {
           .collection(FirebaseConstants.verificationFormsCollection)
           .doc(id)
           .delete();
+
+      final imageStorage = FirebaseStorage.instance.ref().child(id);
+      await imageStorage.listAll().then((value) {
+        for (var element in value.items) {
+          element.delete();
+        }
+      });
+
       return true;
     } catch (e) {
       print(e);

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:mioamoreadmin/helpers/firebase_constants.dart';
 
 class FeedsProvider {
@@ -12,6 +13,16 @@ class FeedsProvider {
           element.reference.delete();
         }
       });
+
+      final feedsImages =
+          FirebaseStorage.instance.ref().child("feeds").child(userId);
+
+      await feedsImages.listAll().then((value) {
+        for (var element in value.items) {
+          element.delete();
+        }
+      });
+
       return true;
     } catch (e) {
       return false;
