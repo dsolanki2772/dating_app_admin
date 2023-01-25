@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/helpers/media_picker_helper.dart';
@@ -148,55 +149,58 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                     ),
               const SizedBox(height: AppConstants.defaultNumericValue),
               CustomButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      final ReportModel reportModel = ReportModel(
-                        id: "${widget.userProfileModel.id}report${DateTime.now().millisecondsSinceEpoch}",
-                        createdAt: DateTime.now(),
-                        images: _imagePaths,
-                        reason: _reasonController.text,
-                        reportedByUserId:
-                            ref.watch(currentUserStateProvider)!.uid,
-                        reportingUserId: widget.userProfileModel.id,
-                      );
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    final ReportModel reportModel = ReportModel(
+                      id: "${widget.userProfileModel.id}report${DateTime.now().millisecondsSinceEpoch}",
+                      createdAt: DateTime.now(),
+                      images: _imagePaths,
+                      reason: _reasonController.text,
+                      reportedByUserId:
+                          ref.watch(currentUserStateProvider)!.uid,
+                      reportingUserId: widget.userProfileModel.id,
+                    );
 
-                      await reportUser(reportModel).then((value) async {
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: const Text('Report sent!'),
-                                content: const Text(
-                                    'Do you want to block this user as well?'),
-                                actions: [
-                                  TextButton(
-                                      onPressed: () {
+                    EasyLoading.show(status: 'Sending report...');
+                    await reportUser(reportModel).then((value) async {
+                      await EasyLoading.dismiss();
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: const Text('Report sent!'),
+                              content: const Text(
+                                  'Do you want to block this user as well?'),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('No')),
+                                TextButton(
+                                    onPressed: () async {
+                                      await showBlockDialog(
+                                              context,
+                                              widget.userProfileModel.userId,
+                                              ref
+                                                  .watch(
+                                                      currentUserStateProvider)!
+                                                  .uid)
+                                          .then((value) {
+                                        Navigator.pop(context);
                                         Navigator.of(context).pop();
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: const Text('No')),
-                                  TextButton(
-                                      onPressed: () async {
-                                        await showBlockDialog(
-                                                context,
-                                                widget.userProfileModel.userId,
-                                                ref
-                                                    .watch(
-                                                        currentUserStateProvider)!
-                                                    .uid)
-                                            .then((value) {
-                                          Navigator.pop(context);
-                                          Navigator.of(context).pop();
-                                        });
-                                      },
-                                      child: const Text('Yes')),
-                                ],
-                              );
-                            });
-                      });
-                    }
-                  },
-                  text: 'Submit'),
+                                      });
+                                    },
+                                    child: const Text('Yes')),
+                              ],
+                            );
+                          });
+                    });
+                  }
+                },
+                text: 'Submit',
+              ),
             ],
           ),
         ),

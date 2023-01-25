@@ -7,7 +7,7 @@ import 'package:mioamoreapp/config/config.dart';
 import 'package:http/http.dart' as http;
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/helpers/get_location_prediction.dart';
-import 'package:mioamoreapp/models/prediction_model.dart';
+import 'package:mioamoreapp/models/location_prediction_model.dart';
 import 'package:mioamoreapp/models/user_account_settings_model.dart';
 import 'package:mioamoreapp/providers/country_codes_provider.dart';
 import 'package:mioamoreapp/providers/get_current_location_provider.dart';

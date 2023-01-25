@@ -55,54 +55,41 @@ class _LoginWithPhoneNumberPageState
                     text: "My phone number is",
                     secondPartColor: AppConstants.primaryColor),
                 const SizedBox(height: AppConstants.defaultNumericValue),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _phoneController,
-                        keyboardType: TextInputType.phone,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Phone number is required";
-                          }
-                          return null;
-                        },
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge!
-                            .copyWith(fontWeight: FontWeight.bold),
-                        decoration: InputDecoration(
-                          hintText: "Phone Number",
-                          prefixIcon: GestureDetector(
-                            onTap: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const SelectCountryPage()),
-                              );
-                            },
-                            child: Text(
-                              getFormattedCountryCode(_countryCode),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge!
-                                  .copyWith(
-                                      color: AppConstants.primaryColor,
-                                      fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          prefixIconConstraints:
-                              const BoxConstraints(minWidth: 0, minHeight: 0),
-                        ),
+                TextFormField(
+                  controller: _phoneController,
+                  keyboardType: TextInputType.phone,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "Phone number is required";
+                    }
+                    return null;
+                  },
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge!
+                      .copyWith(fontWeight: FontWeight.bold),
+                  decoration: InputDecoration(
+                    hintText: "Phone Number",
+                    prefixIcon: GestureDetector(
+                      onTap: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SelectCountryPage()),
+                        );
+                      },
+                      child: Text(
+                        getFormattedCountryCode(_countryCode),
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            color: AppConstants.primaryColor,
+                            fontWeight: FontWeight.bold),
                       ),
-                    )
-                  ],
+                    ),
+                    prefixIconConstraints:
+                        const BoxConstraints(minWidth: 0, minHeight: 0),
+                  ),
                 ),
                 const SizedBox(height: AppConstants.defaultNumericValue),
                 const Text("We'll send you a code to verify your phone number"),

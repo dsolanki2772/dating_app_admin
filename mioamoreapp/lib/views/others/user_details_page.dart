@@ -60,97 +60,102 @@ class UserDetailsPage extends ConsumerWidget {
       await addNotification(notificationModel);
     }
 
-    Future<void> showMatchingDialog(
-        {required BuildContext context,
-        required UserProfileModel currentUser,
-        required UserProfileModel otherUser}) async {
+    Future<void> showMatchingDialog({
+      required BuildContext context,
+      required UserProfileModel currentUser,
+      required UserProfileModel otherUser,
+    }) async {
       final MatchModel matchModel = MatchModel(
         id: currentUser.userId + otherUser.userId,
         userIds: [currentUser.userId, otherUser.userId],
       );
 
-      final matchResult = await createConversation(matchModel);
+      await createConversation(matchModel).then((matchResult) async {
+        if (matchResult) {
+          final currentTime = DateTime.now();
+          final id =
+              matchModel.id + currentTime.millisecondsSinceEpoch.toString();
+          final NotificationModel notificationModel = NotificationModel(
+            id: id,
+            userId: currentUser.userId,
+            receiverId: otherUser.userId,
+            matchId: matchModel.id,
+            title: currentUser.fullName,
+            body: "You have a new match",
+            image: currentUser.profilePicture,
+            createdAt: currentTime,
+            isRead: false,
+            isMatchingNotification: true,
+            isInteractionNotification: false,
+          );
 
-      if (matchResult) {
-        final currentTime = DateTime.now();
-        final id =
-            matchModel.id + currentTime.millisecondsSinceEpoch.toString();
-        final NotificationModel notificationModel = NotificationModel(
-          id: id,
-          userId: currentUser.userId,
-          receiverId: otherUser.userId,
-          matchId: matchModel.id,
-          title: currentUser.fullName,
-          body: "You have a new match",
-          image: currentUser.profilePicture,
-          createdAt: currentTime,
-          isRead: false,
-          isMatchingNotification: true,
-          isInteractionNotification: false,
-        );
-
-        await addNotification(notificationModel);
-
-        return await showDialog(
-          context: context,
-          builder: (context) {
-            return SimpleDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius:
-                    BorderRadius.circular(AppConstants.defaultNumericValue),
-              ),
-              insetPadding:
-                  const EdgeInsets.all(AppConstants.defaultNumericValue * 2),
-              contentPadding:
-                  const EdgeInsets.all(AppConstants.defaultNumericValue * 2),
-              title: const Center(child: Text("Matched")),
-              children: [
-                const SizedBox(height: AppConstants.defaultNumericValue),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+          await addNotification(notificationModel).then((value) async {
+            await showDialog(
+              context: context,
+              builder: (context) {
+                return SimpleDialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(AppConstants.defaultNumericValue),
+                  ),
+                  insetPadding: const EdgeInsets.all(
+                      AppConstants.defaultNumericValue * 2),
+                  contentPadding: const EdgeInsets.all(
+                      AppConstants.defaultNumericValue * 2),
+                  title: const Center(child: Text("Matched")),
                   children: [
-                    UserCirlePicture(imageUrl: otherUser.profilePicture),
-                    const SizedBox(width: AppConstants.defaultNumericValue / 4),
-                    UserCirlePicture(imageUrl: currentUser.profilePicture),
-                  ],
-                ),
-                const SizedBox(height: AppConstants.defaultNumericValue),
-                Center(
-                  child: Text("You are now matched with ${otherUser.fullName}"),
-                ),
-                const SizedBox(height: AppConstants.defaultNumericValue),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                        child: OutlinedButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: const Text("Not Now"))),
-                    const SizedBox(width: AppConstants.defaultNumericValue),
-                    Expanded(
-                      child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => ChatPage(
-                                  matchId: matchModel.id,
-                                  otherUserId: otherUser.userId,
-                                ),
-                              ),
-                            );
-                          },
-                          child: const Text("Start Chat")),
+                    const SizedBox(height: AppConstants.defaultNumericValue),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        UserCirlePicture(
+                            imageUrl: otherUser.profilePicture, size: 40),
+                        const SizedBox(
+                            width: AppConstants.defaultNumericValue / 4),
+                        UserCirlePicture(
+                            imageUrl: currentUser.profilePicture, size: 40),
+                      ],
+                    ),
+                    const SizedBox(height: AppConstants.defaultNumericValue),
+                    Center(
+                      child: Text(
+                          "You are now matched with ${otherUser.fullName}"),
+                    ),
+                    const SizedBox(height: AppConstants.defaultNumericValue),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                            child: OutlinedButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text("Not Now"))),
+                        const SizedBox(width: AppConstants.defaultNumericValue),
+                        Expanded(
+                          child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => ChatPage(
+                                      matchId: matchModel.id,
+                                      otherUserId: otherUser.userId,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: const Text("Start Chat")),
+                        ),
+                      ],
                     ),
                   ],
-                ),
-              ],
+                );
+              },
             );
-          },
-        );
-      }
+          });
+        }
+      });
     }
 
     final currentUserProfile = ref.watch(userProfileFutureProvider);
@@ -437,76 +442,71 @@ class _DetailsBodyState extends State<DetailsBody> {
                         padding: const EdgeInsets.all(
                             AppConstants.defaultNumericValue / 1.5),
                       ),
-                      widget.matchId == null
-                          ? const SizedBox()
-                          : CustomPopupMenu(
-                              menuBuilder: () => ClipRRect(
-                                borderRadius: BorderRadius.circular(
-                                    AppConstants.defaultNumericValue / 2),
-                                child: Container(
-                                  decoration:
-                                      const BoxDecoration(color: Colors.white),
-                                  child: IntrinsicWidth(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
-                                      children: [
-                                        MoreMenuTitle(
+                      CustomPopupMenu(
+                        menuBuilder: () => ClipRRect(
+                          borderRadius: BorderRadius.circular(
+                              AppConstants.defaultNumericValue / 2),
+                          child: Container(
+                            decoration:
+                                const BoxDecoration(color: Colors.white),
+                            child: IntrinsicWidth(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  widget.matchId != null
+                                      ? MoreMenuTitle(
                                           title: 'Unmatch',
                                           onTap: () async {
                                             _moreMenuController.hideMenu();
                                             _onTapUnmatch();
                                           },
+                                        )
+                                      : const SizedBox(),
+                                  MoreMenuTitle(
+                                    title: 'Report',
+                                    onTap: () {
+                                      _moreMenuController.hideMenu();
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ReportPage(
+                                              userProfileModel: widget.user),
                                         ),
-                                        MoreMenuTitle(
-                                          title: 'Report',
-                                          onTap: () {
-                                            _moreMenuController.hideMenu();
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    ReportPage(
-                                                        userProfileModel:
-                                                            widget.user),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                        MoreMenuTitle(
-                                          title: 'Block',
-                                          onTap: () async {
-                                            _moreMenuController.hideMenu();
-                                            showBlockDialog(
-                                                context,
-                                                widget.user.userId,
-                                                widget.myUserId);
-                                          },
-                                        ),
-                                      ],
-                                    ),
+                                      );
+                                    },
                                   ),
-                                ),
-                              ),
-                              pressType: PressType.singleClick,
-                              verticalMargin: 0,
-                              controller: _moreMenuController,
-                              showArrow: true,
-                              arrowColor: Colors.white,
-                              barrierColor:
-                                  AppConstants.primaryColor.withOpacity(0.1),
-                              child: CustomIconButton(
-                                icon: CupertinoIcons.ellipsis,
-                                color: Colors.white,
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.primary,
-                                onPressed: () {
-                                  _moreMenuController.showMenu();
-                                },
-                                padding: const EdgeInsets.all(
-                                    AppConstants.defaultNumericValue / 1.5),
+                                  MoreMenuTitle(
+                                    title: 'Block',
+                                    onTap: () async {
+                                      _moreMenuController.hideMenu();
+                                      showBlockDialog(context,
+                                          widget.user.userId, widget.myUserId);
+                                    },
+                                  ),
+                                ],
                               ),
                             ),
+                          ),
+                        ),
+                        pressType: PressType.singleClick,
+                        verticalMargin: 0,
+                        controller: _moreMenuController,
+                        showArrow: true,
+                        arrowColor: Colors.white,
+                        barrierColor:
+                            AppConstants.primaryColor.withOpacity(0.1),
+                        child: CustomIconButton(
+                          icon: CupertinoIcons.ellipsis,
+                          color: Colors.white,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary,
+                          onPressed: () {
+                            _moreMenuController.showMenu();
+                          },
+                          padding: const EdgeInsets.all(
+                              AppConstants.defaultNumericValue / 1.5),
+                        ),
+                      ),
                     ],
                   ),
                 ),

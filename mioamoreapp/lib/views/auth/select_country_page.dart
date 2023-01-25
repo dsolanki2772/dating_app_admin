@@ -38,24 +38,6 @@ class _SelectCountryPageState extends ConsumerState<SelectCountryPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: AppConstants.defaultNumericValue),
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(
-                //       horizontal: AppConstants.defaultNumericValue),
-                //   child: CupertinoTextField(
-                //     controller: _searchController,
-                //     placeholder: "Search",
-                //     onChanged: (_) {
-                //       setState(() {});
-                //     },
-                //     decoration: BoxDecoration(
-                //       borderRadius: BorderRadius.circular(
-                //           AppConstants.defaultNumericValue / 2),
-                //       color: Colors.white,
-                //       border: Border.all(
-                //           color: Theme.of(context).disabledColor, width: 1.2),
-                //     ),
-                //   ),
-                // ),
                 Container(
                   padding: const EdgeInsets.all(
                       AppConstants.defaultNumericValue / 3),

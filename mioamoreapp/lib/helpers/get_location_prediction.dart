@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:mioamoreapp/config/config.dart';
-import 'package:mioamoreapp/models/prediction_model.dart';
+import 'package:mioamoreapp/models/location_prediction_model.dart';
 import 'package:http/http.dart' as http;
 
 Future<List<Prediction>?> getLocationPrediction(String input) async {

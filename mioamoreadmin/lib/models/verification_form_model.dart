@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-class GetVerifiedModel {
+class VerificationFormModel {
   String id;
   String userId;
   String photoIdFrontViewUrl;
@@ -11,7 +11,7 @@ class GetVerifiedModel {
   bool isPending;
   bool isApproved;
   String? statusMessage;
-  GetVerifiedModel({
+  VerificationFormModel({
     required this.id,
     required this.userId,
     required this.photoIdFrontViewUrl,
@@ -24,7 +24,7 @@ class GetVerifiedModel {
     this.statusMessage,
   });
 
-  GetVerifiedModel copyWith({
+  VerificationFormModel copyWith({
     String? id,
     String? userId,
     String? photoIdFrontViewUrl,
@@ -36,7 +36,7 @@ class GetVerifiedModel {
     bool? isApproved,
     String? statusMessage,
   }) {
-    return GetVerifiedModel(
+    return VerificationFormModel(
       id: id ?? this.id,
       userId: userId ?? this.userId,
       photoIdFrontViewUrl: photoIdFrontViewUrl ?? this.photoIdFrontViewUrl,
@@ -69,8 +69,8 @@ class GetVerifiedModel {
     return result;
   }
 
-  factory GetVerifiedModel.fromMap(Map<String, dynamic> map) {
-    return GetVerifiedModel(
+  factory VerificationFormModel.fromMap(Map<String, dynamic> map) {
+    return VerificationFormModel(
       id: map['id'] ?? '',
       userId: map['userId'] ?? '',
       photoIdFrontViewUrl: map['photoIdFrontViewUrl'] ?? '',
@@ -86,8 +86,8 @@ class GetVerifiedModel {
 
   String toJson() => json.encode(toMap());
 
-  factory GetVerifiedModel.fromJson(String source) =>
-      GetVerifiedModel.fromMap(json.decode(source));
+  factory VerificationFormModel.fromJson(String source) =>
+      VerificationFormModel.fromMap(json.decode(source));
 
   @override
   String toString() {
@@ -98,7 +98,7 @@ class GetVerifiedModel {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is GetVerifiedModel &&
+    return other is VerificationFormModel &&
         other.id == id &&
         other.userId == userId &&
         other.photoIdFrontViewUrl == photoIdFrontViewUrl &&
