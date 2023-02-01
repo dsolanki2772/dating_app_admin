@@ -522,6 +522,8 @@ class ProfileCompletenessAndGetVerifiedWidget extends ConsumerWidget {
       data: (data) {
         int percentageComplete = _getProfilePercentageComplete(data!);
 
+        print('USer verificaitons status:${data.isVerified}');
+
         return percentageComplete == 100
             ? data.isVerified
                 ? const SizedBox()

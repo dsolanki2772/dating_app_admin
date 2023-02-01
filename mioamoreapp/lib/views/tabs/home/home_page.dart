@@ -1,4 +1,3 @@
-import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -350,8 +349,8 @@ class NotificationButton extends ConsumerWidget {
             bottom: 0,
             right: 0,
             child: Badge(
-              badgeColor: AppConstants.primaryColor,
-              badgeContent: Text(
+              backgroundColor: AppConstants.primaryColor,
+              child: Text(
                 count.toString(),
                 style: Theme.of(context).textTheme.caption!.copyWith(
                       color: Colors.white,
