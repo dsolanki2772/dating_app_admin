@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/models/user_profile_model.dart';
+import 'package:mioamoreapp/providers/banned_users_provider.dart';
 import 'package:mioamoreapp/providers/match_provider.dart';
 import 'package:mioamoreapp/providers/user_profile_provider.dart';
 import 'package:mioamoreapp/views/others/error_page.dart';
 import 'package:mioamoreapp/views/others/loading_page.dart';
+import 'package:mioamoreapp/views/others/user_is_banned_page.dart';
 import 'package:mioamoreapp/views/tabs/matches/matches_page.dart';
 import 'package:mioamoreapp/views/tabs/feeds/feeds_page.dart';
 import 'package:mioamoreapp/views/tabs/home/home_page.dart';
@@ -74,77 +76,103 @@ class _BottomNavBarPageState extends ConsumerState<BottomNavBarPage>
   @override
   Widget build(BuildContext context) {
     final isUserAdded = ref.watch(isUserAddedProvider);
+    final isMeBanned = ref.watch(isMeBannedProvider);
 
-    return isUserAdded.when(
-      loading: () => const LoadingPage(),
-      error: (e, _) => const ErrorPage(),
+    return isMeBanned.when(
       data: (data) {
-        return data
-            ? Scaffold(
-                body: PageTransitionSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  transitionBuilder:
-                      (child, primaryAnimation, secondaryAnimation) =>
-                          FadeThroughTransition(
-                    fillColor: Theme.of(context).scaffoldBackgroundColor,
-                    animation: primaryAnimation,
-                    secondaryAnimation: secondaryAnimation,
-                    child: child,
-                  ),
-                  child: _navItems[_currentIndex].page,
-                ),
-                bottomNavigationBar: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 10,
-                        spreadRadius: 2,
-                        offset: const Offset(0, -5),
-                      ),
-                    ],
-                    color: Colors.white,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                        top: AppConstants.defaultNumericValue / 3),
-                    child: BottomNavigationBar(
-                      unselectedLabelStyle: const TextStyle(
-                          fontSize: 10, fontWeight: FontWeight.bold),
-                      selectedLabelStyle: const TextStyle(
-                          fontSize: 11, fontWeight: FontWeight.bold),
-                      backgroundColor: Colors.transparent,
-                      elevation: 0,
-                      type: BottomNavigationBarType.fixed,
-                      currentIndex: _currentIndex,
-                      unselectedItemColor: Colors.grey,
-                      selectedItemColor: AppConstants.primaryColor,
-                      onTap: (index) {
-                        setState(() {
-                          _currentIndex = index;
-                        });
-                      },
-                      items: _navItems.map((e) {
-                        return BottomNavigationBarItem(
-                          icon: _navItems.indexOf(e) == 3
-                              ? MessageConsumerBottomNavIcon(icon: e.icon)
-                              : Icon(e.icon),
-                          label: e.title,
-                          activeIcon: _navItems.indexOf(e) == 3
-                              ? MessageConsumerBottomNavIcon(icon: e.activeIcon)
-                              : Icon(e.activeIcon),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ),
-              )
-            : const FirstTimeUserProfilePage();
+        bool isBanned = false;
+
+        if (data == null) {
+          isBanned = false;
+        } else {
+          if (data.bannedUntil.isAfter(DateTime.now())) {
+            isBanned = true;
+          } else if (data.isLifetimeBan) {
+            isBanned = true;
+          } else {
+            isBanned = false;
+          }
+        }
+
+        return isBanned
+            ? UserIsBannedPage(bannedUserModel: data!)
+            : isUserAdded.when(
+                loading: () => const LoadingPage(),
+                error: (e, _) => const ErrorPage(),
+                data: (data) {
+                  return data
+                      ? Scaffold(
+                          body: PageTransitionSwitcher(
+                            duration: const Duration(milliseconds: 300),
+                            transitionBuilder:
+                                (child, primaryAnimation, secondaryAnimation) =>
+                                    FadeThroughTransition(
+                              fillColor:
+                                  Theme.of(context).scaffoldBackgroundColor,
+                              animation: primaryAnimation,
+                              secondaryAnimation: secondaryAnimation,
+                              child: child,
+                            ),
+                            child: _navItems[_currentIndex].page,
+                          ),
+                          bottomNavigationBar: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(30),
+                                topRight: Radius.circular(30),
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 10,
+                                  spreadRadius: 2,
+                                  offset: const Offset(0, -5),
+                                ),
+                              ],
+                              color: Colors.white,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  top: AppConstants.defaultNumericValue / 3),
+                              child: BottomNavigationBar(
+                                unselectedLabelStyle: const TextStyle(
+                                    fontSize: 10, fontWeight: FontWeight.bold),
+                                selectedLabelStyle: const TextStyle(
+                                    fontSize: 11, fontWeight: FontWeight.bold),
+                                backgroundColor: Colors.transparent,
+                                elevation: 0,
+                                type: BottomNavigationBarType.fixed,
+                                currentIndex: _currentIndex,
+                                unselectedItemColor: Colors.grey,
+                                selectedItemColor: AppConstants.primaryColor,
+                                onTap: (index) {
+                                  setState(() {
+                                    _currentIndex = index;
+                                  });
+                                },
+                                items: _navItems.map((e) {
+                                  return BottomNavigationBarItem(
+                                    icon: _navItems.indexOf(e) == 3
+                                        ? MessageConsumerBottomNavIcon(
+                                            icon: e.icon)
+                                        : Icon(e.icon),
+                                    label: e.title,
+                                    activeIcon: _navItems.indexOf(e) == 3
+                                        ? MessageConsumerBottomNavIcon(
+                                            icon: e.activeIcon)
+                                        : Icon(e.activeIcon),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                        )
+                      : const FirstTimeUserProfilePage();
+                },
+              );
       },
+      error: (error, stackTrace) => const ErrorPage(),
+      loading: () => const LoadingPage(),
     );
   }
 }

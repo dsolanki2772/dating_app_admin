@@ -8,6 +8,7 @@ import 'package:mioamoreadmin/providers/admin_provider.dart';
 import 'package:mioamoreadmin/providers/user_profiles_provider.dart';
 import 'package:mioamoreadmin/providers/user_reports_provider.dart';
 import 'package:mioamoreadmin/views/others/other_widgets.dart';
+import 'package:mioamoreadmin/views/tabs/reports/reports_page.dart';
 import 'package:mioamoreadmin/views/tabs/users/user_short_card.dart';
 
 class UserDetailsPage extends ConsumerStatefulWidget {
@@ -300,9 +301,26 @@ class UserDetailsReportsSection extends ConsumerWidget {
                 ),
                 userReportsRef.when(
                   data: (data) {
-                    return Text(
-                      "Total: ${data.length}",
-                      style: FluentTheme.of(context).typography.body,
+                    return Row(
+                      children: [
+                        Text(
+                          "Total: ${data.length}",
+                          style: FluentTheme.of(context).typography.body,
+                        ),
+                        const SizedBox(width: 8),
+                        if (data.isNotEmpty)
+                          FilledButton(
+                            child: const Text('Ban User'),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return BanUserDialog(userId: userId);
+                                },
+                              );
+                            },
+                          ),
+                      ],
                     );
                   },
                   error: (error, stackTrace) {

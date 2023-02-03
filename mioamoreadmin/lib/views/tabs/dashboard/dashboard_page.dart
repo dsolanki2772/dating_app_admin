@@ -2,6 +2,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreadmin/helpers/number_formatter.dart';
 import 'package:mioamoreadmin/providers/account_delete_request_provider.dart';
+import 'package:mioamoreadmin/providers/banned_users_provider.dart';
 import 'package:mioamoreadmin/providers/devices_provider.dart';
 import 'package:mioamoreadmin/providers/interactions_provider.dart';
 import 'package:mioamoreadmin/providers/matches_provider.dart';
@@ -20,6 +21,7 @@ class DashboardPage extends ConsumerWidget {
     final totalMatchesRef = ref.watch(totalMatchesProvider);
     final totalDevicesRef = ref.watch(totalDevicesProvider);
     final allReportsRef = ref.watch(allReportsProvider);
+    final bannedUsersRef = ref.watch(bannedUsersProvider);
     final verificationsref = ref.watch(pendingVerificationFormsStreamProvider);
     final allAccountDeleteRequests = ref.watch(accountDeleteRequestsProvider);
 
@@ -126,6 +128,18 @@ class DashboardPage extends ConsumerWidget {
                   return DashboardCard(
                     title: 'Total Reported Users',
                     value: NumberFormatter.formatNumber(allReports.length),
+                    icon: FluentIcons.people,
+                    color: Colors.red,
+                  );
+                },
+                loading: () => const SizedBox(),
+                error: (error, stack) => const SizedBox(),
+              ),
+              bannedUsersRef.when(
+                data: (bannedUsers) {
+                  return DashboardCard(
+                    title: 'Total Banned Users',
+                    value: NumberFormatter.formatNumber(bannedUsers.length),
                     icon: FluentIcons.people,
                     color: Colors.red,
                   );

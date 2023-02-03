@@ -32,6 +32,7 @@ class FirebaseConstants {
   static const String notificationsCollection = "notifications";
   static const String blockedUsersCollection = "blockedUsers";
   static const String reportsCollection = "reports";
+  static const String bannedUsersCollection = "bannedUsers";
   static const String accountDeleteRequestCollection = "accountDeleteRequest";
 }
 

@@ -65,56 +65,56 @@ class AccountDeleteRequestsPage extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      // if (daysRemaining <= 0)
-                      FilledButton(
-                        style: ButtonStyle(
-                          backgroundColor: ButtonState.all(Colors.red),
+                      if (daysRemaining <= 0)
+                        FilledButton(
+                          style: ButtonStyle(
+                            backgroundColor: ButtonState.all(Colors.red),
+                          ),
+                          child: const Text("Delete"),
+                          onPressed: () async {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return ContentDialog(
+                                  title: const Text('Delete user'),
+                                  content: const Text(
+                                      'Are you sure you want to delete this user?'),
+                                  actions: [
+                                    TextButton(
+                                      child: const Text('Cancel'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: const Text('Delete'),
+                                      onPressed: () async {
+                                        await AccountDeleteRequestProvider
+                                                .deleteUser(userReports.userId)
+                                            .then((value) async {
+                                          if (value) {
+                                            EasyLoading.show(
+                                                status:
+                                                    'Deleting account delete request...');
+                                            await AccountDeleteRequestProvider
+                                                    .deleteRequest(
+                                                        userReports.userId)
+                                                .then((value) {
+                                              EasyLoading.dismiss();
+                                              ref.invalidate(
+                                                  accountDeleteRequestsProvider);
+                                              Navigator.of(context).pop();
+                                            });
+                                          }
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
                         ),
-                        child: const Text("Delete"),
-                        onPressed: () async {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return ContentDialog(
-                                title: const Text('Delete user'),
-                                content: const Text(
-                                    'Are you sure you want to delete this user?'),
-                                actions: [
-                                  TextButton(
-                                    child: const Text('Cancel'),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                  TextButton(
-                                    child: const Text('Delete'),
-                                    onPressed: () async {
-                                      await AccountDeleteRequestProvider
-                                              .deleteUser(userReports.userId)
-                                          .then((value) async {
-                                        if (value) {
-                                          EasyLoading.show(
-                                              status:
-                                                  'Deleting account delete request...');
-                                          await AccountDeleteRequestProvider
-                                                  .deleteRequest(
-                                                      userReports.userId)
-                                              .then((value) {
-                                            EasyLoading.dismiss();
-                                            ref.invalidate(
-                                                accountDeleteRequestsProvider);
-                                            Navigator.of(context).pop();
-                                          });
-                                        }
-                                      });
-                                    },
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                      ),
                       const SizedBox(width: 16),
                     ],
                   ),

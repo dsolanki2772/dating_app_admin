@@ -41,6 +41,22 @@ class UserProfileProvider {
     }
   }
 
+  // Add user profile
+  static Future<bool> addUser(UserProfileModel userProfile) async {
+    final userProfileCollection = FirebaseFirestore.instance
+        .collection(FirebaseConstants.userProfileCollection);
+
+    try {
+      await userProfileCollection
+          .doc(userProfile.userId)
+          .set(userProfile.toMap());
+      return true;
+    } on Exception catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
   //delete user profile
   static Future<bool> deleteUser(String userId) async {
     final userProfileCollection = FirebaseFirestore.instance

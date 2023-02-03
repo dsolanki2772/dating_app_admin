@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:badges/badges.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -214,8 +213,8 @@ class ConversationTile extends ConsumerWidget {
                 const SizedBox(width: AppConstants.defaultNumericValue / 2),
               if (messageViewModel.unreadCount > 0)
                 Badge(
-                  badgeColor: AppConstants.primaryColor,
-                  badgeContent: Text(
+                  backgroundColor: AppConstants.primaryColor,
+                  child: Text(
                     messageViewModel.unreadCount.toString(),
                     style: Theme.of(context).textTheme.caption!.copyWith(
                         color: Colors.white, fontWeight: FontWeight.bold),
