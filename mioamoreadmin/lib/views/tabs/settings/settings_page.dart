@@ -103,53 +103,55 @@ class SettingsPage extends ConsumerWidget {
                         },
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    Card(
-                      child: ListTile(
-                        title: const Text("RESET to DEFAULT"),
-                        subtitle: const Text("Reset the database to default."),
-                        leading: const Icon(FluentIcons.reset),
-                        trailing: const Icon(FluentIcons.chevron_right),
-                        onPressed: () async {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return ContentDialog(
-                                title: const Text("Reset to default?"),
-                                content: const Text(
-                                    "Are you sure you want to reset the database to default?"),
-                                actions: [
-                                  FilledButton(
-                                    child: const Text("Cancel"),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                  FilledButton(
-                                    child: const Text("Yes"),
-                                    onPressed: () async {
-                                      Navigator.of(context).pop();
-                                      EasyLoading.show(
-                                          status: 'Resetting database...');
-                                      await ResetDatabaseProvider.start()
-                                          .then((value) {
-                                        if (value) {
-                                          EasyLoading.showSuccess(
-                                              'Database reset to default!\nReload the app to see changes!');
-                                        } else {
-                                          EasyLoading.showError(
-                                              'Failed to reset database!');
-                                        }
-                                      });
-                                    },
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        },
+                    if (data.isSuperAdmin) const SizedBox(height: 16),
+                    if (data.isSuperAdmin)
+                      Card(
+                        child: ListTile(
+                          title: const Text("RESET to DEFAULT"),
+                          subtitle:
+                              const Text("Reset the database to default."),
+                          leading: const Icon(FluentIcons.reset),
+                          trailing: const Icon(FluentIcons.chevron_right),
+                          onPressed: () async {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return ContentDialog(
+                                  title: const Text("Reset to default?"),
+                                  content: const Text(
+                                      "Are you sure you want to reset the database to default?"),
+                                  actions: [
+                                    FilledButton(
+                                      child: const Text("Cancel"),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    FilledButton(
+                                      child: const Text("Yes"),
+                                      onPressed: () async {
+                                        Navigator.of(context).pop();
+                                        EasyLoading.show(
+                                            status: 'Resetting database...');
+                                        await ResetDatabaseProvider.start()
+                                            .then((value) {
+                                          if (value) {
+                                            EasyLoading.showSuccess(
+                                                'Database reset to default!\nReload the app to see changes!');
+                                          } else {
+                                            EasyLoading.showError(
+                                                'Failed to reset database!');
+                                          }
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
