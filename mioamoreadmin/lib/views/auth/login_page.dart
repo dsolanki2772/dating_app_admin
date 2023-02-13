@@ -136,6 +136,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     child: const Text('Reset here'),
                   ),
                   const SizedBox(height: 16),
+                  SelectableText(
+                    "Demo Email: incevio.mioamore@gmail.com\nDemo Password: mioamore",
+                    textAlign: TextAlign.center,
+                  ),
                 ],
               ),
             ),

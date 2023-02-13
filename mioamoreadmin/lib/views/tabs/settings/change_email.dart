@@ -1,4 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreadmin/helpers/email_verifier.dart';
 import 'package:mioamoreadmin/models/admin_model.dart';
@@ -74,28 +75,30 @@ class _ChangeEmailDialogState extends ConsumerState<ChangeEmailDialog> {
         TextButton(
           onPressed: () async {
             if (_formKey.currentState!.validate()) {
-              await AuthProvider.verifyPassword(
-                      password: _passwordController.text.trim())
-                  .then((value) async {
-                if (value) {
-                  await AuthProvider.changeEmail(
-                          email: _emailController.text.trim())
-                      .then((value) async {
-                    if (value) {
-                      final AdminModel newModel = widget.admin.copyWith(
-                        email: _emailController.text.trim(),
-                      );
-                      await AdminProvider.updateAdmin(admin: newModel)
-                          .then((value) {
-                        if (value) {
-                          ref.invalidate(currentAdminProvider);
-                          Navigator.of(context).pop();
-                        }
-                      });
-                    }
-                  });
-                }
-              });
+              // await AuthProvider.verifyPassword(
+              //         password: _passwordController.text.trim())
+              //     .then((value) async {
+              //   if (value) {
+              //     await AuthProvider.changeEmail(
+              //             email: _emailController.text.trim())
+              //         .then((value) async {
+              //       if (value) {
+              //         final AdminModel newModel = widget.admin.copyWith(
+              //           email: _emailController.text.trim(),
+              //         );
+              //         await AdminProvider.updateAdmin(admin: newModel)
+              //             .then((value) {
+              //           if (value) {
+              //             ref.invalidate(currentAdminProvider);
+              //             Navigator.of(context).pop();
+              //           }
+              //         });
+              //       }
+              //     });
+              //   }
+              // });
+              EasyLoading.showInfo(
+                  'This feature is not available for public demo!');
             }
           },
           child: const Text('Update'),
