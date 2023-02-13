@@ -35,7 +35,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const SizedBox(height: 16),
+                  const LogoWiget(),
                   Text(
                     AppConstants.appName,
                     textAlign: TextAlign.center,
@@ -146,6 +146,29 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class LogoWiget extends StatelessWidget {
+  const LogoWiget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const SizedBox(height: 16),
+        Image.asset(
+          'assets/logo/logo.jpg',
+          width: 100,
+          height: 100,
+        ),
+        const SizedBox(height: 16),
+      ],
     );
   }
 }

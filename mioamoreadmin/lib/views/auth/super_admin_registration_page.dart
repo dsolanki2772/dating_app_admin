@@ -6,6 +6,7 @@ import 'package:mioamoreadmin/config/config.dart';
 import 'package:mioamoreadmin/models/admin_model.dart';
 import 'package:mioamoreadmin/providers/admin_provider.dart';
 import 'package:mioamoreadmin/providers/auth_provider.dart';
+import 'package:mioamoreadmin/views/auth/login_page.dart';
 
 class SuperAdminRegistrationPage extends ConsumerStatefulWidget {
   const SuperAdminRegistrationPage({super.key});
@@ -43,7 +44,7 @@ class _SuperAdminRegistrationPageState
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const SizedBox(height: 16),
+                    const LogoWiget(),
                     Text(
                       AppConstants.appName,
                       textAlign: TextAlign.center,
