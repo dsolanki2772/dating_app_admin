@@ -223,12 +223,15 @@ class _UserCardWidgetState extends State<UserCardWidget> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(
                             AppConstants.defaultNumericValue),
-                        child: CachedNetworkImage(
-                          imageUrl: e,
+                        child: Image.network(
+                          e,
                           fit: BoxFit.cover,
-                          placeholder: (context, url) => const Center(
-                              child: CircularProgressIndicator.adaptive()),
-                          errorWidget: (context, url, error) {
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return const Center(
+                                child: CircularProgressIndicator.adaptive());
+                          },
+                          errorBuilder: (context, error, stackTrace) {
                             return const Center(
                                 child: Icon(CupertinoIcons.photo));
                           },
@@ -313,7 +316,7 @@ class UserLikeActions extends StatelessWidget {
                   const SizedBox(height: AppConstants.defaultNumericValue / 3),
                 if (AppConfig.showInteractionButtonText)
                   Text(AppConfig.dislikeButtonText,
-                      style: Theme.of(context).textTheme.caption!.copyWith(
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
                           color: AppConfig.dislikeButtonColor,
                           fontWeight: FontWeight.bold)),
               ],
@@ -339,7 +342,7 @@ class UserLikeActions extends StatelessWidget {
                   const SizedBox(height: AppConstants.defaultNumericValue / 3),
                 if (AppConfig.showInteractionButtonText)
                   Text(AppConfig.superLikeButtonText,
-                      style: Theme.of(context).textTheme.caption!.copyWith(
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
                           color: AppConfig.superLikeButtonColor,
                           fontWeight: FontWeight.bold)),
               ],
@@ -365,7 +368,7 @@ class UserLikeActions extends StatelessWidget {
                   const SizedBox(height: AppConstants.defaultNumericValue / 3),
                 if (AppConfig.showInteractionButtonText)
                   Text(AppConfig.likeButtonText,
-                      style: Theme.of(context).textTheme.caption!.copyWith(
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
                           color: AppConfig.likeButtonColor,
                           fontWeight: FontWeight.bold)),
               ],
@@ -398,7 +401,7 @@ class OnlineStatus extends StatelessWidget {
       ),
       child: Text(
         'Online',
-        style: Theme.of(context).textTheme.caption!.copyWith(
+        style: Theme.of(context).textTheme.bodySmall!.copyWith(
           color: Colors.white,
           fontWeight: FontWeight.bold,
           fontSize: 11,

@@ -164,21 +164,21 @@ class _HomePageState extends State<HomePage> {
       targets: _targets,
       colorShadow: AppConstants.primaryColor,
       onClickTarget: (target) {
-        print(target);
+        debugPrint(target.toString());
       },
       onClickTargetWithTapPosition: (target, tapDetails) {
-        print("target: $target");
-        print(
+        debugPrint("target: $target");
+        debugPrint(
             "clicked at position local: ${tapDetails.localPosition} - global: ${tapDetails.globalPosition}");
       },
       onClickOverlay: (target) {
-        print(target);
+        debugPrint(target.toString());
       },
       onSkip: () {
-        print("skip");
+        debugPrint("skip");
       },
       onFinish: () {
-        print("finish");
+        debugPrint("finish");
       },
     ).show(context: context);
   }
@@ -218,12 +218,12 @@ class _HomePageState extends State<HomePage> {
                   final user = ref.watch(userProfileFutureProvider);
                   return user.when(
                       data: (data) {
-                        print("Online Status: ${data?.isOnline}");
+                        debugPrint("Online Status: ${data?.isOnline}");
 
                         if (data?.userAccountSettingsModel.showOnlineStatus !=
                             false) {
                           if (data?.isOnline == false) {
-                            print("Updating online status to true");
+                            debugPrint("Updating online status to true");
                             ref.read(userProfileNotifier).updateUserProfile(
                                 data!.copyWith(isOnline: true));
                           }
@@ -262,7 +262,7 @@ class _HomePageState extends State<HomePage> {
                                         overflow: TextOverflow.ellipsis,
                                         style: Theme.of(context)
                                             .textTheme
-                                            .subtitle2!
+                                            .titleSmall!
                                             .copyWith(
                                                 fontWeight: FontWeight.bold),
                                       ),
@@ -284,7 +284,7 @@ class _HomePageState extends State<HomePage> {
 
                   return filteredUsers.when(
                     data: (data) {
-                      print("Filtered Users: ${data.length}");
+                      debugPrint("Filtered Users: ${data.length}");
 
                       return data.isEmpty
                           ? const HomePageNoUsersFoundWidget()
@@ -352,7 +352,7 @@ class NotificationButton extends ConsumerWidget {
               backgroundColor: AppConstants.primaryColor,
               child: Text(
                 count.toString(),
-                style: Theme.of(context).textTheme.caption!.copyWith(
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
@@ -387,7 +387,7 @@ class FilterInteraction extends ConsumerWidget {
           }
         }
 
-        print("Filtered Users: ${filteredUsers.length}");
+        debugPrint("Filtered Users: ${filteredUsers.length}");
 
         return filteredUsers.isEmpty
             ? const NoItemFoundWidget(text: "No users found")
@@ -815,7 +815,7 @@ class _ChangeRadiusFromHomePageWidgetState
                 TextSpan(
                   text:
                       "${widget.closestUsersDistanceInKM.toStringAsFixed(0)} km",
-                  style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                         color: AppConstants.primaryColor,
                         fontWeight: FontWeight.bold,
                       ),
@@ -836,14 +836,14 @@ class _ChangeRadiusFromHomePageWidgetState
                     'Radius',
                     style: Theme.of(context)
                         .textTheme
-                        .subtitle2!
+                        .titleSmall!
                         .copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
                 if (!_isWorldWide)
                   Text(
                     '${_distanceInKm.toInt()} km',
-                    style: Theme.of(context).textTheme.headline6!.copyWith(
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
                         fontWeight: FontWeight.bold,
                         color: AppConstants.primaryColor),
                   ),

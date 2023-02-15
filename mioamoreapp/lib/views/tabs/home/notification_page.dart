@@ -206,11 +206,11 @@ class NotificationBody extends ConsumerWidget {
                   children: [
                     Text(
                       DateFormatter.toTime(item.createdAt),
-                      style: Theme.of(context).textTheme.caption,
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                     Text(
                       DateFormatter.toYearMonthDay2(item.createdAt),
-                      style: Theme.of(context).textTheme.caption,
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
                 ),
@@ -222,7 +222,7 @@ class NotificationBody extends ConsumerWidget {
                           item.title.substring(0, 1),
                           style: Theme.of(context)
                               .textTheme
-                              .headline6!
+                              .titleLarge!
                               .copyWith(color: Colors.white),
                         ),
                       )

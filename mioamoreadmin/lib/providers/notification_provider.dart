@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:mioamoreadmin/helpers/firebase_constants.dart';
 
 class NotificaitonProvider {
@@ -17,7 +18,7 @@ class NotificaitonProvider {
       });
       return true;
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return false;
     }
   }

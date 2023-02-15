@@ -133,6 +133,7 @@ class Dob {
       };
 }
 
+// ignore: constant_identifier_names
 enum Gender { MALE, FEMALE }
 
 final genderValues = EnumValues({"female": Gender.FEMALE, "male": Gender.MALE});

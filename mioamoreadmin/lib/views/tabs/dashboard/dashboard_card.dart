@@ -39,7 +39,7 @@ class DashboardCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       title,
-                      style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
                             color: Colors.white,
                           ),
                     ),
@@ -52,14 +52,14 @@ class DashboardCard extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: Theme.of(context)
                     .textTheme
-                    .headline3!
+                    .displaySmall!
                     .copyWith(color: Colors.white, fontWeight: FontWeight.bold),
               ),
               const Spacer(),
               if (subtitle != null)
                 Text(
                   subtitle!,
-                  style: Theme.of(context).textTheme.caption!.copyWith(
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
                       color: Colors.white, fontWeight: FontWeight.bold),
                 ),
             ],

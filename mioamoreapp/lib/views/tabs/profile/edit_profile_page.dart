@@ -231,7 +231,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                 const SizedBox(height: AppConstants.defaultNumericValue),
                 Text(
                   "Interests",
-                  style: Theme.of(context).textTheme.caption,
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
                 const SizedBox(height: AppConstants.defaultNumericValue / 2),
                 Wrap(
@@ -278,12 +278,12 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                 Text(
                   "You can select up to ${AppConfig.maxNumOfInterests} interests",
                   textAlign: TextAlign.end,
-                  style: Theme.of(context).textTheme.caption,
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
                 const SizedBox(height: AppConstants.defaultNumericValue),
                 Text(
                   "Images",
-                  style: Theme.of(context).textTheme.caption,
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
                 const SizedBox(height: AppConstants.defaultNumericValue / 2),
                 Wrap(
@@ -377,7 +377,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                 Text(
                   "You can add up to ${AppConfig.maxNumOfMedia} images",
                   textAlign: TextAlign.end,
-                  style: Theme.of(context).textTheme.caption,
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
                 const SizedBox(height: AppConstants.defaultNumericValue),
                 CustomButton(

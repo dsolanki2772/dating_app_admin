@@ -137,11 +137,11 @@ class LoginPage extends ConsumerWidget {
                       TextSpan(
                         text: "By logging in you agree to our ",
                         style:
-                            Theme.of(context).textTheme.subtitle2!.copyWith(),
+                            Theme.of(context).textTheme.titleSmall!.copyWith(),
                       ),
                       TextSpan(
                         text: "Terms of Service",
-                        style: Theme.of(context).textTheme.subtitle2!.copyWith(
+                        style: Theme.of(context).textTheme.titleSmall!.copyWith(
                               color: AppConstants.primaryColor,
                             ),
                         recognizer: TapGestureRecognizer()
@@ -157,11 +157,11 @@ class LoginPage extends ConsumerWidget {
                       TextSpan(
                         text: " and ",
                         style:
-                            Theme.of(context).textTheme.subtitle2!.copyWith(),
+                            Theme.of(context).textTheme.titleSmall!.copyWith(),
                       ),
                       TextSpan(
                         text: "Privacy Policy",
-                        style: Theme.of(context).textTheme.subtitle2!.copyWith(
+                        style: Theme.of(context).textTheme.titleSmall!.copyWith(
                               color: AppConstants.primaryColor,
                             ),
                         recognizer: TapGestureRecognizer()

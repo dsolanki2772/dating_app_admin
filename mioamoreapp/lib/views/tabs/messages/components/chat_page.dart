@@ -303,13 +303,13 @@ class _ChatBodyState extends ConsumerState<ChatBody> {
                 ListTile(
                   title: Text(
                     "Searching for",
-                    style: Theme.of(context).textTheme.caption,
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                   leading: const Icon(Icons.search),
                   minLeadingWidth: 0,
                   subtitle: Text(
                     widget.searchQuery!,
-                    style: Theme.of(context).textTheme.bodyText1,
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -422,7 +422,7 @@ class _ChatTopBarState extends ConsumerState<ChatTopBar> {
               widget.otherUser.fullName,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.subtitle1!.copyWith(
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
@@ -907,7 +907,7 @@ class MoreMenuTitle extends StatelessWidget {
         child: Text(title,
             style: Theme.of(context)
                 .textTheme
-                .subtitle2!
+                .titleSmall!
                 .copyWith(color: Colors.black87)),
       ),
     );
@@ -938,13 +938,13 @@ class ChatAddMenuItem extends StatelessWidget {
           children: [
             Icon(
               icon,
-              size: Theme.of(context).textTheme.subtitle2!.fontSize,
+              size: Theme.of(context).textTheme.titleSmall!.fontSize,
               color: Colors.white,
             ),
             const SizedBox(width: AppConstants.defaultNumericValue),
             Expanded(
               child: Text(title,
-                  style: Theme.of(context).textTheme.subtitle2!.copyWith(
+                  style: Theme.of(context).textTheme.titleSmall!.copyWith(
                       color: Colors.white, fontWeight: FontWeight.bold)),
             ),
           ],
@@ -1111,7 +1111,7 @@ class MessageSingleTile extends ConsumerWidget {
                       children: [
                         Text(
                           DateFormatter.toWholeDateTime(chat.createdAt),
-                          style: Theme.of(context).textTheme.caption,
+                          style: Theme.of(context).textTheme.bodySmall,
                         ),
                         if (!isNotMe) const SizedBox(width: 8),
                         if (!isNotMe)

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreadmin/helpers/firebase_constants.dart';
 import 'package:mioamoreadmin/models/user_profile_model.dart';
@@ -36,7 +37,7 @@ class UserProfileProvider {
       await userProfileCollection.doc(userId).update({'isVerified': true});
       return true;
     } on Exception catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return false;
     }
   }
@@ -52,7 +53,7 @@ class UserProfileProvider {
           .set(userProfile.toMap());
       return true;
     } on Exception catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return false;
     }
   }
@@ -87,7 +88,7 @@ class UserProfileProvider {
 
       return true;
     } on Exception catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return false;
     }
   }

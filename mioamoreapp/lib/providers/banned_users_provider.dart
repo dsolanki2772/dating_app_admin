@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/models/banned_user_model.dart';
@@ -24,7 +25,7 @@ final isMeBannedProvider = FutureProvider<BannedUserModel?>((ref) async {
         return null;
       }
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return null;
     }
   }

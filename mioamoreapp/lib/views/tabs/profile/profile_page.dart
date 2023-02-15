@@ -142,7 +142,7 @@ class ProfilePage extends ConsumerWidget {
                                                     textAlign: TextAlign.center,
                                                     style: Theme.of(context)
                                                         .textTheme
-                                                        .caption!
+                                                        .bodySmall!
                                                         .copyWith(
                                                             color:
                                                                 Colors.white70),
@@ -324,7 +324,7 @@ class _ProfileBottomPartState extends State<ProfileBottomPart> {
                     },
                     child: Text(
                       e,
-                      style: Theme.of(context).textTheme.headline6!.copyWith(
+                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
                             color: _selectedTabIndex == _tabs.indexOf(e)
                                 ? AppConstants.primaryColor
                                 : Colors.black54,
@@ -522,7 +522,7 @@ class ProfileCompletenessAndGetVerifiedWidget extends ConsumerWidget {
       data: (data) {
         int percentageComplete = _getProfilePercentageComplete(data!);
 
-        print('USer verificaitons status:${data.isVerified}');
+        debugPrint('USer verificaitons status:${data.isVerified}');
 
         return percentageComplete == 100
             ? data.isVerified
@@ -539,17 +539,17 @@ class ProfileCompletenessAndGetVerifiedWidget extends ConsumerWidget {
                       title: Text("You are almost there!",
                           style: Theme.of(context)
                               .textTheme
-                              .caption!
+                              .bodySmall!
                               .copyWith(fontWeight: FontWeight.bold)),
                       subtitle: Text("Get yourself as a verified user!",
-                          style: Theme.of(context).textTheme.caption),
+                          style: Theme.of(context).textTheme.bodySmall),
                       trailing: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                               horizontal: AppConstants.defaultNumericValue / 2,
                               vertical: AppConstants.defaultNumericValue / 4),
                           textStyle:
-                              Theme.of(context).textTheme.caption!.copyWith(
+                              Theme.of(context).textTheme.bodySmall!.copyWith(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -574,7 +574,7 @@ class ProfileCompletenessAndGetVerifiedWidget extends ConsumerWidget {
                   title: Text("Profile Completeness:",
                       style: Theme.of(context)
                           .textTheme
-                          .caption!
+                          .bodySmall!
                           .copyWith(fontWeight: FontWeight.bold)),
                   subtitle: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -597,10 +597,11 @@ class ProfileCompletenessAndGetVerifiedWidget extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: AppConstants.defaultNumericValue / 2,
                           vertical: AppConstants.defaultNumericValue / 4),
-                      textStyle: Theme.of(context).textTheme.caption!.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      textStyle:
+                          Theme.of(context).textTheme.bodySmall!.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                     ),
                     onPressed: () {
                       Navigator.of(context).push(

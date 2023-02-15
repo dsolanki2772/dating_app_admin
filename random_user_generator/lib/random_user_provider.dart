@@ -4,13 +4,13 @@ import 'package:http/http.dart' as http;
 Future<RandomUserModel?> getRandomUsers() async {
   final Uri url = Uri.parse('https://randomuser.me/api/?results=200');
 
-  print("Getting data...");
+  // debugPrint("Getting data...");
   final response = await http.get(url);
 
   if (response.statusCode == 200) {
     return randomUserModelFromJson(response.body);
   } else {
-    print(response);
+    // debugPrint(response);
     return null;
   }
 }

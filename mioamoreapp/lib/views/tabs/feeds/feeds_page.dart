@@ -152,7 +152,7 @@ class CreateNewPostSection extends ConsumerWidget {
                               borderRadius: BorderRadius.circular(50),
                             ),
                             child: Text("Share your thoughts",
-                                style: Theme.of(context).textTheme.subtitle2),
+                                style: Theme.of(context).textTheme.titleSmall),
                           ),
                         ),
                       ),
@@ -208,13 +208,13 @@ class _SingleFeedPostState extends ConsumerState<SingleFeedPost> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(widget.user.fullName,
-                          style: Theme.of(context).textTheme.subtitle1),
+                          style: Theme.of(context).textTheme.titleMedium),
                       Text(
                         DateFormatter.toWholeDateTime(widget.feed.createdAt),
                         textAlign: TextAlign.end,
                         style: Theme.of(context)
                             .textTheme
-                            .caption!
+                            .bodySmall!
                             .copyWith(fontSize: 10),
                       ),
                     ],
@@ -359,7 +359,7 @@ class _PostTextState extends State<PostText> {
         overflow: TextOverflow.ellipsis,
         style: Theme.of(context)
             .textTheme
-            .bodyText2!
+            .bodyMedium!
             .copyWith(fontSize: 16, color: Colors.black.withOpacity(0.87)),
       ),
     );
@@ -527,7 +527,7 @@ class PostSingleImage extends StatelessWidget {
                     moreNumberOfImages!,
                     style: Theme.of(context)
                         .textTheme
-                        .headline6!
+                        .titleLarge!
                         .copyWith(color: Colors.white),
                   ),
                 ),

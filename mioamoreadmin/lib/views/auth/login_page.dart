@@ -2,6 +2,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreadmin/config/config.dart';
+import 'package:mioamoreadmin/helpers/demo_constants.dart';
 import 'package:mioamoreadmin/helpers/email_verifier.dart';
 import 'package:mioamoreadmin/providers/admin_provider.dart';
 import 'package:mioamoreadmin/providers/auth_provider.dart';
@@ -19,6 +20,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final _passwordController = TextEditingController();
 
   bool _showPassword = false;
+
   @override
   Widget build(BuildContext context) {
     return NavigationView(
@@ -136,10 +138,48 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     child: const Text('Reset here'),
                   ),
                   const SizedBox(height: 16),
-                  SelectableText(
-                    "Demo Email: incevio.mioamore@gmail.com\nDemo Password: mioamore",
-                    textAlign: TextAlign.center,
-                  ),
+                  if (DemoConstants.isDemo)
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text("Demo Email: ",
+                                style:
+                                    FluentTheme.of(context).typography.caption),
+                            SelectableText("incevio.mioamore@gmail.com",
+                                style: FluentTheme.of(context)
+                                    .typography
+                                    .body!
+                                    .copyWith(fontWeight: FontWeight.bold)),
+                            IconButton(
+                                icon: const Icon(FluentIcons.copy),
+                                onPressed: () {
+                                  _emailController.text =
+                                      "incevio.mioamore@gmail.com";
+                                })
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Text("Demo Password: ",
+                                style:
+                                    FluentTheme.of(context).typography.caption),
+                            SelectableText("mioamore",
+                                style: FluentTheme.of(context)
+                                    .typography
+                                    .body!
+                                    .copyWith(fontWeight: FontWeight.bold)),
+                            IconButton(
+                                icon: const Icon(FluentIcons.copy),
+                                onPressed: () {
+                                  _passwordController.text = "mioamore";
+                                })
+                          ],
+                        ),
+                      ],
+                    ),
                 ],
               ),
             ),

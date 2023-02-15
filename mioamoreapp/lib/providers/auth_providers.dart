@@ -74,13 +74,8 @@ class AuthProvider {
             FacebookAuthProvider.credential(result.accessToken!.token);
         log('FB Credentials: $credential');
 
-        final userCred = await FirebaseAuth.instance
-            .signInWithCredential(credential)
-            .catchError(
-          (e) {
-            log('FB Error: $e');
-          },
-        );
+        final userCred =
+            await FirebaseAuth.instance.signInWithCredential(credential);
 
         log('FB User: ${userCred.user}');
         await _deviceTokenProvider.saveDeviceToken(userCred.user!.uid);

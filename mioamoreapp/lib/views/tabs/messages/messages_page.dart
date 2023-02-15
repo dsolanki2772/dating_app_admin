@@ -206,7 +206,7 @@ class ConversationTile extends ConsumerWidget {
                 messageViewModel.matchedUser.fullName,
                 style: Theme.of(context)
                     .textTheme
-                    .subtitle1!
+                    .titleMedium!
                     .copyWith(fontWeight: FontWeight.bold),
               ),
               if (messageViewModel.unreadCount > 0)
@@ -216,7 +216,7 @@ class ConversationTile extends ConsumerWidget {
                   backgroundColor: AppConstants.primaryColor,
                   child: Text(
                     messageViewModel.unreadCount.toString(),
-                    style: Theme.of(context).textTheme.caption!.copyWith(
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
                         color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -231,11 +231,11 @@ class ConversationTile extends ConsumerWidget {
             children: [
               Text(
                 DateFormatter.toTime(messageViewModel.lastMessageDate),
-                style: Theme.of(context).textTheme.caption!,
+                style: Theme.of(context).textTheme.bodySmall!,
               ),
               Text(
                 DateFormatter.toYearMonthDay2(messageViewModel.lastMessageDate),
-                style: Theme.of(context).textTheme.caption!,
+                style: Theme.of(context).textTheme.bodySmall!,
               ),
             ],
           ),

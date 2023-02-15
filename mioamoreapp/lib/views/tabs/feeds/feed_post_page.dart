@@ -182,7 +182,7 @@ class _FeedPostPageState extends ConsumerState<FeedPostPage> {
               minLines: 1,
               style: Theme.of(context)
                   .textTheme
-                  .headline5!
+                  .headlineSmall!
                   .copyWith(decoration: TextDecoration.none, fontSize: size),
               controller: _postController,
               onTap: () {
@@ -214,7 +214,7 @@ class _FeedPostPageState extends ConsumerState<FeedPostPage> {
                 focusedErrorBorder: InputBorder.none,
                 disabledBorder: InputBorder.none,
                 border: InputBorder.none,
-                hintStyle: Theme.of(context).textTheme.headline5!.copyWith(
+                hintStyle: Theme.of(context).textTheme.headlineSmall!.copyWith(
                       color: Colors.black.withOpacity(0.38),
                     ),
               ),
@@ -248,7 +248,7 @@ class _FeedPostPageState extends ConsumerState<FeedPostPage> {
           ),
           Expanded(
             child: Text('Create Post',
-                style: Theme.of(context).textTheme.subtitle1),
+                style: Theme.of(context).textTheme.titleMedium),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
@@ -372,7 +372,7 @@ class CretePostNameSection extends ConsumerWidget {
                       const SizedBox(width: 16),
                       Expanded(
                         child: Text(data.fullName,
-                            style: Theme.of(context).textTheme.headline6!),
+                            style: Theme.of(context).textTheme.titleLarge!),
                       ),
                     ],
                   ),

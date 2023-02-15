@@ -162,8 +162,8 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                     );
 
                     EasyLoading.show(status: 'Sending report...');
-                    await reportUser(reportModel).then((value) async {
-                      await EasyLoading.dismiss();
+                    await reportUser(reportModel).then((value) {
+                      EasyLoading.dismiss();
                       showDialog(
                           context: context,
                           builder: (context) {

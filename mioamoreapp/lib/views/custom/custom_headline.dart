@@ -19,7 +19,7 @@ class CustomHeadLine extends StatelessWidget {
 
     final textStyle = Theme.of(context)
         .textTheme
-        .headline5!
+        .headlineSmall!
         .copyWith(fontWeight: FontWeight.bold);
 
     return Text.rich(

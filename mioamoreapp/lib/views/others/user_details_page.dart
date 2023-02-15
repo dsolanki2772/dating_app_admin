@@ -554,7 +554,7 @@ class _DetailsBodyState extends State<DetailsBody> {
                                     overflow: TextOverflow.ellipsis,
                                     style: Theme.of(context)
                                         .textTheme
-                                        .headline6!
+                                        .titleLarge!
                                         .copyWith(fontWeight: FontWeight.bold)),
                               ),
                               const SizedBox(
@@ -592,7 +592,7 @@ class _DetailsBodyState extends State<DetailsBody> {
                             "${DateTime.now().difference(widget.user.birthDay).inDays ~/ 365} Years",
                             style: Theme.of(context)
                                 .textTheme
-                                .subtitle2!
+                                .titleSmall!
                                 .copyWith(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold)),
@@ -626,7 +626,7 @@ class _DetailsBodyState extends State<DetailsBody> {
                               overflow: TextOverflow.ellipsis,
                               style: Theme.of(context)
                                   .textTheme
-                                  .subtitle2!
+                                  .titleSmall!
                                   .copyWith(
                                       color: AppConstants.primaryColor,
                                       fontWeight: FontWeight.bold),
@@ -642,7 +642,7 @@ class _DetailsBodyState extends State<DetailsBody> {
                                       '${(Geolocator.distanceBetween(data.userAccountSettingsModel.location.latitude, data.userAccountSettingsModel.location.longitude, widget.user.userAccountSettingsModel.location.latitude, widget.user.userAccountSettingsModel.location.longitude) / 1000).toStringAsFixed(2)} km away',
                                       style: Theme.of(context)
                                           .textTheme
-                                          .caption!
+                                          .bodySmall!
                                           .copyWith(
                                               fontWeight: FontWeight.bold),
                                     );
@@ -669,7 +669,7 @@ class _DetailsBodyState extends State<DetailsBody> {
                   "About",
                   style: Theme.of(context)
                       .textTheme
-                      .headline6!
+                      .titleLarge!
                       .copyWith(fontWeight: FontWeight.bold),
                 ),
               ),
@@ -690,7 +690,7 @@ class _DetailsBodyState extends State<DetailsBody> {
                   "Interests",
                   style: Theme.of(context)
                       .textTheme
-                      .headline6!
+                      .titleLarge!
                       .copyWith(fontWeight: FontWeight.bold),
                 ),
               ),
@@ -729,7 +729,7 @@ class _DetailsBodyState extends State<DetailsBody> {
                   "Photos",
                   style: Theme.of(context)
                       .textTheme
-                      .headline6!
+                      .titleLarge!
                       .copyWith(fontWeight: FontWeight.bold),
                 ),
               ),

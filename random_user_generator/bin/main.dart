@@ -65,7 +65,7 @@ void main(List<String> arguments) async {
   final Directory systemTempDir = Directory.current;
   final File file = File('${systemTempDir.path}/random_users.json');
 
-  print('Writing to file: ${file.path}...');
+  // debugPrint('Writing to file: ${file.path}...');
   file.writeAsStringSync(randomUserJson.toString());
 }
 

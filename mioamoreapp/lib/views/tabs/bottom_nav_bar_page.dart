@@ -60,14 +60,14 @@ class _BottomNavBarPageState extends ConsumerState<BottomNavBarPage>
     userRef.whenData((value) {
       if (value != null) {
         if (value.userAccountSettingsModel.showOnlineStatus != false) {
-          print("User Online Status: ${value.isOnline}");
+          debugPrint("User Online Status: ${value.isOnline}");
           newModel = value.copyWith(isOnline: status);
         }
       }
     });
 
     if (newModel != null) {
-      print("Updating user online status to $status");
+      debugPrint("Updating user online status to $status");
 
       await ref.read(userProfileNotifier).updateUserProfile(newModel!);
     }

@@ -113,7 +113,7 @@ class _VerifiedPart extends StatelessWidget {
                           textAlign: TextAlign.center,
                           style: Theme.of(context)
                               .textTheme
-                              .headline6!
+                              .titleLarge!
                               .copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(
@@ -142,16 +142,18 @@ class _VerifiedPart extends StatelessWidget {
                     children: [
                       Text(
                           "Submitted at: ${DateFormatter.toWholeDate(data.createdAt)}",
-                          style: Theme.of(context).textTheme.caption!.copyWith(
-                                fontWeight: FontWeight.bold,
-                              )),
+                          style:
+                              Theme.of(context).textTheme.bodySmall!.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  )),
                       const SizedBox(
                           height: AppConstants.defaultNumericValue / 4),
                       Text(
                           "Last Updated at: ${DateFormatter.toWholeDate(data.updatedAt)}",
-                          style: Theme.of(context).textTheme.caption!.copyWith(
-                                fontWeight: FontWeight.bold,
-                              )),
+                          style:
+                              Theme.of(context).textTheme.bodySmall!.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  )),
                     ],
                   )
                 ],
@@ -265,13 +267,13 @@ class _NotVerifiedPartState extends ConsumerState<_NotVerifiedPart> {
               Text(
                 "Submit documents",
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headline5,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: AppConstants.defaultNumericValue / 2),
               Text(
                 "We need to verify your information.\n Please submit the documents below.",
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.caption,
+                style: Theme.of(context).textTheme.bodySmall,
               ),
               const SizedBox(height: AppConstants.defaultNumericValue * 4),
               VerificationSingleStep(

@@ -93,14 +93,14 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
               'Location',
               style: Theme.of(context)
                   .textTheme
-                  .headline6!
+                  .titleLarge!
                   .copyWith(fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: AppConstants.defaultNumericValue / 2),
             Text(
                 'This is your location. Other users will be able to see you if they are within this range.',
-                style: Theme.of(context).textTheme.caption),
+                style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: AppConstants.defaultNumericValue),
             GestureDetector(
               onTap: () async {
@@ -155,7 +155,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                     'Radius',
                     style: Theme.of(context)
                         .textTheme
-                        .headline6!
+                        .titleLarge!
                         .copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -163,7 +163,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                 if (!_isWorldWide)
                   Text(
                     '${_distanceInKm.toInt()} km',
-                    style: Theme.of(context).textTheme.headline6!.copyWith(
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
                         fontWeight: FontWeight.bold,
                         color: AppConstants.primaryColor),
                   ),
@@ -171,7 +171,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
             ),
             const SizedBox(height: AppConstants.defaultNumericValue / 2),
             Text('This radius is used to find other users within this range.',
-                style: Theme.of(context).textTheme.caption),
+                style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: AppConstants.defaultNumericValue),
             if (!_isWorldWide)
               Slider(
@@ -217,11 +217,11 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
             Text("Interested In",
                 style: Theme.of(context)
                     .textTheme
-                    .headline6!
+                    .titleLarge!
                     .copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: AppConstants.defaultNumericValue / 2),
             Text('This is the type of people you are interested in.',
-                style: Theme.of(context).textTheme.caption),
+                style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: AppConstants.defaultNumericValue),
             Wrap(
               alignment: WrapAlignment.center,
@@ -276,13 +276,13 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                   child: Text("Age Range",
                       style: Theme.of(context)
                           .textTheme
-                          .headline6!
+                          .titleLarge!
                           .copyWith(fontWeight: FontWeight.bold)),
                 ),
                 const SizedBox(width: AppConstants.defaultNumericValue),
                 Text(
                   '${_minimumAge.toInt()} - ${_maximumAge.toInt()}',
-                  style: Theme.of(context).textTheme.headline6!.copyWith(
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
                       fontWeight: FontWeight.bold,
                       color: AppConstants.primaryColor),
                 ),
@@ -290,7 +290,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
             ),
             const SizedBox(height: AppConstants.defaultNumericValue / 2),
             Text('This is the age range you are interested in.',
-                style: Theme.of(context).textTheme.caption),
+                style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: AppConstants.defaultNumericValue),
             RangeSlider(
               values:
@@ -311,7 +311,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                 Text("Show Age",
                     style: Theme.of(context)
                         .textTheme
-                        .headline6!
+                        .titleLarge!
                         .copyWith(fontWeight: FontWeight.bold)),
                 Switch.adaptive(
                   value: _showAge ?? true,
@@ -324,7 +324,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
               ],
             ),
             Text('If not enabled, your age will be hidden from others.',
-                style: Theme.of(context).textTheme.caption),
+                style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: AppConstants.defaultNumericValue * 2),
 
             Row(
@@ -333,7 +333,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                 Text("Show Location",
                     style: Theme.of(context)
                         .textTheme
-                        .headline6!
+                        .titleLarge!
                         .copyWith(fontWeight: FontWeight.bold)),
                 Switch.adaptive(
                   value: _showLocation ?? true,
@@ -346,7 +346,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
               ],
             ),
             Text('If not enabled, your location will be hidden from others.',
-                style: Theme.of(context).textTheme.caption),
+                style: Theme.of(context).textTheme.bodySmall),
 
             const SizedBox(height: AppConstants.defaultNumericValue * 2),
 
@@ -356,7 +356,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                 Text("Show Online Status",
                     style: Theme.of(context)
                         .textTheme
-                        .headline6!
+                        .titleLarge!
                         .copyWith(fontWeight: FontWeight.bold)),
                 Switch.adaptive(
                   value: _showOnlineStatus ?? true,
@@ -370,7 +370,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
             ),
             Text(
                 'If not enabled, your online status will be hidden from others.',
-                style: Theme.of(context).textTheme.caption),
+                style: Theme.of(context).textTheme.bodySmall),
 
             const SizedBox(height: AppConstants.defaultNumericValue * 2),
           ],
@@ -456,7 +456,7 @@ class _GenderButton extends StatelessWidget {
         ),
         child: Text(
           text,
-          style: Theme.of(context).textTheme.bodyText1!.copyWith(
+          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                 color: isSelected ? Colors.white : Colors.black,
               ),
         ),
