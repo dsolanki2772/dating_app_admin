@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:mioamoreapp/config/config.dart';
 import 'package:mioamoreapp/models/match_model.dart';
@@ -14,6 +17,8 @@ import 'package:mioamoreapp/providers/match_provider.dart';
 import 'package:mioamoreapp/providers/notifiaction_provider.dart';
 import 'package:mioamoreapp/views/custom/custom_button.dart';
 import 'package:mioamoreapp/views/custom/lottie/no_item_found_widget.dart';
+import 'package:mioamoreapp/views/custom/subscription_builder.dart';
+import 'package:mioamoreapp/views/tabs/home/explore_page.dart';
 import 'package:mioamoreapp/views/tabs/home/notification_page.dart';
 import 'package:mioamoreapp/views/tabs/messages/components/chat_page.dart';
 import 'package:swipe_cards/swipe_cards.dart';
@@ -43,6 +48,7 @@ class _HomePageState extends State<HomePage> {
   final _menuKey = GlobalKey();
   final _locationKey = GlobalKey();
   final _notificationKey = GlobalKey();
+  final _exploreKey = GlobalKey();
 
   final List<TargetFocus> _targets = [];
 
@@ -84,7 +90,7 @@ class _HomePageState extends State<HomePage> {
                 Padding(
                   padding: EdgeInsets.only(top: 10.0),
                   child: Text(
-                    "You will find account settings, notifications, logout and others here...",
+                    "This is the app menu.\n\nClick here to open the menu.\n\nYou will find your profile, account settings, and other options here.\n\nYou can also logout from here.",
                     style: TextStyle(color: Colors.white),
                   ),
                 )
@@ -117,7 +123,7 @@ class _HomePageState extends State<HomePage> {
                 Padding(
                   padding: EdgeInsets.only(top: 10.0),
                   child: Text(
-                    "Click here to change your location...",
+                    "This is your current location.\n\nYou can change your location here.\n\nYou can also change your location from the app menu.\n\nTapping here will take you to the account settings page.",
                     style: TextStyle(color: Colors.white),
                   ),
                 )
@@ -149,7 +155,39 @@ class _HomePageState extends State<HomePage> {
                 Padding(
                   padding: EdgeInsets.only(top: 10.0),
                   child: Text(
-                    "You will find notifications here...",
+                    "This is the notification icon.\n\nYou will get notifications here.\n\nTapping here will take you to the notification page.",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                )
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+
+    _targets.add(
+      TargetFocus(
+        identify: "Explore",
+        keyTarget: _exploreKey,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  "Explore",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 20.0),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0),
+                  child: Text(
+                    "This is the explore icon.\n\nTapping here will take you to the explore page.\n\nYou can explore other users based on interests. You can also search for users here.",
                     style: TextStyle(color: Colors.white),
                   ),
                 )
@@ -275,7 +313,26 @@ class _HomePageState extends State<HomePage> {
                       loading: () => const SizedBox());
                 },
               ),
-              trailing: NotificationButton(key: _notificationKey),
+              trailing: Row(
+                children: [
+                  CustomIconButton(
+                    key: _exploreKey,
+                    icon: Icons.explore,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ExplorePage(),
+                        ),
+                      );
+                    },
+                    padding: const EdgeInsets.all(
+                        AppConstants.defaultNumericValue / 1.5),
+                  ),
+                  const SizedBox(width: AppConstants.defaultNumericValue / 2),
+                  NotificationButton(key: _notificationKey),
+                ],
+              ),
             ),
             Expanded(
               child: Consumer(
@@ -288,7 +345,17 @@ class _HomePageState extends State<HomePage> {
 
                       return data.isEmpty
                           ? const HomePageNoUsersFoundWidget()
-                          : FilterInteraction(users: data);
+                          : SubscriptionBuilder(
+                              // children: [
+                              //   FilterInteraction(users: data),
+                              // ],
+                              builder: (context, isPremiumUser) {
+                                return FilterInteraction(
+                                  isPremiumUser: isPremiumUser,
+                                  users: data,
+                                );
+                              },
+                            );
                     },
                     error: (_, __) => const Center(
                       child: Text("Something Went Wrong!"),
@@ -350,12 +417,8 @@ class NotificationButton extends ConsumerWidget {
             right: 0,
             child: Badge(
               backgroundColor: AppConstants.primaryColor,
-              child: Text(
+              label: Text(
                 count.toString(),
-                style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
               ),
             ),
           ),
@@ -365,10 +428,12 @@ class NotificationButton extends ConsumerWidget {
 }
 
 class FilterInteraction extends ConsumerWidget {
+  final bool isPremiumUser;
   final List<UserProfileModel> users;
 
   const FilterInteraction({
     Key? key,
+    required this.isPremiumUser,
     required this.users,
   }) : super(key: key);
 
@@ -391,7 +456,10 @@ class FilterInteraction extends ConsumerWidget {
 
         return filteredUsers.isEmpty
             ? const NoItemFoundWidget(text: "No users found")
-            : HomeBody(users: filteredUsers);
+            : HomeBody(
+                users: filteredUsers,
+                isPremiumUser: isPremiumUser,
+              );
       },
       error: (_, __) => const Center(
         child: Text("Something Went Wrong!"),
@@ -405,9 +473,10 @@ class FilterInteraction extends ConsumerWidget {
 
 class HomeBody extends ConsumerStatefulWidget {
   final List<UserProfileModel> users;
-
+  final bool isPremiumUser;
   const HomeBody({
     Key? key,
+    required this.isPremiumUser,
     required this.users,
   }) : super(key: key);
 
@@ -418,6 +487,9 @@ class HomeBody extends ConsumerStatefulWidget {
 class _HomeBodyState extends ConsumerState<HomeBody> {
   late MatchEngine _matchEngine;
   final List<SwipeItem> _swipeItems = [];
+
+  InterstitialAd? _interstitialAd;
+  bool _isInterstitialAdLoaded = false;
 
   @override
   void initState() {
@@ -436,6 +508,24 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
     }
 
     _matchEngine = MatchEngine(swipeItems: _swipeItems);
+
+    if (!widget.isPremiumUser) {
+      InterstitialAd.load(
+        adUnitId: Platform.isAndroid
+            ? AndroidAdUnits.interstitialId
+            : IOSAdUnits.interstitialId,
+        request: const AdRequest(),
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (ad) {
+            setState(() {
+              _interstitialAd = ad;
+              _isInterstitialAdLoaded = true;
+            });
+          },
+          onAdFailedToLoad: (error) {},
+        ),
+      );
+    }
 
     super.initState();
   }
@@ -572,107 +662,127 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
     final currentUserProfile = ref.watch(userProfileFutureProvider);
 
     return currentUserProfile.when(
-        data: (data) {
-          if (data == null) {
-            return const SizedBox();
-          } else {
-            return Center(
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.72,
-                width: MediaQuery.of(context).size.width * 0.95,
-                child: SwipeCards(
-                  upSwipeAllowed: true,
-                  matchEngine: _matchEngine,
-                  onStackFinished: () {
-                    ref.invalidate(interactionFutureProvider);
-                  },
-                  itemBuilder: (context, index) {
-                    final user = _swipeItems[index].content as UserProfileModel;
+      data: (data) {
+        if (data == null) {
+          return const SizedBox();
+        } else {
+          return Center(
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height * 0.72,
+              width: MediaQuery.of(context).size.width * 0.95,
+              child: SwipeCards(
+                upSwipeAllowed: false,
+                matchEngine: _matchEngine,
+                itemChanged: (p0, p1) {
+                  if (_isInterstitialAdLoaded) {
+                    _interstitialAd?.show();
+                    _isInterstitialAdLoaded = false;
+                  }
+                },
+                onStackFinished: () {
+                  ref.invalidate(interactionFutureProvider);
+                },
+                itemBuilder: (context, index) {
+                  final user = _swipeItems[index].content as UserProfileModel;
 
-                    final String myUserId =
-                        ref.watch(currentUserStateProvider)!.uid;
-                    final String id = myUserId + user.id;
+                  final String myUserId =
+                      ref.watch(currentUserStateProvider)!.uid;
+                  final String id = myUserId + user.id;
 
-                    final UserInteractionModel interaction =
-                        UserInteractionModel(
-                      id: id,
-                      userId: myUserId,
-                      intractToUserId: user.id,
-                      isSuperLike: false,
-                      isLike: false,
-                      isDislike: false,
-                      createdAt: DateTime.now(),
-                    );
+                  final UserInteractionModel interaction = UserInteractionModel(
+                    id: id,
+                    userId: myUserId,
+                    intractToUserId: user.id,
+                    isSuperLike: false,
+                    isLike: false,
+                    isDislike: false,
+                    createdAt: DateTime.now(),
+                  );
 
-                    return UserCardWidget(
-                      user: _swipeItems[index].content,
-                      onTapBolt: () async {
-                        _matchEngine.currentItem?.superLike();
-                        final newInteraction = interaction.copyWith(
-                            isSuperLike: true, createdAt: DateTime.now());
+                  return UserCardWidget(
+                    user: _swipeItems[index].content,
+                    onTapBolt: () async {
+                      _matchEngine.currentItem?.superLike();
+                      final newInteraction = interaction.copyWith(
+                          isSuperLike: true, createdAt: DateTime.now());
 
-                        await createInteraction(newInteraction)
-                            .then((result) async {
-                          if (result) {
-                            await getExistingInteraction(user.id, myUserId)
-                                .then((otherUserInteraction) {
-                              if (otherUserInteraction != null) {
-                                showMatchingDialog(
-                                    context: context,
-                                    currentUser: data,
-                                    otherUser: user);
-                              } else {
-                                createInteractionNotification(
-                                    title: "You have a new Interaction!",
-                                    body:
-                                        "${user.fullName} has super liked you!",
-                                    receiverId: user.id,
-                                    currentUser: data);
-                              }
-                            });
-                          }
-                        });
-                      },
-                      onTapCross: () async {
-                        _matchEngine.currentItem?.nope();
-                        final newInteraction = interaction.copyWith(
-                            isDislike: true, createdAt: DateTime.now());
-                        await createInteraction(newInteraction);
-                      },
-                      onTapHeart: () async {
-                        _matchEngine.currentItem?.like();
-                        final newInteraction = interaction.copyWith(
-                            isLike: true, createdAt: DateTime.now());
-                        await createInteraction(newInteraction)
-                            .then((result) async {
-                          if (result) {
-                            await getExistingInteraction(user.id, myUserId)
-                                .then((otherUserInteraction) {
-                              if (otherUserInteraction != null) {
-                                showMatchingDialog(
-                                    context: context,
-                                    currentUser: data,
-                                    otherUser: user);
-                              } else {
-                                createInteractionNotification(
-                                    title: "You have a new Interaction!",
-                                    body: "${user.fullName} has liked you!",
-                                    receiverId: user.id,
-                                    currentUser: data);
-                              }
-                            });
-                          }
-                        });
-                      },
-                    );
-                  },
-                ),
+                      await createInteraction(newInteraction)
+                          .then((result) async {
+                        if (result) {
+                          await getExistingInteraction(user.id, myUserId)
+                              .then((otherUserInteraction) {
+                            if (otherUserInteraction != null) {
+                              showMatchingDialog(
+                                  context: context,
+                                  currentUser: data,
+                                  otherUser: user);
+                            } else {
+                              createInteractionNotification(
+                                  title: "You have a new Interaction!",
+                                  body: "${user.fullName} has super liked you!",
+                                  receiverId: user.id,
+                                  currentUser: data);
+                            }
+                          });
+                        }
+                      });
+
+                      if (_isInterstitialAdLoaded) {
+                        _interstitialAd?.show();
+                        _isInterstitialAdLoaded = false;
+                      }
+                    },
+                    onTapCross: () async {
+                      _matchEngine.currentItem?.nope();
+                      final newInteraction = interaction.copyWith(
+                          isDislike: true, createdAt: DateTime.now());
+                      await createInteraction(newInteraction);
+
+                      if (_isInterstitialAdLoaded) {
+                        _interstitialAd?.show();
+                        _isInterstitialAdLoaded = false;
+                      }
+                    },
+                    onTapHeart: () async {
+                      _matchEngine.currentItem?.like();
+                      final newInteraction = interaction.copyWith(
+                          isLike: true, createdAt: DateTime.now());
+                      await createInteraction(newInteraction)
+                          .then((result) async {
+                        if (result) {
+                          await getExistingInteraction(user.id, myUserId)
+                              .then((otherUserInteraction) {
+                            if (otherUserInteraction != null) {
+                              showMatchingDialog(
+                                  context: context,
+                                  currentUser: data,
+                                  otherUser: user);
+                            } else {
+                              createInteractionNotification(
+                                  title: "You have a new Interaction!",
+                                  body: "${user.fullName} has liked you!",
+                                  receiverId: user.id,
+                                  currentUser: data);
+                            }
+                          });
+                        }
+                      });
+
+                      if (_isInterstitialAdLoaded) {
+                        _interstitialAd?.show();
+                        _isInterstitialAdLoaded = false;
+                      }
+                    },
+                  );
+                },
               ),
-            );
-          }
-        },
-        error: (_, __) => const SizedBox(),
-        loading: () => const SizedBox());
+            ),
+          );
+        }
+      },
+      error: (_, __) => const SizedBox(),
+      loading: () => const SizedBox(),
+    );
   }
 }
 

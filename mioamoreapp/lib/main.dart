@@ -159,7 +159,7 @@ class _LandingWidgetState extends ConsumerState<LandingWidget> {
     return authState.when(
       data: (data) {
         if (data != null) {
-          return const BottomNavBarPage();
+          return BottomNavBarPage(userId: data.uid);
         } else {
           return const LoginPage();
         }

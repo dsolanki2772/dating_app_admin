@@ -244,3 +244,26 @@ class IOSAdUnits {
   static const String rewardedVideoId =
       "ca-app-pub-3940256099942544/1712485313";
 }
+
+///
+/// Subscription Settings
+/// !! You need to create a subscription plan in your app store and play store then create the api keys in revenue cat and paste them here.
+
+class SubscriptionConstants {
+  SubscriptionConstants._();
+
+  // Revenue Cat Apple API Key
+  static const String appleApiKey =
+      ""; //!! Create this from revenue cat and paste here
+
+  // Revenue Cat Google API Key
+  static const String googleApiKey =
+      "goog_VmVavmeuIpEDQjtuwPCaOlSTJXg"; //!! Create this from revenue cat and paste here
+
+  // Revenue Cat Entitlement Id
+  static const String entitlementId =
+      "premium"; //!! Create the entitlement id in revenue cat and paste here
+
+  static const String footerText =
+      "You can cancel your subscription at any time.";
+}

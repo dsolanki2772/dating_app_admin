@@ -2,9 +2,11 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreadmin/providers/admin_provider.dart';
+import 'package:mioamoreadmin/providers/app_settings_provider.dart';
 import 'package:mioamoreadmin/providers/auth_provider.dart';
 import 'package:mioamoreadmin/providers/reset_database_provider.dart';
 import 'package:mioamoreadmin/views/others/other_widgets.dart';
+import 'package:mioamoreadmin/views/tabs/settings/app_settings.dart';
 import 'package:mioamoreadmin/views/tabs/settings/change_email.dart';
 import 'package:mioamoreadmin/views/tabs/settings/change_name.dart';
 import 'package:mioamoreadmin/views/tabs/settings/change_password.dart';
@@ -16,6 +18,7 @@ class SettingsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final adminProfile = ref.watch(currentAdminProvider);
+    final appSettingsRef = ref.watch(appSettingsProvider);
 
     return NavigationView(
       appBar: const NavigationAppBar(
@@ -37,6 +40,37 @@ class SettingsPage extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            // App Settings
+                            appSettingsRef.when(
+                              data: (data) {
+                                return Card(
+                                  child: ListTile(
+                                    title: const Text("App Settings"),
+                                    subtitle:
+                                        const Text("Update app settings here"),
+                                    leading: const Icon(FluentIcons.edit),
+                                    trailing:
+                                        const Icon(FluentIcons.chevron_right),
+                                    onPressed: () {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) =>
+                                              AppSettingsDialog(
+                                                  appSettingsModel: data));
+                                    },
+                                  ),
+                                );
+                              },
+                              error: (error, stackTrace) => const SizedBox(),
+                              loading: () => const SizedBox(),
+                            ),
+
+                            const Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 8),
+                              child: Text("Account Settings"),
+                            ),
+
                             Card(
                               child: ListTile(
                                 title: const Text("Change Name"),

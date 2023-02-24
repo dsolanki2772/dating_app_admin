@@ -32,7 +32,7 @@ class _SuperAdminRegistrationPageState
     return NavigationView(
       content: Center(
         child: SizedBox(
-          width: 350,
+          width: 400,
           child: Card(
             borderRadius: BorderRadius.circular(8),
             padding: const EdgeInsets.all(24),

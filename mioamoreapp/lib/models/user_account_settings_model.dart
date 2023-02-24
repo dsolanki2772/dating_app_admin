@@ -9,6 +9,8 @@ class UserAccountSettingsModel {
   bool? showAge;
   bool? showLocation;
   bool? showOnlineStatus;
+  bool? showOnlyToPremiumUsers;
+  bool? allowAnonymousMessages;
   UserAccountSettingsModel({
     required this.location,
     this.distanceInKm,
@@ -18,6 +20,8 @@ class UserAccountSettingsModel {
     this.showAge,
     this.showLocation,
     this.showOnlineStatus,
+    this.showOnlyToPremiumUsers,
+    this.allowAnonymousMessages,
   });
 
   UserAccountSettingsModel copyWith({
@@ -29,6 +33,8 @@ class UserAccountSettingsModel {
     bool? showAge,
     bool? showLocation,
     bool? showOnlineStatus,
+    bool? showOnlyToPremiumUsers,
+    bool? allowAnonymousMessages,
   }) {
     return UserAccountSettingsModel(
       location: location ?? this.location,
@@ -39,6 +45,10 @@ class UserAccountSettingsModel {
       showAge: showAge ?? this.showAge,
       showLocation: showLocation ?? this.showLocation,
       showOnlineStatus: showOnlineStatus ?? this.showOnlineStatus,
+      showOnlyToPremiumUsers:
+          showOnlyToPremiumUsers ?? this.showOnlyToPremiumUsers,
+      allowAnonymousMessages:
+          allowAnonymousMessages ?? this.allowAnonymousMessages,
     );
   }
 
@@ -63,6 +73,12 @@ class UserAccountSettingsModel {
     if (showOnlineStatus != null) {
       result.addAll({'showOnlineStatus': showOnlineStatus});
     }
+    if (showOnlyToPremiumUsers != null) {
+      result.addAll({'showOnlyToPremiumUsers': showOnlyToPremiumUsers});
+    }
+    if (allowAnonymousMessages != null) {
+      result.addAll({'allowAnonymousMessages': allowAnonymousMessages});
+    }
 
     return result;
   }
@@ -77,6 +93,8 @@ class UserAccountSettingsModel {
       showAge: map['showAge'],
       showLocation: map['showLocation'],
       showOnlineStatus: map['showOnlineStatus'],
+      showOnlyToPremiumUsers: map['showOnlyToPremiumUsers'],
+      allowAnonymousMessages: map['allowAnonymousMessages'],
     );
   }
 
@@ -87,7 +105,7 @@ class UserAccountSettingsModel {
 
   @override
   String toString() {
-    return 'UserAccountSettingsModel(location: $location, distanceInKm: $distanceInKm, interestedIn: $interestedIn, minimumAge: $minimumAge, maximumAge: $maximumAge, showAge: $showAge, showLocation: $showLocation, showOnlineStatus: $showOnlineStatus)';
+    return 'UserAccountSettingsModel(location: $location, distanceInKm: $distanceInKm, interestedIn: $interestedIn, minimumAge: $minimumAge, maximumAge: $maximumAge, showAge: $showAge, showLocation: $showLocation, showOnlineStatus: $showOnlineStatus, showOnlyToPremiumUsers: $showOnlyToPremiumUsers, allowAnonymousMessages: $allowAnonymousMessages)';
   }
 
   @override
@@ -102,7 +120,9 @@ class UserAccountSettingsModel {
         other.maximumAge == maximumAge &&
         other.showAge == showAge &&
         other.showLocation == showLocation &&
-        other.showOnlineStatus == showOnlineStatus;
+        other.showOnlineStatus == showOnlineStatus &&
+        other.showOnlyToPremiumUsers == showOnlyToPremiumUsers &&
+        other.allowAnonymousMessages == allowAnonymousMessages;
   }
 
   @override
@@ -114,7 +134,9 @@ class UserAccountSettingsModel {
         maximumAge.hashCode ^
         showAge.hashCode ^
         showLocation.hashCode ^
-        showOnlineStatus.hashCode;
+        showOnlineStatus.hashCode ^
+        showOnlyToPremiumUsers.hashCode ^
+        allowAnonymousMessages.hashCode;
   }
 }
 

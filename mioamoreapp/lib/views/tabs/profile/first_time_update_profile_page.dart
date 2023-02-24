@@ -1,6 +1,4 @@
 import 'dart:io';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,6 +14,7 @@ import 'package:mioamoreapp/providers/auth_providers.dart';
 import 'package:mioamoreapp/providers/user_profile_provider.dart';
 import 'package:mioamoreapp/views/custom/custom_button.dart';
 import 'package:mioamoreapp/views/others/set_user_location_page.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 
 class FirstTimeUserProfilePage extends ConsumerStatefulWidget {
   const FirstTimeUserProfilePage({
@@ -125,9 +124,10 @@ class _FirstTimeUserProfilePageState
                           "Sure",
                           style: TextStyle(color: Colors.red),
                         ),
-                        onPressed: () {
+                        onPressed: () async {
                           Navigator.of(context).pop();
-                          ref.read(authProvider).signOut();
+                          await Purchases.logOut();
+                          await ref.read(authProvider).signOut();
                         },
                       ),
                     ],

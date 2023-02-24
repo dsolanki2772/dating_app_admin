@@ -26,7 +26,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     return NavigationView(
       content: Center(
         child: SizedBox(
-          width: 350,
+          width: 400,
           child: Card(
             borderRadius: BorderRadius.circular(8),
             padding: const EdgeInsets.all(24),
@@ -144,15 +144,19 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text("Demo Email: ",
                                 style:
                                     FluentTheme.of(context).typography.caption),
-                            SelectableText("incevio.mioamore@gmail.com",
-                                style: FluentTheme.of(context)
-                                    .typography
-                                    .body!
-                                    .copyWith(fontWeight: FontWeight.bold)),
+                            Flexible(
+                              child: SelectableText(
+                                  "incevio.mioamore@gmail.com",
+                                  style: FluentTheme.of(context)
+                                      .typography
+                                      .body!
+                                      .copyWith(fontWeight: FontWeight.bold)),
+                            ),
                             IconButton(
                                 icon: const Icon(FluentIcons.copy),
                                 onPressed: () {
@@ -162,15 +166,18 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           ],
                         ),
                         Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text("Demo Password: ",
                                 style:
                                     FluentTheme.of(context).typography.caption),
-                            SelectableText("mioamore",
-                                style: FluentTheme.of(context)
-                                    .typography
-                                    .body!
-                                    .copyWith(fontWeight: FontWeight.bold)),
+                            Flexible(
+                              child: SelectableText("mioamore",
+                                  style: FluentTheme.of(context)
+                                      .typography
+                                      .body!
+                                      .copyWith(fontWeight: FontWeight.bold)),
+                            ),
                             IconButton(
                                 icon: const Icon(FluentIcons.copy),
                                 onPressed: () {

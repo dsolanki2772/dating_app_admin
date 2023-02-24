@@ -8,6 +8,7 @@ import 'package:mioamoreapp/models/user_account_settings_model.dart';
 import 'package:mioamoreapp/models/user_profile_model.dart';
 import 'package:mioamoreapp/providers/auth_providers.dart';
 import 'package:mioamoreapp/providers/block_user_provider.dart';
+import 'package:mioamoreapp/providers/subscriptions/is_subscribed_provider.dart';
 import 'package:mioamoreapp/providers/user_profile_provider.dart';
 
 final filteredOtherUsersProvider =
@@ -21,6 +22,7 @@ final filteredOtherUsersProvider =
   });
 
   final myProfileProvider = ref.watch(userProfileFutureProvider);
+  final isPremiumUserRef = ref.watch(isPremiumUserProvider);
 
   List<UserProfileModel> filteredUserList = [];
 
@@ -73,6 +75,17 @@ final filteredOtherUsersProvider =
       }
     }
   });
+
+  bool isPremiumUser = false;
+  isPremiumUserRef.whenData((value) {
+    isPremiumUser = value;
+  });
+
+  if (!isPremiumUser) {
+    filteredUserList.removeWhere((element) {
+      return element.userAccountSettingsModel.showOnlyToPremiumUsers ?? false;
+    });
+  }
 
   return filteredUserList;
 });

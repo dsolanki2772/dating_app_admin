@@ -34,6 +34,7 @@ class FirebaseConstants {
   static const String reportsCollection = "reports";
   static const String bannedUsersCollection = "bannedUsers";
   static const String accountDeleteRequestCollection = "accountDeleteRequest";
+  static const String appSettingsCollection = "appSettings";
 }
 
 class HiveConstants {

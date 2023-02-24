@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -141,29 +140,46 @@ class _UserCardWidgetState extends State<UserCardWidget> {
                                   const SizedBox(
                                       height:
                                           AppConstants.defaultNumericValue / 4),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal:
-                                            AppConstants.defaultNumericValue /
-                                                1.3),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const Icon(Icons.location_on_outlined,
-                                            size: 16, color: Colors.white),
-                                        const SizedBox(
-                                            width: AppConstants
+                                  Wrap(
+                                    alignment: WrapAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: AppConstants
                                                     .defaultNumericValue /
-                                                4),
-                                        Text(
-                                          '${(Geolocator.distanceBetween(data.userAccountSettingsModel.location.latitude, data.userAccountSettingsModel.location.longitude, widget.user.userAccountSettingsModel.location.latitude, widget.user.userAccountSettingsModel.location.longitude) / 1000).toStringAsFixed(2)} km away',
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        )
-                                      ],
-                                    ),
+                                                1.2),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Icon(
+                                                Icons.location_on_outlined,
+                                                size: 16,
+                                                color: Colors.white),
+                                            const SizedBox(
+                                                width: AppConstants
+                                                        .defaultNumericValue /
+                                                    4),
+                                            Text(
+                                              '${(Geolocator.distanceBetween(data.userAccountSettingsModel.location.latitude, data.userAccountSettingsModel.location.longitude, widget.user.userAccountSettingsModel.location.latitude, widget.user.userAccountSettingsModel.location.longitude) / 1000).toStringAsFixed(2)} km away',
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: AppConstants
+                                                    .defaultNumericValue /
+                                                1.2),
+                                        child: InterestsSimilarityWidget(
+                                          otherUser: widget.user,
+                                          myProfile: data,
+                                        ),
+                                      )
+                                    ],
                                   ),
                                   const SizedBox(
                                       height: AppConstants.defaultNumericValue),
@@ -272,6 +288,52 @@ class _UserCardWidgetState extends State<UserCardWidget> {
                 );
               }).toList(),
             ),
+    );
+  }
+}
+
+class InterestsSimilarityWidget extends StatelessWidget {
+  final UserProfileModel otherUser;
+  final UserProfileModel myProfile;
+  final Color? color;
+  const InterestsSimilarityWidget({
+    super.key,
+    required this.otherUser,
+    required this.myProfile,
+    this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final myInterests = myProfile.interests;
+    final otherInterests = otherUser.interests;
+
+    double similarity = 0;
+    for (final interest in myInterests) {
+      if (otherInterests.contains(interest)) {
+        similarity++;
+      }
+    }
+
+    double percentage = (similarity / myInterests.length) * 100;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          Icons.join_inner,
+          size: 16,
+          color: color ?? Colors.white,
+        ),
+        const SizedBox(width: AppConstants.defaultNumericValue / 4),
+        Text(
+          '${percentage.toStringAsFixed(0)}% similarity',
+          style: TextStyle(
+            color: color ?? Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        )
+      ],
     );
   }
 }

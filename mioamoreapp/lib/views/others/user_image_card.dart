@@ -59,25 +59,24 @@ class UserImageCard extends StatelessWidget {
             ),
           ),
         ),
-        header: matchId != null
-            ? Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    const Icon(CupertinoIcons.heart_solid,
-                        color: CupertinoColors.destructiveRed,
-                        size: AppConstants.defaultNumericValue * 1.5),
-                    const Spacer(),
-                    if (user.isVerified)
-                      const Icon(Icons.verified_user,
-                          color: CupertinoColors.activeGreen,
-                          size: AppConstants.defaultNumericValue * 1.5),
-                    if (user.isOnline) const SizedBox(width: 4),
-                    if (user.isOnline) const OnlineStatus(),
-                  ],
-                ),
-              )
-            : null,
+        header: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              if (matchId != null)
+                const Icon(CupertinoIcons.heart_solid,
+                    color: CupertinoColors.destructiveRed,
+                    size: AppConstants.defaultNumericValue * 1.5),
+              const Spacer(),
+              if (user.isVerified)
+                const Icon(Icons.verified_user,
+                    color: CupertinoColors.activeGreen,
+                    size: AppConstants.defaultNumericValue * 1.5),
+              if (user.isOnline) const SizedBox(width: 4),
+              if (user.isOnline) const OnlineStatus(),
+            ],
+          ),
+        ),
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,

@@ -612,56 +612,54 @@ class _DetailsBodyState extends State<DetailsBody> {
                     Icon(Icons.location_on, color: AppConstants.primaryColor),
                     const SizedBox(width: AppConstants.defaultNumericValue / 4),
                     Expanded(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (widget
-                                  .user.userAccountSettingsModel.showLocation !=
-                              false)
-                            Text(
-                              widget.user.userAccountSettingsModel.location
-                                  .addressText,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleSmall!
-                                  .copyWith(
-                                      color: AppConstants.primaryColor,
-                                      fontWeight: FontWeight.bold),
-                            ),
-                          Consumer(
-                            builder: (context, ref, child) {
-                              final myProfile =
-                                  ref.watch(userProfileFutureProvider);
-                              return myProfile.when(
-                                data: (data) {
-                                  if (data != null) {
-                                    return Text(
+                      child: Consumer(
+                        builder: (context, ref, child) {
+                          final myProfile =
+                              ref.watch(userProfileFutureProvider);
+                          return myProfile.when(
+                            data: (data) {
+                              return Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (widget.user.userAccountSettingsModel
+                                          .showLocation !=
+                                      false)
+                                    Text(
+                                      widget.user.userAccountSettingsModel
+                                          .location.addressText,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall!
+                                          .copyWith(
+                                              color: AppConstants.primaryColor,
+                                              fontWeight: FontWeight.bold),
+                                    ),
+                                  if (data != null)
+                                    Text(
                                       '${(Geolocator.distanceBetween(data.userAccountSettingsModel.location.latitude, data.userAccountSettingsModel.location.longitude, widget.user.userAccountSettingsModel.location.latitude, widget.user.userAccountSettingsModel.location.longitude) / 1000).toStringAsFixed(2)} km away',
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodySmall!
                                           .copyWith(
                                               fontWeight: FontWeight.bold),
-                                    );
-                                  } else {
-                                    return const SizedBox();
-                                  }
-                                },
-                                error: (_, __) => const SizedBox(),
-                                loading: () => const SizedBox(),
+                                    )
+                                ],
                               );
                             },
-                          ),
-                        ],
+                            error: (_, __) => const SizedBox(),
+                            loading: () => const SizedBox(),
+                          );
+                        },
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
               const Divider(),
+              const SizedBox(height: AppConstants.defaultNumericValue / 2),
               Padding(
                 padding: const EdgeInsets.symmetric(
                     horizontal: AppConstants.defaultNumericValue),
@@ -682,19 +680,44 @@ class _DetailsBodyState extends State<DetailsBody> {
                         ? "Not Available"
                         : widget.user.about!),
               ),
-              const SizedBox(height: AppConstants.defaultNumericValue),
+              const SizedBox(height: AppConstants.defaultNumericValue * 2),
               Padding(
                 padding: const EdgeInsets.symmetric(
                     horizontal: AppConstants.defaultNumericValue),
-                child: Text(
-                  "Interests",
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge!
-                      .copyWith(fontWeight: FontWeight.bold),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Interests",
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge!
+                          .copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final myProfile = ref.watch(userProfileFutureProvider);
+                        return myProfile.when(
+                          data: (data) {
+                            if (data != null) {
+                              return InterestsSimilarityWidget(
+                                otherUser: widget.user,
+                                myProfile: data,
+                                color: AppConstants.primaryColor,
+                              );
+                            } else {
+                              return const SizedBox();
+                            }
+                          },
+                          error: (_, __) => const SizedBox(),
+                          loading: () => const SizedBox(),
+                        );
+                      },
+                    )
+                  ],
                 ),
               ),
-              const SizedBox(height: AppConstants.defaultNumericValue / 2),
+              const SizedBox(height: AppConstants.defaultNumericValue),
               Padding(
                 padding: const EdgeInsets.symmetric(
                     horizontal: AppConstants.defaultNumericValue),
@@ -721,7 +744,7 @@ class _DetailsBodyState extends State<DetailsBody> {
                           );
                         }).toList()),
               ),
-              const SizedBox(height: AppConstants.defaultNumericValue),
+              const SizedBox(height: AppConstants.defaultNumericValue * 2),
               Padding(
                 padding: const EdgeInsets.symmetric(
                     horizontal: AppConstants.defaultNumericValue),

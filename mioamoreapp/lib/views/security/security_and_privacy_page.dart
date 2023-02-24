@@ -10,6 +10,7 @@ import 'package:mioamoreapp/views/others/error_page.dart';
 import 'package:mioamoreapp/views/others/loading_page.dart';
 import 'package:mioamoreapp/views/security/blocking_page.dart';
 import 'package:mioamoreapp/views/settings/verification/verification_steps.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 
 class SecurityAndPrivacyLandingPage extends ConsumerWidget {
   const SecurityAndPrivacyLandingPage({Key? key}) : super(key: key);
@@ -163,7 +164,8 @@ class _SecurityAndPrivacyPageState
                                         await ref
                                             .read(authProvider)
                                             .signOut()
-                                            .then((value) {
+                                            .then((value) async {
+                                          Purchases.logOut();
                                           Navigator.pop(context);
                                           Navigator.pop(context);
                                           Navigator.pop(context);
