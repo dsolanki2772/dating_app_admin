@@ -34,6 +34,14 @@ void main(List<String> arguments) async {
         maximumAge: 50,
       );
 
+      String? profilePicture;
+
+      if (random.gender.name.toLowerCase() == "male") {
+        profilePicture = maleImageUrl(Random().nextInt(29) + 1);
+      } else {
+        profilePicture = femaleImageUrl(Random().nextInt(34) + 1);
+      }
+
       UserProfileModel profile = UserProfileModel(
         id: random.login.uuid,
         userId: random.login.uuid,
@@ -48,7 +56,7 @@ void main(List<String> arguments) async {
         isOnline: Random().nextBool(),
         email: random.email,
         phoneNumber: random.phone,
-        profilePicture: random.picture.large,
+        profilePicture: profilePicture,
         about: aboutList[Random().nextInt(aboutList.length)],
       );
 
@@ -103,3 +111,9 @@ List<String> aboutList = [
   "I'm looking for someone to go on a trip with!",
   "I'm looking for someone to go on a vacation with!",
 ];
+
+String femaleImageUrl(int number) =>
+    "https://firebasestorage.googleapis.com/v0/b/mio-amore-incevio.appspot.com/o/demo_images%2Ffemale%2F$number.jpg?alt=media&token=9335f403-660c-4f86-a675-2c28f9818c1d";
+
+String maleImageUrl(int number) =>
+    "https://firebasestorage.googleapis.com/v0/b/mio-amore-incevio.appspot.com/o/demo_images%2Fmale%2F$number.jpg?alt=media&token=f89cf9bb-678f-4d81-8abe-7d885c8994c7";

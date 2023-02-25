@@ -36,7 +36,7 @@ class _ChangeEmailDialogState extends ConsumerState<ChangeEmailDialog> {
             children: [
               TextFormBox(
                 controller: _emailController,
-                header: "Email",
+                // header: "Email",
                 placeholder: "Enter your new email",
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -50,7 +50,7 @@ class _ChangeEmailDialogState extends ConsumerState<ChangeEmailDialog> {
               const SizedBox(height: 16),
               TextFormBox(
                 controller: _passwordController,
-                header: "Password",
+                // header: "Password",
                 placeholder: "Enter your current password",
                 obscureText: true,
                 validator: (value) {

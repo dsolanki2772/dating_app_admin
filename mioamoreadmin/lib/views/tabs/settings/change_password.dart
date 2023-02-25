@@ -30,7 +30,7 @@ class _ChangePasswordState extends ConsumerState<ChangePasswordDialog> {
             children: [
               TextFormBox(
                 controller: _oldPasswordController,
-                header: "Old Password",
+                // header: "Old Password",
                 placeholder: "Enter your old password",
                 obscureText: true,
                 validator: (value) {
@@ -45,7 +45,7 @@ class _ChangePasswordState extends ConsumerState<ChangePasswordDialog> {
               const SizedBox(height: 16),
               TextFormBox(
                 controller: _newPasswordController,
-                header: "New Password",
+                // header: "New Password",
                 placeholder: "Enter your new password",
                 obscureText: true,
                 validator: (value) {
@@ -60,7 +60,7 @@ class _ChangePasswordState extends ConsumerState<ChangePasswordDialog> {
               const SizedBox(height: 16),
               TextFormBox(
                 controller: _confirmPasswordController,
-                header: "Confirm Password",
+                // header: "Confirm Password",
                 placeholder: "Confirm your new password",
                 obscureText: true,
                 validator: (value) {

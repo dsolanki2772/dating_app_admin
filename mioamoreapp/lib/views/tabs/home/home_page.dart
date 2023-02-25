@@ -509,7 +509,7 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
 
     _matchEngine = MatchEngine(swipeItems: _swipeItems);
 
-    if (!widget.isPremiumUser) {
+    if (!widget.isPremiumUser && isAdmobAvailable) {
       InterstitialAd.load(
         adUnitId: Platform.isAndroid
             ? AndroidAdUnits.interstitialId
@@ -567,6 +567,7 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
     final MatchModel matchModel = MatchModel(
       id: currentUser.userId + otherUser.userId,
       userIds: [currentUser.userId, otherUser.userId],
+      isMatched: true,
     );
 
     await createConversation(matchModel).then((matchResult) async {

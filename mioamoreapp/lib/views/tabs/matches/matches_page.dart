@@ -35,6 +35,8 @@ class MatchesConsumerPage extends ConsumerWidget {
             data: (matches) {
               final List<MatchedUsersView> matchedViews = [];
 
+              matches.removeWhere((element) => element.isMatched == false);
+
               for (final user in data) {
                 if (matches
                     .any((element) => element.userIds.contains(user.id))) {
@@ -49,7 +51,9 @@ class MatchesConsumerPage extends ConsumerWidget {
 
               return MatchesPage(matchesView: matchedViews);
             },
-            error: (_, __) => const ErrorPage(),
+            error: (_, __) {
+              return const ErrorPage();
+            },
             loading: () => const LoadingPage(),
           );
         }

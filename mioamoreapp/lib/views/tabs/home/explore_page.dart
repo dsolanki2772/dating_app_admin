@@ -146,7 +146,7 @@ class ExploreUsersBody extends ConsumerStatefulWidget {
 class _ExploreUsersBodyState extends ConsumerState<ExploreUsersBody> {
   @override
   void initState() {
-    if (!widget.isPremiumUser) {
+    if (!widget.isPremiumUser && isAdmobAvailable) {
       InterstitialAd.load(
         adUnitId: Platform.isAndroid
             ? AndroidAdUnits.interstitialId

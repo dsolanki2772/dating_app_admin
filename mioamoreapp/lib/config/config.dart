@@ -59,13 +59,13 @@ class AppConfig {
   ///
 
   //!! Dislike Button Color
-  static const Color dislikeButtonColor = Color.fromARGB(255, 246, 40, 25);
+  static const Color dislikeButtonColor = Color.fromARGB(255, 195, 16, 4);
 
   //!! Super Like Button Color
-  static const Color superLikeButtonColor = Color.fromARGB(255, 40, 205, 251);
+  static const Color superLikeButtonColor = Color.fromARGB(255, 3, 160, 204);
 
   //!! Like Button Color
-  static const Color likeButtonColor = Color.fromARGB(255, 120, 243, 124);
+  static const Color likeButtonColor = Color.fromARGB(255, 3, 223, 10);
 
   //!! Show Interaction Button Text
   static const bool showInteractionButtonText = true;
@@ -258,12 +258,9 @@ class SubscriptionConstants {
 
   // Revenue Cat Google API Key
   static const String googleApiKey =
-      "goog_VmVavmeuIpEDQjtuwPCaOlSTJXg"; //!! Create this from revenue cat and paste here
+      ""; //!! Create this from revenue cat and paste here
 
   // Revenue Cat Entitlement Id
   static const String entitlementId =
-      "premium"; //!! Create the entitlement id in revenue cat and paste here
-
-  static const String footerText =
-      "You can cancel your subscription at any time.";
+      ""; //!! Create the entitlement id in revenue cat and paste here
 }

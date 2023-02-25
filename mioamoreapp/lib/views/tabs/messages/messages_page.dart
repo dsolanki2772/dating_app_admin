@@ -74,7 +74,7 @@ class _MessagesPageState extends ConsumerState<MessagesPage> {
 
   @override
   void initState() {
-    if (!widget.isPremiumUser) {
+    if (!widget.isPremiumUser && isAdmobAvailable) {
       InterstitialAd.load(
         adUnitId: Platform.isAndroid
             ? AndroidAdUnits.interstitialId

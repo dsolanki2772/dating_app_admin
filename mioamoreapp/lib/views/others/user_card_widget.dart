@@ -187,6 +187,7 @@ class _UserCardWidgetState extends State<UserCardWidget> {
                                     onTapCross: widget.onTapCross,
                                     onTapBolt: widget.onTapBolt,
                                     onTapHeart: widget.onTapHeart,
+                                    showShadow: true,
                                   ),
                                   const SizedBox(
                                       height: AppConstants.defaultNumericValue),
@@ -342,15 +343,28 @@ class UserLikeActions extends StatelessWidget {
   final VoidCallback onTapCross;
   final VoidCallback onTapBolt;
   final VoidCallback onTapHeart;
+  final bool showShadow;
   const UserLikeActions({
     Key? key,
     required this.onTapCross,
     required this.onTapBolt,
     required this.onTapHeart,
+    this.showShadow = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    List<BoxShadow> boxShadow = showShadow
+        ? const [
+            BoxShadow(
+              color: Colors.black45,
+              spreadRadius: 4,
+              blurRadius: 8,
+              offset: Offset(0, 2), // changes position of shadow
+            ),
+          ]
+        : [];
+
     return Padding(
       padding: const EdgeInsets.symmetric(
           horizontal: AppConstants.defaultNumericValue),
@@ -370,6 +384,7 @@ class UserLikeActions extends StatelessWidget {
                     borderRadius: BorderRadius.circular(100),
                     border: Border.all(
                         color: AppConfig.dislikeButtonColor, width: 2),
+                    boxShadow: boxShadow,
                   ),
                   child: const Icon(Icons.clear,
                       color: AppConfig.dislikeButtonColor),
@@ -396,6 +411,7 @@ class UserLikeActions extends StatelessWidget {
                     borderRadius: BorderRadius.circular(100),
                     border: Border.all(
                         color: AppConfig.superLikeButtonColor, width: 2),
+                    boxShadow: boxShadow,
                   ),
                   child: const Icon(Icons.bolt,
                       color: AppConfig.superLikeButtonColor, size: 32),
@@ -422,6 +438,7 @@ class UserLikeActions extends StatelessWidget {
                     borderRadius: BorderRadius.circular(100),
                     border:
                         Border.all(color: AppConfig.likeButtonColor, width: 2),
+                    boxShadow: boxShadow,
                   ),
                   child: const Icon(Icons.favorite,
                       color: AppConfig.likeButtonColor),

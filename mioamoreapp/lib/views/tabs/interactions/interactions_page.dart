@@ -121,6 +121,9 @@ class _InteractionsPageState extends ConsumerState<InteractionsPage> {
 
                   otherUsers.whenData((value) {
                     matchedUsersProvider.whenData((matchedUsers) {
+                      matchedUsers
+                          .removeWhere((element) => element.isMatched == false);
+
                       for (var user in value) {
                         if (!matchedUsers.any(
                             (element) => element.userIds.contains(user.id))) {

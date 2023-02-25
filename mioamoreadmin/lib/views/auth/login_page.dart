@@ -242,7 +242,6 @@ class _ResetPasswordFormState extends ConsumerState<ResetPasswordForm> {
           padding: const EdgeInsets.symmetric(vertical: 16),
           child: TextFormBox(
             controller: _emailController,
-            header: "Email",
             placeholder: "Enter your email",
             validator: (value) {
               if (value!.isEmpty) {

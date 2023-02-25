@@ -36,7 +36,7 @@ class _ChangeNameDialogState extends ConsumerState<ChangeNameDialog> {
           padding: const EdgeInsets.symmetric(vertical: 16),
           child: TextFormBox(
             controller: _nameController,
-            header: "Name",
+            // header: "Name",
             placeholder: "Enter your name",
             validator: (value) {
               if (value!.isEmpty) {

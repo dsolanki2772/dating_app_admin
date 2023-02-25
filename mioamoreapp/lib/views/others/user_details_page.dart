@@ -11,6 +11,7 @@ import 'package:mioamoreapp/models/match_model.dart';
 import 'package:mioamoreapp/models/notification_model.dart';
 import 'package:mioamoreapp/models/user_interaction_model.dart';
 import 'package:mioamoreapp/models/user_profile_model.dart';
+import 'package:mioamoreapp/providers/app_settings_provider.dart';
 import 'package:mioamoreapp/providers/auth_providers.dart';
 import 'package:mioamoreapp/providers/block_user_provider.dart';
 import 'package:mioamoreapp/providers/interaction_provider.dart';
@@ -68,6 +69,7 @@ class UserDetailsPage extends ConsumerWidget {
       final MatchModel matchModel = MatchModel(
         id: currentUser.userId + otherUser.userId,
         userIds: [currentUser.userId, otherUser.userId],
+        isMatched: true,
       );
 
       await createConversation(matchModel).then((matchResult) async {
@@ -310,7 +312,7 @@ class UserDetailsPage extends ConsumerWidget {
   }
 }
 
-class DetailsBody extends StatefulWidget {
+class DetailsBody extends ConsumerStatefulWidget {
   const DetailsBody({
     Key? key,
     required this.user,
@@ -323,10 +325,10 @@ class DetailsBody extends StatefulWidget {
   final String? matchId;
 
   @override
-  State<DetailsBody> createState() => _DetailsBodyState();
+  ConsumerState<DetailsBody> createState() => _DetailsBodyState();
 }
 
-class _DetailsBodyState extends State<DetailsBody> {
+class _DetailsBodyState extends ConsumerState<DetailsBody> {
   final CustomPopupMenuController _moreMenuController =
       CustomPopupMenuController();
 
@@ -363,8 +365,36 @@ class _DetailsBodyState extends State<DetailsBody> {
         });
   }
 
+  void _onTapSendMessage() async {
+    final MatchModel matchModel = MatchModel(
+      id: widget.myUserId + widget.user.userId,
+      userIds: [widget.myUserId, widget.user.userId],
+      isMatched: false,
+    );
+
+    EasyLoading.show(status: "Creating conversation...");
+    await createConversation(matchModel).then((matchResult) async {
+      if (matchResult) {
+        EasyLoading.dismiss();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatPage(
+              matchId: matchModel.id,
+              otherUserId: widget.user.userId,
+            ),
+          ),
+        );
+      } else {
+        EasyLoading.showInfo("Something went wrong! Please try again later.");
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final appSettingsRef = ref.watch(appSettingsProvider);
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -461,7 +491,26 @@ class _DetailsBodyState extends State<DetailsBody> {
                                             _onTapUnmatch();
                                           },
                                         )
-                                      : const SizedBox(),
+                                      : widget.user.userAccountSettingsModel
+                                                  .allowAnonymousMessages ==
+                                              true
+                                          ? appSettingsRef.when(
+                                              data: (data) {
+                                                if (data?.isChattingEnabledBeforeMatch ==
+                                                    true) {
+                                                  return MoreMenuTitle(
+                                                    title: 'Send Message',
+                                                    onTap: _onTapSendMessage,
+                                                  );
+                                                } else {
+                                                  return const SizedBox();
+                                                }
+                                              },
+                                              error: (error, stackTrace) =>
+                                                  const SizedBox(),
+                                              loading: () => const SizedBox(),
+                                            )
+                                          : const SizedBox(),
                                   MoreMenuTitle(
                                     title: 'Report',
                                     onTap: () {
