@@ -211,7 +211,6 @@ class _NotVerifiedPartState extends ConsumerState<_NotVerifiedPart> {
       } else {
         await verificationData.submitVerificationForm(form);
       }
-      EasyLoading.showSuccess("Submitted successfully");
     }
   }
 

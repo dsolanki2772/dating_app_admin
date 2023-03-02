@@ -28,6 +28,7 @@ class VerificationProvider extends ChangeNotifier {
   Future<void> submitVerificationForm(VerificationFormModel model) async {
     try {
       await _verificationCollection.doc(model.userId).set(model.toMap());
+      EasyLoading.showSuccess("Verification form submitted!");
       notifyListeners();
     } catch (e) {
       EasyLoading.showError("Something went wrong!");
@@ -37,6 +38,7 @@ class VerificationProvider extends ChangeNotifier {
   Future<void> updateVerificationForm(VerificationFormModel model) async {
     try {
       await _verificationCollection.doc(model.userId).update(model.toMap());
+      EasyLoading.showSuccess("Verification form updated!");
       notifyListeners();
     } catch (e) {
       EasyLoading.showError("Something went wrong!");

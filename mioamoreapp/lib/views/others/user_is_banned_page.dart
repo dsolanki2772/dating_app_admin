@@ -5,7 +5,6 @@ import 'package:mioamoreapp/helpers/date_formater.dart';
 import 'package:mioamoreapp/models/banned_user_model.dart';
 import 'package:mioamoreapp/providers/auth_providers.dart';
 import 'package:mioamoreapp/views/custom/custom_button.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
 
 class UserIsBannedPage extends ConsumerWidget {
   final BannedUserModel bannedUserModel;
@@ -55,7 +54,6 @@ class UserIsBannedPage extends ConsumerWidget {
               onPressed: () async {
                 EasyLoading.show(status: 'Logging out...');
                 await ref.read(authProvider).signOut();
-                await Purchases.logOut();
                 EasyLoading.dismiss();
               },
             )

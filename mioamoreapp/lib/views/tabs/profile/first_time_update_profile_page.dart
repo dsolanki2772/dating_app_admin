@@ -14,7 +14,6 @@ import 'package:mioamoreapp/providers/auth_providers.dart';
 import 'package:mioamoreapp/providers/user_profile_provider.dart';
 import 'package:mioamoreapp/views/custom/custom_button.dart';
 import 'package:mioamoreapp/views/others/set_user_location_page.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
 
 class FirstTimeUserProfilePage extends ConsumerStatefulWidget {
   const FirstTimeUserProfilePage({
@@ -126,7 +125,7 @@ class _FirstTimeUserProfilePageState
                         ),
                         onPressed: () async {
                           Navigator.of(context).pop();
-                          await Purchases.logOut();
+
                           await ref.read(authProvider).signOut();
                         },
                       ),

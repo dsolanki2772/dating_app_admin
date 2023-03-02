@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreapp/config/config.dart';
-
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/providers/auth_providers.dart';
 import 'package:mioamoreapp/providers/user_profile_provider.dart';
@@ -18,7 +17,6 @@ import 'package:mioamoreapp/views/custom/subscription_builder.dart';
 import 'package:mioamoreapp/views/security/security_and_privacy_page.dart';
 import 'package:mioamoreapp/views/settings/account_settings.dart';
 import 'package:mioamoreapp/views/tabs/profile/profile_page.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
 
 class AppDrawer extends ConsumerWidget {
   const AppDrawer({
@@ -299,7 +297,6 @@ class AppDrawer extends ConsumerWidget {
                     .updateOnlineStatus(isOnline: false, userId: currentUserId);
               }
               await ref.read(authProvider).signOut();
-              await Purchases.logOut();
               EasyLoading.dismiss();
             },
             title: 'Log Out',

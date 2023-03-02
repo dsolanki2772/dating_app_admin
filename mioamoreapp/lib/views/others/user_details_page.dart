@@ -707,6 +707,35 @@ class _DetailsBodyState extends ConsumerState<DetailsBody> {
                   ],
                 ),
               ),
+              widget.user.userAccountSettingsModel.allowAnonymousMessages ==
+                      true
+                  ? appSettingsRef.when(
+                      data: (data) {
+                        if (data?.isChattingEnabledBeforeMatch == true) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppConstants.defaultNumericValue,
+                              vertical: AppConstants.defaultNumericValue / 4,
+                            ),
+                            child: Text(
+                              "Anonymous messages are allowed",
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall!
+                                  .copyWith(
+                                      color: Colors.green,
+                                      fontWeight: FontWeight.bold),
+                            ),
+                          );
+                        } else {
+                          return const SizedBox();
+                        }
+                      },
+                      error: (error, stackTrace) => const SizedBox(),
+                      loading: () => const SizedBox(),
+                    )
+                  : const SizedBox(),
               const Divider(),
               const SizedBox(height: AppConstants.defaultNumericValue / 2),
               Padding(
