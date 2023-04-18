@@ -209,7 +209,7 @@ const String locationApiKey = "AIzaSyDvkwrf9abC92F6SFdYEDmmYIgdvBrLi9o";
 ///
 
 //! Enable Admob Ads or not. If you don't want ads, set this to false. If you want ads, set this to true and set the ad ids below.
-const bool isAdmobAvailable = true;
+const bool isAdmobAvailable = false;
 
 class AndroidAdUnits {
   AndroidAdUnits._();

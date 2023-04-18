@@ -22,13 +22,13 @@ import 'package:mioamoreapp/views/tabs/messages/components/chat_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  if (isAdmobAvailable) {
+    MobileAds.instance.initialize();
+  }
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-  if (isAdmobAvailable) {
-    await MobileAds.instance.initialize();
-  }
 
   FirebaseMessaging.onBackgroundMessage(_handleBackgroundNotification);
 
