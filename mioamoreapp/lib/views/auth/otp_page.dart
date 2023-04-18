@@ -164,7 +164,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
                   maxLength: 6,
                   style: Theme.of(context)
                       .textTheme
-                      .headline6!
+                      .titleLarge!
                       .copyWith(fontWeight: FontWeight.bold),
                   decoration: const InputDecoration(hintText: "******"),
                   validator: (value) {

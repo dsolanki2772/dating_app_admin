@@ -28,7 +28,7 @@ class ErrorPage extends ConsumerWidget {
                 textAlign: TextAlign.center,
                 style: Theme.of(context)
                     .textTheme
-                    .headline6!
+                    .titleLarge!
                     .copyWith(color: Colors.black87),
               ),
               const SizedBox(height: AppConstants.defaultNumericValue * 2),

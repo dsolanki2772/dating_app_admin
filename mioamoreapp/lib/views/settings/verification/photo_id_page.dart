@@ -66,7 +66,7 @@ class _PhotoIdPageState extends State<PhotoIdPage> {
             children: [
               const SizedBox(height: 16),
               Text('Please take photos of front and back of your of your ID',
-                  style: Theme.of(context).textTheme.bodyText1),
+                  style: Theme.of(context).textTheme.bodyLarge),
               const SizedBox(height: 32),
               GestureDetector(
                 onTap: () {

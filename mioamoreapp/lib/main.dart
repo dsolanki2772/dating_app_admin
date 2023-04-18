@@ -22,14 +22,14 @@ import 'package:mioamoreapp/views/tabs/messages/components/chat_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  if (isAdmobAvailable) {
+    MobileAds.instance.initialize();
+  }
+
   await Firebase.initializeApp(
     //! Generate Firebase options from https://console.firebase.google.com/ and paste it here. You can also use the default options below.
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-  if (isAdmobAvailable) {
-    await MobileAds.instance.initialize();
-  }
 
   FirebaseMessaging.onBackgroundMessage(_handleBackgroundNotification);
 
@@ -160,7 +160,7 @@ class _LandingWidgetState extends ConsumerState<LandingWidget> {
     return authState.when(
       data: (data) {
         if (data != null) {
-          return const BottomNavBarPage();
+          return BottomNavBarPage(userId: data.uid);
         } else {
           return const LoginPage();
         }

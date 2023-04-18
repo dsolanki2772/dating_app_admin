@@ -19,6 +19,7 @@ final getFeedsProvider = FutureProvider<List<FeedModel>>((ref) async {
   final List<String> feedsUserIds = [currentUserId];
 
   machingProvider.whenData((matches) {
+    matches.removeWhere((element) => element.isMatched == false);
     otherUsersRef.whenData((otherUsers) {
       final List<String> matchUserIds = [];
       for (var match in matches) {

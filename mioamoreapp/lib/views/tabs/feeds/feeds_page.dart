@@ -16,6 +16,7 @@ import 'package:mioamoreapp/views/ads/banner_ads.dart';
 import 'package:mioamoreapp/views/custom/custom_app_bar.dart';
 import 'package:mioamoreapp/views/custom/custom_headline.dart';
 import 'package:mioamoreapp/views/custom/lottie/no_item_found_widget.dart';
+import 'package:mioamoreapp/views/custom/subscription_builder.dart';
 import 'package:mioamoreapp/views/others/photo_view_page.dart';
 import 'package:mioamoreapp/views/tabs/feeds/edit_feed_page.dart';
 import 'package:mioamoreapp/views/tabs/feeds/feed_post_page.dart';
@@ -54,7 +55,11 @@ class FeedsPage extends ConsumerWidget {
           ),
           const SizedBox(height: AppConstants.defaultNumericValue),
           const Expanded(child: FeedsBody()),
-          const MyBannerAd()
+          SubscriptionBuilder(
+            builder: (context, isPremiumUser) {
+              return isPremiumUser ? const SizedBox() : const MyBannerAd();
+            },
+          ),
         ],
       ),
     );
@@ -121,47 +126,48 @@ class CreateNewPostSection extends ConsumerWidget {
     final currentUserProfile = ref.watch(userProfileFutureProvider);
 
     return currentUserProfile.when(
-        data: (data) {
-          return data == null
-              ? const SizedBox()
-              : Padding(
-                  padding: const EdgeInsets.only(
-                      top: 0, bottom: 8, left: 16, right: 16),
-                  child: Row(
-                    children: [
-                      UserCirlePicture(
-                          imageUrl: data.profilePicture,
-                          size: AppConstants.defaultNumericValue * 2.5),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              CupertinoPageRoute(
-                                  builder: (context) => const FeedPostPage()),
-                            );
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                  width: 1,
-                                  color: Colors.black.withOpacity(0.87)),
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            child: Text("Share your thoughts",
-                                style: Theme.of(context).textTheme.subtitle2),
+      data: (data) {
+        return data == null
+            ? const SizedBox()
+            : Padding(
+                padding: const EdgeInsets.only(
+                    top: 0, bottom: 8, left: 16, right: 16),
+                child: Row(
+                  children: [
+                    UserCirlePicture(
+                        imageUrl: data.profilePicture,
+                        size: AppConstants.defaultNumericValue * 2.5),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                                builder: (context) => const FeedPostPage()),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                width: 1,
+                                color: Colors.black.withOpacity(0.87)),
+                            borderRadius: BorderRadius.circular(50),
                           ),
+                          child: Text("Share your thoughts",
+                              style: Theme.of(context).textTheme.titleSmall),
                         ),
                       ),
-                    ],
-                  ),
-                );
-        },
-        error: (_, __) => const SizedBox(),
-        loading: () => const SizedBox());
+                    ),
+                  ],
+                ),
+              );
+      },
+      error: (_, __) => const SizedBox(),
+      loading: () => const SizedBox(),
+    );
   }
 }
 
@@ -208,13 +214,13 @@ class _SingleFeedPostState extends ConsumerState<SingleFeedPost> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(widget.user.fullName,
-                          style: Theme.of(context).textTheme.subtitle1),
+                          style: Theme.of(context).textTheme.titleMedium),
                       Text(
                         DateFormatter.toWholeDateTime(widget.feed.createdAt),
                         textAlign: TextAlign.end,
                         style: Theme.of(context)
                             .textTheme
-                            .caption!
+                            .bodySmall!
                             .copyWith(fontSize: 10),
                       ),
                     ],
@@ -359,7 +365,7 @@ class _PostTextState extends State<PostText> {
         overflow: TextOverflow.ellipsis,
         style: Theme.of(context)
             .textTheme
-            .bodyText2!
+            .bodyMedium!
             .copyWith(fontSize: 16, color: Colors.black.withOpacity(0.87)),
       ),
     );
@@ -527,7 +533,7 @@ class PostSingleImage extends StatelessWidget {
                     moreNumberOfImages!,
                     style: Theme.of(context)
                         .textTheme
-                        .headline6!
+                        .titleLarge!
                         .copyWith(color: Colors.white),
                   ),
                 ),

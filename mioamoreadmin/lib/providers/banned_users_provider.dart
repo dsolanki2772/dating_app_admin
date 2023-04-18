@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreadmin/helpers/firebase_constants.dart';
 import 'package:mioamoreadmin/models/banned_user_model.dart';
@@ -16,7 +17,7 @@ final bannedUsersProvider = FutureProvider<List<BannedUserModel>>((ref) async {
 
     return bannedUsers;
   } catch (e) {
-    print(e);
+    debugPrint(e.toString());
     return [];
   }
 });
@@ -32,7 +33,7 @@ class BanUserProvider {
           .set(bannedUser.toMap());
       return true;
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return false;
     }
   }
@@ -48,7 +49,7 @@ class BanUserProvider {
           .update(bannedUser.toMap());
       return true;
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return false;
     }
   }
@@ -61,7 +62,7 @@ class BanUserProvider {
       await bannedUsersCollection.doc(userId).delete();
       return true;
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return false;
     }
   }

@@ -112,7 +112,7 @@ class _CreateNewAdminPopupState extends ConsumerState<CreateNewAdminPopup> {
           children: [
             TextFormBox(
               controller: _nameController,
-              header: "Name",
+              // header: "Name",
               placeholder: 'Enter name',
               validator: (value) {
                 if (value!.isEmpty) {
@@ -124,7 +124,7 @@ class _CreateNewAdminPopupState extends ConsumerState<CreateNewAdminPopup> {
             const SizedBox(height: 16),
             TextFormBox(
               controller: _emailController,
-              header: "Email",
+              // header: "Email",
               placeholder: 'Enter email',
               validator: (value) {
                 if (value!.isEmpty) {
@@ -138,7 +138,7 @@ class _CreateNewAdminPopupState extends ConsumerState<CreateNewAdminPopup> {
             const SizedBox(height: 16),
             TextFormBox(
               controller: _passwordController,
-              header: "Password",
+              // header: "Password",
               obscureText: true,
               placeholder: 'Enter password',
               validator: (value) {
@@ -153,7 +153,7 @@ class _CreateNewAdminPopupState extends ConsumerState<CreateNewAdminPopup> {
             const SizedBox(height: 16),
             TextFormBox(
               controller: _confirmPasswordController,
-              header: "Confirm Password",
+              // header: "Confirm Password",
               obscureText: true,
               placeholder: 'Confirm password',
               validator: (value) {

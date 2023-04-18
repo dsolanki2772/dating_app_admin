@@ -30,7 +30,7 @@ class NoItemFoundWidget extends StatelessWidget {
             child: Text(
               text!,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.subtitle2!.copyWith(
+              style: Theme.of(context).textTheme.titleSmall!.copyWith(
                 fontWeight: FontWeight.bold,
                 color: Theme.of(context).colorScheme.primary,
                 shadows: const [

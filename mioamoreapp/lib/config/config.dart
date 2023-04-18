@@ -59,13 +59,13 @@ class AppConfig {
   ///
 
   //!! Dislike Button Color
-  static const Color dislikeButtonColor = Color.fromARGB(255, 246, 40, 25);
+  static const Color dislikeButtonColor = Color.fromARGB(255, 195, 16, 4);
 
   //!! Super Like Button Color
-  static const Color superLikeButtonColor = Color.fromARGB(255, 40, 205, 251);
+  static const Color superLikeButtonColor = Color.fromARGB(255, 3, 160, 204);
 
   //!! Like Button Color
-  static const Color likeButtonColor = Color.fromARGB(255, 120, 243, 124);
+  static const Color likeButtonColor = Color.fromARGB(255, 3, 223, 10);
 
   //!! Show Interaction Button Text
   static const bool showInteractionButtonText = true;
@@ -209,7 +209,7 @@ const String locationApiKey = "Location API Key";
 ///
 
 //! Enable Admob Ads or not. If you don't want ads, set this to false. If you want ads, set this to true and set the ad ids below.
-const bool isAdmobAvailable = true;
+const bool isAdmobAvailable = false;
 
 class AndroidAdUnits {
   AndroidAdUnits._();
@@ -241,4 +241,24 @@ class IOSAdUnits {
 
   //! Admob iOS Rewarded Video Ad Id
   static const String rewardedVideoId = "admob_ios_rewarded_video_id";
+}
+
+///
+/// Subscription Settings
+/// !! You need to create a subscription plan in your app store and play store then create the api keys in revenue cat and paste them here.
+
+class SubscriptionConstants {
+  SubscriptionConstants._();
+
+  // Revenue Cat Apple API Key
+  static const String appleApiKey =
+      ""; //!! Create this from revenue cat and paste here
+
+  // Revenue Cat Google API Key
+  static const String googleApiKey =
+      ""; //!! Create this from revenue cat and paste here
+
+  // Revenue Cat Entitlement Id
+  static const String entitlementId =
+      ""; //!! Create the entitlement id in revenue cat and paste here
 }

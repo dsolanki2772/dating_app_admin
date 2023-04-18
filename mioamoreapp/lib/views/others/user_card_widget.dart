@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -141,29 +140,46 @@ class _UserCardWidgetState extends State<UserCardWidget> {
                                   const SizedBox(
                                       height:
                                           AppConstants.defaultNumericValue / 4),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal:
-                                            AppConstants.defaultNumericValue /
-                                                1.3),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const Icon(Icons.location_on_outlined,
-                                            size: 16, color: Colors.white),
-                                        const SizedBox(
-                                            width: AppConstants
+                                  Wrap(
+                                    alignment: WrapAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: AppConstants
                                                     .defaultNumericValue /
-                                                4),
-                                        Text(
-                                          '${(Geolocator.distanceBetween(data.userAccountSettingsModel.location.latitude, data.userAccountSettingsModel.location.longitude, widget.user.userAccountSettingsModel.location.latitude, widget.user.userAccountSettingsModel.location.longitude) / 1000).toStringAsFixed(2)} km away',
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        )
-                                      ],
-                                    ),
+                                                1.2),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Icon(
+                                                Icons.location_on_outlined,
+                                                size: 16,
+                                                color: Colors.white),
+                                            const SizedBox(
+                                                width: AppConstants
+                                                        .defaultNumericValue /
+                                                    4),
+                                            Text(
+                                              '${(Geolocator.distanceBetween(data.userAccountSettingsModel.location.latitude, data.userAccountSettingsModel.location.longitude, widget.user.userAccountSettingsModel.location.latitude, widget.user.userAccountSettingsModel.location.longitude) / 1000).toStringAsFixed(2)} km away',
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: AppConstants
+                                                    .defaultNumericValue /
+                                                1.2),
+                                        child: InterestsSimilarityWidget(
+                                          otherUser: widget.user,
+                                          myProfile: data,
+                                        ),
+                                      )
+                                    ],
                                   ),
                                   const SizedBox(
                                       height: AppConstants.defaultNumericValue),
@@ -171,6 +187,7 @@ class _UserCardWidgetState extends State<UserCardWidget> {
                                     onTapCross: widget.onTapCross,
                                     onTapBolt: widget.onTapBolt,
                                     onTapHeart: widget.onTapHeart,
+                                    showShadow: true,
                                   ),
                                   const SizedBox(
                                       height: AppConstants.defaultNumericValue),
@@ -223,12 +240,15 @@ class _UserCardWidgetState extends State<UserCardWidget> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(
                             AppConstants.defaultNumericValue),
-                        child: CachedNetworkImage(
-                          imageUrl: e,
+                        child: Image.network(
+                          e,
                           fit: BoxFit.cover,
-                          placeholder: (context, url) => const Center(
-                              child: CircularProgressIndicator.adaptive()),
-                          errorWidget: (context, url, error) {
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return const Center(
+                                child: CircularProgressIndicator.adaptive());
+                          },
+                          errorBuilder: (context, error, stackTrace) {
                             return const Center(
                                 child: Icon(CupertinoIcons.photo));
                           },
@@ -273,19 +293,78 @@ class _UserCardWidgetState extends State<UserCardWidget> {
   }
 }
 
+class InterestsSimilarityWidget extends StatelessWidget {
+  final UserProfileModel otherUser;
+  final UserProfileModel myProfile;
+  final Color? color;
+  const InterestsSimilarityWidget({
+    super.key,
+    required this.otherUser,
+    required this.myProfile,
+    this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final myInterests = myProfile.interests;
+    final otherInterests = otherUser.interests;
+
+    double similarity = 0;
+    for (final interest in myInterests) {
+      if (otherInterests.contains(interest)) {
+        similarity++;
+      }
+    }
+
+    double percentage = (similarity / myInterests.length) * 100;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          Icons.join_inner,
+          size: 16,
+          color: color ?? Colors.white,
+        ),
+        const SizedBox(width: AppConstants.defaultNumericValue / 4),
+        Text(
+          '${percentage.toStringAsFixed(0)}% similarity',
+          style: TextStyle(
+            color: color ?? Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        )
+      ],
+    );
+  }
+}
+
 class UserLikeActions extends StatelessWidget {
   final VoidCallback onTapCross;
   final VoidCallback onTapBolt;
   final VoidCallback onTapHeart;
+  final bool showShadow;
   const UserLikeActions({
     Key? key,
     required this.onTapCross,
     required this.onTapBolt,
     required this.onTapHeart,
+    this.showShadow = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    List<BoxShadow> boxShadow = showShadow
+        ? const [
+            BoxShadow(
+              color: Colors.black45,
+              spreadRadius: 4,
+              blurRadius: 8,
+              offset: Offset(0, 2), // changes position of shadow
+            ),
+          ]
+        : [];
+
     return Padding(
       padding: const EdgeInsets.symmetric(
           horizontal: AppConstants.defaultNumericValue),
@@ -305,6 +384,7 @@ class UserLikeActions extends StatelessWidget {
                     borderRadius: BorderRadius.circular(100),
                     border: Border.all(
                         color: AppConfig.dislikeButtonColor, width: 2),
+                    boxShadow: boxShadow,
                   ),
                   child: const Icon(Icons.clear,
                       color: AppConfig.dislikeButtonColor),
@@ -313,7 +393,7 @@ class UserLikeActions extends StatelessWidget {
                   const SizedBox(height: AppConstants.defaultNumericValue / 3),
                 if (AppConfig.showInteractionButtonText)
                   Text(AppConfig.dislikeButtonText,
-                      style: Theme.of(context).textTheme.caption!.copyWith(
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
                           color: AppConfig.dislikeButtonColor,
                           fontWeight: FontWeight.bold)),
               ],
@@ -331,6 +411,7 @@ class UserLikeActions extends StatelessWidget {
                     borderRadius: BorderRadius.circular(100),
                     border: Border.all(
                         color: AppConfig.superLikeButtonColor, width: 2),
+                    boxShadow: boxShadow,
                   ),
                   child: const Icon(Icons.bolt,
                       color: AppConfig.superLikeButtonColor, size: 32),
@@ -339,7 +420,7 @@ class UserLikeActions extends StatelessWidget {
                   const SizedBox(height: AppConstants.defaultNumericValue / 3),
                 if (AppConfig.showInteractionButtonText)
                   Text(AppConfig.superLikeButtonText,
-                      style: Theme.of(context).textTheme.caption!.copyWith(
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
                           color: AppConfig.superLikeButtonColor,
                           fontWeight: FontWeight.bold)),
               ],
@@ -357,6 +438,7 @@ class UserLikeActions extends StatelessWidget {
                     borderRadius: BorderRadius.circular(100),
                     border:
                         Border.all(color: AppConfig.likeButtonColor, width: 2),
+                    boxShadow: boxShadow,
                   ),
                   child: const Icon(Icons.favorite,
                       color: AppConfig.likeButtonColor),
@@ -365,7 +447,7 @@ class UserLikeActions extends StatelessWidget {
                   const SizedBox(height: AppConstants.defaultNumericValue / 3),
                 if (AppConfig.showInteractionButtonText)
                   Text(AppConfig.likeButtonText,
-                      style: Theme.of(context).textTheme.caption!.copyWith(
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
                           color: AppConfig.likeButtonColor,
                           fontWeight: FontWeight.bold)),
               ],
@@ -398,7 +480,7 @@ class OnlineStatus extends StatelessWidget {
       ),
       child: Text(
         'Online',
-        style: Theme.of(context).textTheme.caption!.copyWith(
+        style: Theme.of(context).textTheme.bodySmall!.copyWith(
           color: Colors.white,
           fontWeight: FontWeight.bold,
           fontSize: 11,

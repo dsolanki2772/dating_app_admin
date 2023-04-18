@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:mioamoreapp/config/config.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/helpers/date_formater.dart';
 import 'package:mioamoreapp/helpers/encrypt_helper.dart';
@@ -18,6 +21,7 @@ import 'package:mioamoreapp/views/custom/custom_app_bar.dart';
 import 'package:mioamoreapp/views/custom/custom_headline.dart';
 import 'package:mioamoreapp/views/custom/custom_icon_button.dart';
 import 'package:mioamoreapp/views/custom/lottie/no_item_found_widget.dart';
+import 'package:mioamoreapp/views/custom/subscription_builder.dart';
 import 'package:mioamoreapp/views/others/error_page.dart';
 import 'package:mioamoreapp/views/others/loading_page.dart';
 import 'package:mioamoreapp/views/others/user_card_widget.dart';
@@ -37,7 +41,13 @@ class MessageConsumerPage extends ConsumerWidget {
 
         messages.addAll(getAllMessages(ref, data));
 
-        return MessagesPage(messages: messages);
+        // return MessagesPage(messages: messages);
+        return SubscriptionBuilder(
+          builder: (context, isPremiumUser) {
+            return MessagesPage(
+                messages: messages, isPremiumUser: isPremiumUser);
+          },
+        );
       },
       error: (_, __) => const ErrorPage(),
       loading: () => const LoadingPage(),
@@ -47,9 +57,11 @@ class MessageConsumerPage extends ConsumerWidget {
 
 class MessagesPage extends ConsumerStatefulWidget {
   final List<MessageViewModel> messages;
+  final bool isPremiumUser;
   const MessagesPage({
     Key? key,
     required this.messages,
+    required this.isPremiumUser,
   }) : super(key: key);
 
   @override
@@ -59,6 +71,30 @@ class MessagesPage extends ConsumerStatefulWidget {
 class _MessagesPageState extends ConsumerState<MessagesPage> {
   bool _isSearchBarVisible = false;
   final _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    if (!widget.isPremiumUser && isAdmobAvailable) {
+      InterstitialAd.load(
+        adUnitId: Platform.isAndroid
+            ? AndroidAdUnits.interstitialId
+            : IOSAdUnits.interstitialId,
+        request: const AdRequest(),
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (ad) async {
+            debugPrint('InterstitialAd loaded.');
+
+            await Future.delayed(const Duration(seconds: 4)).then((value) {
+              ad.show();
+            });
+          },
+          onAdFailedToLoad: (error) {},
+        ),
+      );
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final searchedMessages = widget.messages.where((element) {
@@ -167,7 +203,13 @@ class _MessagesPageState extends ConsumerState<MessagesPage> {
                           },
                         ),
                 ),
-                const MyBannerAd(),
+                SubscriptionBuilder(
+                  builder: (context, isPremiumUser) {
+                    return isPremiumUser
+                        ? const SizedBox()
+                        : const MyBannerAd();
+                  },
+                ),
               ],
             ),
           ),
@@ -206,7 +248,7 @@ class ConversationTile extends ConsumerWidget {
                 messageViewModel.matchedUser.fullName,
                 style: Theme.of(context)
                     .textTheme
-                    .subtitle1!
+                    .titleMedium!
                     .copyWith(fontWeight: FontWeight.bold),
               ),
               if (messageViewModel.unreadCount > 0)
@@ -214,11 +256,7 @@ class ConversationTile extends ConsumerWidget {
               if (messageViewModel.unreadCount > 0)
                 Badge(
                   backgroundColor: AppConstants.primaryColor,
-                  child: Text(
-                    messageViewModel.unreadCount.toString(),
-                    style: Theme.of(context).textTheme.caption!.copyWith(
-                        color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
+                  label: Text(messageViewModel.unreadCount.toString()),
                 ),
               if (messageViewModel.matchedUser.isOnline)
                 const SizedBox(width: AppConstants.defaultNumericValue / 2),
@@ -231,11 +269,11 @@ class ConversationTile extends ConsumerWidget {
             children: [
               Text(
                 DateFormatter.toTime(messageViewModel.lastMessageDate),
-                style: Theme.of(context).textTheme.caption!,
+                style: Theme.of(context).textTheme.bodySmall!,
               ),
               Text(
                 DateFormatter.toYearMonthDay2(messageViewModel.lastMessageDate),
-                style: Theme.of(context).textTheme.caption!,
+                style: Theme.of(context).textTheme.bodySmall!,
               ),
             ],
           ),

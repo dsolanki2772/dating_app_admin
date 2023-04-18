@@ -61,7 +61,7 @@ class _SelfiePageState extends State<SelfiePage> {
             children: [
               const SizedBox(height: 16),
               Text('Please take clear a selfie of your self',
-                  style: Theme.of(context).textTheme.bodyText1),
+                  style: Theme.of(context).textTheme.bodyLarge),
               const SizedBox(height: 32),
               GestureDetector(
                 onTap: _onTapPicker,

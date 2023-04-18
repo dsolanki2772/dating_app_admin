@@ -2,6 +2,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreadmin/config/config.dart';
+import 'package:mioamoreadmin/helpers/demo_constants.dart';
 import 'package:mioamoreadmin/helpers/email_verifier.dart';
 import 'package:mioamoreadmin/providers/admin_provider.dart';
 import 'package:mioamoreadmin/providers/auth_provider.dart';
@@ -19,12 +20,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final _passwordController = TextEditingController();
 
   bool _showPassword = false;
+
   @override
   Widget build(BuildContext context) {
     return NavigationView(
       content: Center(
         child: SizedBox(
-          width: 350,
+          width: 400,
           child: Card(
             borderRadius: BorderRadius.circular(8),
             padding: const EdgeInsets.all(24),
@@ -35,7 +37,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const SizedBox(height: 16),
+                  const LogoWiget(),
                   Text(
                     AppConstants.appName,
                     textAlign: TextAlign.center,
@@ -136,12 +138,84 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     child: const Text('Reset here'),
                   ),
                   const SizedBox(height: 16),
+                  if (DemoConstants.isDemo)
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Demo Email: ",
+                                style:
+                                    FluentTheme.of(context).typography.caption),
+                            Flexible(
+                              child: SelectableText(
+                                  "incevio.mioamore@gmail.com",
+                                  style: FluentTheme.of(context)
+                                      .typography
+                                      .body!
+                                      .copyWith(fontWeight: FontWeight.bold)),
+                            ),
+                            IconButton(
+                                icon: const Icon(FluentIcons.copy),
+                                onPressed: () {
+                                  _emailController.text =
+                                      "incevio.mioamore@gmail.com";
+                                })
+                          ],
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Demo Password: ",
+                                style:
+                                    FluentTheme.of(context).typography.caption),
+                            Flexible(
+                              child: SelectableText("mioamore",
+                                  style: FluentTheme.of(context)
+                                      .typography
+                                      .body!
+                                      .copyWith(fontWeight: FontWeight.bold)),
+                            ),
+                            IconButton(
+                                icon: const Icon(FluentIcons.copy),
+                                onPressed: () {
+                                  _passwordController.text = "mioamore";
+                                })
+                          ],
+                        ),
+                      ],
+                    ),
                 ],
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class LogoWiget extends StatelessWidget {
+  const LogoWiget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const SizedBox(height: 16),
+        Image.asset(
+          'assets/logo/logo.jpg',
+          width: 100,
+          height: 100,
+        ),
+        const SizedBox(height: 16),
+      ],
     );
   }
 }
@@ -168,7 +242,6 @@ class _ResetPasswordFormState extends ConsumerState<ResetPasswordForm> {
           padding: const EdgeInsets.symmetric(vertical: 16),
           child: TextFormBox(
             controller: _emailController,
-            header: "Email",
             placeholder: "Enter your email",
             validator: (value) {
               if (value!.isEmpty) {

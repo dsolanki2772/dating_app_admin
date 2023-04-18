@@ -11,6 +11,7 @@ import 'package:mioamoreapp/models/match_model.dart';
 import 'package:mioamoreapp/models/notification_model.dart';
 import 'package:mioamoreapp/models/user_interaction_model.dart';
 import 'package:mioamoreapp/models/user_profile_model.dart';
+import 'package:mioamoreapp/providers/app_settings_provider.dart';
 import 'package:mioamoreapp/providers/auth_providers.dart';
 import 'package:mioamoreapp/providers/block_user_provider.dart';
 import 'package:mioamoreapp/providers/interaction_provider.dart';
@@ -68,6 +69,7 @@ class UserDetailsPage extends ConsumerWidget {
       final MatchModel matchModel = MatchModel(
         id: currentUser.userId + otherUser.userId,
         userIds: [currentUser.userId, otherUser.userId],
+        isMatched: true,
       );
 
       await createConversation(matchModel).then((matchResult) async {
@@ -310,7 +312,7 @@ class UserDetailsPage extends ConsumerWidget {
   }
 }
 
-class DetailsBody extends StatefulWidget {
+class DetailsBody extends ConsumerStatefulWidget {
   const DetailsBody({
     Key? key,
     required this.user,
@@ -323,10 +325,10 @@ class DetailsBody extends StatefulWidget {
   final String? matchId;
 
   @override
-  State<DetailsBody> createState() => _DetailsBodyState();
+  ConsumerState<DetailsBody> createState() => _DetailsBodyState();
 }
 
-class _DetailsBodyState extends State<DetailsBody> {
+class _DetailsBodyState extends ConsumerState<DetailsBody> {
   final CustomPopupMenuController _moreMenuController =
       CustomPopupMenuController();
 
@@ -363,8 +365,36 @@ class _DetailsBodyState extends State<DetailsBody> {
         });
   }
 
+  void _onTapSendMessage() async {
+    final MatchModel matchModel = MatchModel(
+      id: widget.myUserId + widget.user.userId,
+      userIds: [widget.myUserId, widget.user.userId],
+      isMatched: false,
+    );
+
+    EasyLoading.show(status: "Creating conversation...");
+    await createConversation(matchModel).then((matchResult) async {
+      if (matchResult) {
+        EasyLoading.dismiss();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatPage(
+              matchId: matchModel.id,
+              otherUserId: widget.user.userId,
+            ),
+          ),
+        );
+      } else {
+        EasyLoading.showInfo("Something went wrong! Please try again later.");
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final appSettingsRef = ref.watch(appSettingsProvider);
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -461,7 +491,26 @@ class _DetailsBodyState extends State<DetailsBody> {
                                             _onTapUnmatch();
                                           },
                                         )
-                                      : const SizedBox(),
+                                      : widget.user.userAccountSettingsModel
+                                                  .allowAnonymousMessages ==
+                                              true
+                                          ? appSettingsRef.when(
+                                              data: (data) {
+                                                if (data?.isChattingEnabledBeforeMatch ==
+                                                    true) {
+                                                  return MoreMenuTitle(
+                                                    title: 'Send Message',
+                                                    onTap: _onTapSendMessage,
+                                                  );
+                                                } else {
+                                                  return const SizedBox();
+                                                }
+                                              },
+                                              error: (error, stackTrace) =>
+                                                  const SizedBox(),
+                                              loading: () => const SizedBox(),
+                                            )
+                                          : const SizedBox(),
                                   MoreMenuTitle(
                                     title: 'Report',
                                     onTap: () {
@@ -554,7 +603,7 @@ class _DetailsBodyState extends State<DetailsBody> {
                                     overflow: TextOverflow.ellipsis,
                                     style: Theme.of(context)
                                         .textTheme
-                                        .headline6!
+                                        .titleLarge!
                                         .copyWith(fontWeight: FontWeight.bold)),
                               ),
                               const SizedBox(
@@ -592,7 +641,7 @@ class _DetailsBodyState extends State<DetailsBody> {
                             "${DateTime.now().difference(widget.user.birthDay).inDays ~/ 365} Years",
                             style: Theme.of(context)
                                 .textTheme
-                                .subtitle2!
+                                .titleSmall!
                                 .copyWith(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold)),
@@ -612,56 +661,83 @@ class _DetailsBodyState extends State<DetailsBody> {
                     Icon(Icons.location_on, color: AppConstants.primaryColor),
                     const SizedBox(width: AppConstants.defaultNumericValue / 4),
                     Expanded(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (widget
-                                  .user.userAccountSettingsModel.showLocation !=
-                              false)
-                            Text(
-                              widget.user.userAccountSettingsModel.location
-                                  .addressText,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .subtitle2!
-                                  .copyWith(
-                                      color: AppConstants.primaryColor,
-                                      fontWeight: FontWeight.bold),
-                            ),
-                          Consumer(
-                            builder: (context, ref, child) {
-                              final myProfile =
-                                  ref.watch(userProfileFutureProvider);
-                              return myProfile.when(
-                                data: (data) {
-                                  if (data != null) {
-                                    return Text(
+                      child: Consumer(
+                        builder: (context, ref, child) {
+                          final myProfile =
+                              ref.watch(userProfileFutureProvider);
+                          return myProfile.when(
+                            data: (data) {
+                              return Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (widget.user.userAccountSettingsModel
+                                          .showLocation !=
+                                      false)
+                                    Text(
+                                      widget.user.userAccountSettingsModel
+                                          .location.addressText,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall!
+                                          .copyWith(
+                                              color: AppConstants.primaryColor,
+                                              fontWeight: FontWeight.bold),
+                                    ),
+                                  if (data != null)
+                                    Text(
                                       '${(Geolocator.distanceBetween(data.userAccountSettingsModel.location.latitude, data.userAccountSettingsModel.location.longitude, widget.user.userAccountSettingsModel.location.latitude, widget.user.userAccountSettingsModel.location.longitude) / 1000).toStringAsFixed(2)} km away',
                                       style: Theme.of(context)
                                           .textTheme
-                                          .caption!
+                                          .bodySmall!
                                           .copyWith(
                                               fontWeight: FontWeight.bold),
-                                    );
-                                  } else {
-                                    return const SizedBox();
-                                  }
-                                },
-                                error: (_, __) => const SizedBox(),
-                                loading: () => const SizedBox(),
+                                    )
+                                ],
                               );
                             },
-                          ),
-                        ],
+                            error: (_, __) => const SizedBox(),
+                            loading: () => const SizedBox(),
+                          );
+                        },
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
+              widget.user.userAccountSettingsModel.allowAnonymousMessages ==
+                      true
+                  ? appSettingsRef.when(
+                      data: (data) {
+                        if (data?.isChattingEnabledBeforeMatch == true) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppConstants.defaultNumericValue,
+                              vertical: AppConstants.defaultNumericValue / 4,
+                            ),
+                            child: Text(
+                              "Anonymous messages are allowed",
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall!
+                                  .copyWith(
+                                      color: Colors.green,
+                                      fontWeight: FontWeight.bold),
+                            ),
+                          );
+                        } else {
+                          return const SizedBox();
+                        }
+                      },
+                      error: (error, stackTrace) => const SizedBox(),
+                      loading: () => const SizedBox(),
+                    )
+                  : const SizedBox(),
               const Divider(),
+              const SizedBox(height: AppConstants.defaultNumericValue / 2),
               Padding(
                 padding: const EdgeInsets.symmetric(
                     horizontal: AppConstants.defaultNumericValue),
@@ -669,7 +745,7 @@ class _DetailsBodyState extends State<DetailsBody> {
                   "About",
                   style: Theme.of(context)
                       .textTheme
-                      .headline6!
+                      .titleLarge!
                       .copyWith(fontWeight: FontWeight.bold),
                 ),
               ),
@@ -682,19 +758,44 @@ class _DetailsBodyState extends State<DetailsBody> {
                         ? "Not Available"
                         : widget.user.about!),
               ),
-              const SizedBox(height: AppConstants.defaultNumericValue),
+              const SizedBox(height: AppConstants.defaultNumericValue * 2),
               Padding(
                 padding: const EdgeInsets.symmetric(
                     horizontal: AppConstants.defaultNumericValue),
-                child: Text(
-                  "Interests",
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline6!
-                      .copyWith(fontWeight: FontWeight.bold),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Interests",
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge!
+                          .copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final myProfile = ref.watch(userProfileFutureProvider);
+                        return myProfile.when(
+                          data: (data) {
+                            if (data != null) {
+                              return InterestsSimilarityWidget(
+                                otherUser: widget.user,
+                                myProfile: data,
+                                color: AppConstants.primaryColor,
+                              );
+                            } else {
+                              return const SizedBox();
+                            }
+                          },
+                          error: (_, __) => const SizedBox(),
+                          loading: () => const SizedBox(),
+                        );
+                      },
+                    )
+                  ],
                 ),
               ),
-              const SizedBox(height: AppConstants.defaultNumericValue / 2),
+              const SizedBox(height: AppConstants.defaultNumericValue),
               Padding(
                 padding: const EdgeInsets.symmetric(
                     horizontal: AppConstants.defaultNumericValue),
@@ -721,7 +822,7 @@ class _DetailsBodyState extends State<DetailsBody> {
                           );
                         }).toList()),
               ),
-              const SizedBox(height: AppConstants.defaultNumericValue),
+              const SizedBox(height: AppConstants.defaultNumericValue * 2),
               Padding(
                 padding: const EdgeInsets.symmetric(
                     horizontal: AppConstants.defaultNumericValue),
@@ -729,7 +830,7 @@ class _DetailsBodyState extends State<DetailsBody> {
                   "Photos",
                   style: Theme.of(context)
                       .textTheme
-                      .headline6!
+                      .titleLarge!
                       .copyWith(fontWeight: FontWeight.bold),
                 ),
               ),

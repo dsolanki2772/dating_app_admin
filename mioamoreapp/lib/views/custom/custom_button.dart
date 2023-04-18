@@ -21,7 +21,7 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final buttonTextStyle = Theme.of(context).textTheme.button!.copyWith(
+    final buttonTextStyle = Theme.of(context).textTheme.labelLarge!.copyWith(
           color: isWhite ? Colors.black : Colors.white,
         );
     return InkWell(

@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mioamoreapp/providers/account_delete_request_provider.dart';
 import 'package:mioamoreapp/providers/device_token_provider.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 
 final authStateProvider = StreamProvider<User?>((ref) {
   return FirebaseAuth.instance.authStateChanges().map((user) {
@@ -74,13 +75,8 @@ class AuthProvider {
             FacebookAuthProvider.credential(result.accessToken!.token);
         log('FB Credentials: $credential');
 
-        final userCred = await FirebaseAuth.instance
-            .signInWithCredential(credential)
-            .catchError(
-          (e) {
-            log('FB Error: $e');
-          },
-        );
+        final userCred =
+            await FirebaseAuth.instance.signInWithCredential(credential);
 
         log('FB User: ${userCred.user}');
         await _deviceTokenProvider.saveDeviceToken(userCred.user!.uid);
@@ -124,6 +120,7 @@ class AuthProvider {
   }
 
   Future<void> signOut() async {
+    Purchases.logOut();
     await _deviceTokenProvider.deleteDeviceToken();
     await GoogleSignIn().signOut();
     await FacebookAuth.instance.logOut();

@@ -103,34 +103,63 @@ class UserDetailsAccountSettingsCard extends StatelessWidget {
               style: FluentTheme.of(context).typography.subtitle,
             ),
             const SizedBox(height: 16),
-            TextBox(
-              readOnly: true,
-              header: 'Location',
-              maxLines: null,
-              initialValue:
-                  profile.userAccountSettingsModel.location.addressText,
+            // const TextBox(
+            //   readOnly: true,
+            //   // header: 'Location',
+            //   maxLines: null,
+            //   // initialValue:
+            //   // profile.userAccountSettingsModel.location.addressText,
+
+            // ),
+            ListTile.selectable(
+              title: const Text("Location"),
+              subtitle: Text(
+                profile.userAccountSettingsModel.location.addressText,
+              ),
+              selected: true,
             ),
-            const SizedBox(height: 16),
-            TextBox(
-              readOnly: true,
-              header: "Interested In",
-              initialValue:
-                  profile.userAccountSettingsModel.interestedIn ?? "All",
+            const SizedBox(height: 8),
+            // const TextBox(
+            //   readOnly: true,
+            //   // header: "Interested In",
+            //   // initialValue:
+            //   // profile.userAccountSettingsModel.interestedIn ?? "All",
+            // ),
+            ListTile.selectable(
+              title: const Text("Interested In"),
+              subtitle: Text(
+                profile.userAccountSettingsModel.interestedIn ?? "All",
+              ),
+              selected: true,
             ),
-            const SizedBox(height: 16),
-            TextBox(
-              readOnly: true,
-              header: "Age Range",
-              initialValue:
-                  "${profile.userAccountSettingsModel.minimumAge} - ${profile.userAccountSettingsModel.maximumAge}",
+            const SizedBox(height: 8),
+            // const TextBox(
+            //   readOnly: true,
+            //   // header: "Age Range",
+            //   // initialValue:
+            //   // "${profile.userAccountSettingsModel.minimumAge} - ${profile.userAccountSettingsModel.maximumAge}",
+            // ),
+            ListTile.selectable(
+              title: const Text("Age Range"),
+              subtitle: Text(
+                "${profile.userAccountSettingsModel.minimumAge} - ${profile.userAccountSettingsModel.maximumAge}",
+              ),
+              selected: true,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
             // Distance Range
-            TextBox(
-              readOnly: true,
-              header: "Distance Radius",
-              initialValue:
-                  "${profile.userAccountSettingsModel.distanceInKm ?? "Unknown"} km",
+            // const TextBox(
+            //   readOnly: true,
+            //   // header: "Distance Radius",
+            //   // initialValue:
+            //   // "${profile.userAccountSettingsModel.distanceInKm ?? "Unknown"} km",
+            // ),
+            ListTile.selectable(
+              title: const Text("Distance Radius"),
+              subtitle: Text(
+                "${profile.userAccountSettingsModel.distanceInKm ?? "Unknown"} km",
+              ),
+              selected: true,
             ),
           ],
         ),
@@ -217,35 +246,60 @@ class UserDetailsProfileCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            TextBox(
-              readOnly: true,
-              header: 'Full Name',
-              initialValue: profile.fullName,
+            // const TextBox(
+            //   readOnly: true,
+            //   // header: 'Full Name',
+            //   // initialValue: profile.fullName,
+            // ),
+            ListTile.selectable(
+              title: const Text("Full Name"),
+              subtitle: Text(profile.fullName),
+              selected: true,
             ),
             const SizedBox(height: 8),
-            TextBox(
-              readOnly: true,
-              header: 'Email',
-              initialValue: profile.email,
+            // const TextBox(
+            //   readOnly: true,
+            //   // header: 'Email',
+            //   // initialValue: profile.email,
+            // ),
+            ListTile.selectable(
+              title: const Text("Email"),
+              subtitle: Text(profile.email ?? "Unknown"),
+              selected: true,
             ),
             const SizedBox(height: 8),
-            TextBox(
-              readOnly: true,
-              header: 'Phone Number',
-              initialValue: profile.phoneNumber,
+            // const TextBox(
+            //   readOnly: true,
+            //   // header: 'Phone Number',
+            //   // initialValue: profile.phoneNumber,
+            // ),
+            ListTile.selectable(
+              title: const Text("Phone Number"),
+              subtitle: Text(profile.phoneNumber ?? "Unknown"),
+              selected: true,
             ),
             const SizedBox(height: 8),
-            TextBox(
-              readOnly: true,
-              maxLines: null,
-              header: 'About',
-              initialValue: profile.about,
+            // const TextBox(
+            //   readOnly: true,
+            //   maxLines: null,
+            //   // header: 'About',
+            //   // initialValue: profile.about,
+            // ),
+            ListTile.selectable(
+              title: const Text("About"),
+              subtitle: Text(profile.about ?? "Unknown"),
+              selected: true,
             ),
             const SizedBox(height: 8),
-            TextBox(
-              readOnly: true,
-              initialValue: profile.interests.join(', '),
-              header: 'Interests',
+            // const TextBox(
+            //   readOnly: true,
+            //   // initialValue: profile.interests.join(', '),
+            //   // header: 'Interests',
+            // ),
+            ListTile.selectable(
+              title: const Text("Interests"),
+              subtitle: Text(profile.interests.join(', ')),
+              selected: true,
             ),
             const SizedBox(height: 8),
             const Text("Images"),

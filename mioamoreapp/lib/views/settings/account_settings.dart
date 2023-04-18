@@ -5,6 +5,7 @@ import 'package:mioamoreapp/config/config.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/models/user_account_settings_model.dart';
 import 'package:mioamoreapp/models/user_profile_model.dart';
+import 'package:mioamoreapp/providers/app_settings_provider.dart';
 import 'package:mioamoreapp/providers/user_profile_provider.dart';
 import 'package:mioamoreapp/views/custom/custom_button.dart';
 import 'package:mioamoreapp/views/others/error_page.dart';
@@ -56,6 +57,8 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
   bool? _showAge;
   bool? _showLocation;
   bool? _showOnlineStatus;
+  bool? _showOnlyToPremiumUsers;
+  bool? _allowAnonymousMessages;
 
   @override
   void initState() {
@@ -74,11 +77,19 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
     _showLocation = widget.user.userAccountSettingsModel.showLocation;
     _showOnlineStatus = widget.user.userAccountSettingsModel.showOnlineStatus;
 
+    _showOnlyToPremiumUsers =
+        widget.user.userAccountSettingsModel.showOnlyToPremiumUsers;
+
+    _allowAnonymousMessages =
+        widget.user.userAccountSettingsModel.allowAnonymousMessages;
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final appSettingsRef = ref.watch(appSettingsProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Account Settings'),
@@ -93,14 +104,14 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
               'Location',
               style: Theme.of(context)
                   .textTheme
-                  .headline6!
+                  .titleLarge!
                   .copyWith(fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: AppConstants.defaultNumericValue / 2),
             Text(
                 'This is your location. Other users will be able to see you if they are within this range.',
-                style: Theme.of(context).textTheme.caption),
+                style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: AppConstants.defaultNumericValue),
             GestureDetector(
               onTap: () async {
@@ -155,7 +166,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                     'Radius',
                     style: Theme.of(context)
                         .textTheme
-                        .headline6!
+                        .titleLarge!
                         .copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -163,7 +174,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                 if (!_isWorldWide)
                   Text(
                     '${_distanceInKm.toInt()} km',
-                    style: Theme.of(context).textTheme.headline6!.copyWith(
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
                         fontWeight: FontWeight.bold,
                         color: AppConstants.primaryColor),
                   ),
@@ -171,7 +182,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
             ),
             const SizedBox(height: AppConstants.defaultNumericValue / 2),
             Text('This radius is used to find other users within this range.',
-                style: Theme.of(context).textTheme.caption),
+                style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: AppConstants.defaultNumericValue),
             if (!_isWorldWide)
               Slider(
@@ -217,11 +228,11 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
             Text("Interested In",
                 style: Theme.of(context)
                     .textTheme
-                    .headline6!
+                    .titleLarge!
                     .copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: AppConstants.defaultNumericValue / 2),
             Text('This is the type of people you are interested in.',
-                style: Theme.of(context).textTheme.caption),
+                style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: AppConstants.defaultNumericValue),
             Wrap(
               alignment: WrapAlignment.center,
@@ -276,13 +287,13 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                   child: Text("Age Range",
                       style: Theme.of(context)
                           .textTheme
-                          .headline6!
+                          .titleLarge!
                           .copyWith(fontWeight: FontWeight.bold)),
                 ),
                 const SizedBox(width: AppConstants.defaultNumericValue),
                 Text(
                   '${_minimumAge.toInt()} - ${_maximumAge.toInt()}',
-                  style: Theme.of(context).textTheme.headline6!.copyWith(
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
                       fontWeight: FontWeight.bold,
                       color: AppConstants.primaryColor),
                 ),
@@ -290,7 +301,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
             ),
             const SizedBox(height: AppConstants.defaultNumericValue / 2),
             Text('This is the age range you are interested in.',
-                style: Theme.of(context).textTheme.caption),
+                style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: AppConstants.defaultNumericValue),
             RangeSlider(
               values:
@@ -311,7 +322,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                 Text("Show Age",
                     style: Theme.of(context)
                         .textTheme
-                        .headline6!
+                        .titleLarge!
                         .copyWith(fontWeight: FontWeight.bold)),
                 Switch.adaptive(
                   value: _showAge ?? true,
@@ -324,7 +335,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
               ],
             ),
             Text('If not enabled, your age will be hidden from others.',
-                style: Theme.of(context).textTheme.caption),
+                style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: AppConstants.defaultNumericValue * 2),
 
             Row(
@@ -333,7 +344,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                 Text("Show Location",
                     style: Theme.of(context)
                         .textTheme
-                        .headline6!
+                        .titleLarge!
                         .copyWith(fontWeight: FontWeight.bold)),
                 Switch.adaptive(
                   value: _showLocation ?? true,
@@ -346,7 +357,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
               ],
             ),
             Text('If not enabled, your location will be hidden from others.',
-                style: Theme.of(context).textTheme.caption),
+                style: Theme.of(context).textTheme.bodySmall),
 
             const SizedBox(height: AppConstants.defaultNumericValue * 2),
 
@@ -356,7 +367,7 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                 Text("Show Online Status",
                     style: Theme.of(context)
                         .textTheme
-                        .headline6!
+                        .titleLarge!
                         .copyWith(fontWeight: FontWeight.bold)),
                 Switch.adaptive(
                   value: _showOnlineStatus ?? true,
@@ -370,7 +381,71 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
             ),
             Text(
                 'If not enabled, your online status will be hidden from others.',
-                style: Theme.of(context).textTheme.caption),
+                style: Theme.of(context).textTheme.bodySmall),
+
+            const SizedBox(height: AppConstants.defaultNumericValue * 2),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Show only to Premium Users",
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge!
+                        .copyWith(fontWeight: FontWeight.bold)),
+                Switch.adaptive(
+                  value: _showOnlyToPremiumUsers ?? false,
+                  onChanged: (value) {
+                    setState(() {
+                      _showOnlyToPremiumUsers = value;
+                    });
+                  },
+                ),
+              ],
+            ),
+            Text(
+                'If enabled, your profile will be visible only to premium users.',
+                style: Theme.of(context).textTheme.bodySmall),
+
+            appSettingsRef.when(
+              data: (data) {
+                bool isAnonymousMessagesEnabled =
+                    data?.isChattingEnabledBeforeMatch ?? false;
+                if (isAnonymousMessagesEnabled) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(
+                          height: AppConstants.defaultNumericValue * 2),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Allow anonymous messages",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge!
+                                  .copyWith(fontWeight: FontWeight.bold)),
+                          Switch.adaptive(
+                            value: _allowAnonymousMessages ?? false,
+                            onChanged: (value) {
+                              setState(() {
+                                _allowAnonymousMessages = value;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                      Text(
+                          'If enabled, any user can send you messages without revealing their identity.',
+                          style: Theme.of(context).textTheme.bodySmall),
+                    ],
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
+              },
+              error: (error, stackTrace) => const SizedBox.shrink(),
+              loading: () => const SizedBox.shrink(),
+            ),
 
             const SizedBox(height: AppConstants.defaultNumericValue * 2),
           ],
@@ -392,6 +467,8 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                 showAge: _showAge,
                 showLocation: _showLocation,
                 showOnlineStatus: _showOnlineStatus,
+                showOnlyToPremiumUsers: _showOnlyToPremiumUsers,
+                allowAnonymousMessages: _allowAnonymousMessages,
               );
 
               final userProfileModel = widget.user.copyWith(
@@ -456,7 +533,7 @@ class _GenderButton extends StatelessWidget {
         ),
         child: Text(
           text,
-          style: Theme.of(context).textTheme.bodyText1!.copyWith(
+          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                 color: isSelected ? Colors.white : Colors.black,
               ),
         ),

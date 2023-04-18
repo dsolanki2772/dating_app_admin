@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -5,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:mioamoreapp/config/config.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
+import 'package:mioamoreapp/helpers/media_picker_helper.dart';
 import 'package:mioamoreapp/models/user_account_settings_model.dart';
 import 'package:mioamoreapp/models/user_profile_model.dart';
 import 'package:mioamoreapp/providers/auth_providers.dart';
@@ -40,6 +43,8 @@ class _FirstTimeUserProfilePageState
 
   final List<String> _interests = [];
 
+  String? _profilePicture;
+
   @override
   void initState() {
     _pageController.addListener(() {
@@ -72,6 +77,7 @@ class _FirstTimeUserProfilePageState
       phoneNumber: ref.watch(currentUserStateProvider)!.phoneNumber,
       userAccountSettingsModel: userAccountSettingsModel,
       isVerified: false,
+      profilePicture: _profilePicture,
     );
     final result =
         await ref.read(userProfileNotifier).createUserProfile(userProfileModel);
@@ -117,9 +123,10 @@ class _FirstTimeUserProfilePageState
                           "Sure",
                           style: TextStyle(color: Colors.red),
                         ),
-                        onPressed: () {
+                        onPressed: () async {
                           Navigator.of(context).pop();
-                          ref.read(authProvider).signOut();
+
+                          await ref.read(authProvider).signOut();
                         },
                       ),
                     ],
@@ -151,60 +158,148 @@ class _FirstTimeUserProfilePageState
                   controller: _pageController,
                   physics: const NeverScrollableScrollPhysics(),
                   children: [
-                    UserDetailsTakingScreen(
-                      nameController: _fullNameController,
-                      onGenderSelected: (gender) {
-                        setState(() {
-                          _gender = gender;
-                        });
-                      },
-                      gender: _gender,
-                      birthday: _birthday,
-                      onBirthdaySelected: (birthday) {
-                        setState(() {
-                          _birthday = birthday;
-                        });
-                      },
-                      birthdayController: _birthdayController,
-                      selectedInterests: _interests,
-                      onSelectInterest: (notSelected, interest) {
-                        setState(() {
-                          if (notSelected) {
-                            if (_interests.length >=
-                                AppConfig.maxNumOfInterests) {
-                              EasyLoading.showToast(
-                                  "You can only select ${AppConfig.maxNumOfInterests} interests",
-                                  toastPosition:
-                                      EasyLoadingToastPosition.bottom);
-                            } else {
-                              _interests.add(interest);
-                            }
-                          } else {
-                            _interests.remove(interest);
-                          }
-                        });
-                      },
-                      onNext: () {
-                        if (_formKey.currentState!.validate()) {
-                          if (_gender != null) {
-                            if (_interests.isNotEmpty) {
-                              _pageController.nextPage(
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut,
-                              );
-                            } else {
-                              EasyLoading.showToast(
-                                  "Please select at least one interest",
-                                  toastPosition:
-                                      EasyLoadingToastPosition.bottom);
-                            }
-                          } else {
-                            EasyLoading.showToast(
-                                "Please select your your gender",
-                                toastPosition: EasyLoadingToastPosition.bottom);
-                          }
-                        }
-                      },
+                    SingleChildScrollView(
+                      padding: const EdgeInsets.all(
+                          AppConstants.defaultNumericValue * 2),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: AppConstants.defaultNumericValue),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Welcome to ${AppConfig.appName}",
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall!
+                                      .copyWith(
+                                          color: AppConstants.primaryColor,
+                                          fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(
+                                    height:
+                                        AppConstants.defaultNumericValue / 2),
+                                Text("Please fill in your details to continue.",
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall!)
+                              ],
+                            ),
+                          ),
+                          const SizedBox(
+                              height: AppConstants.defaultNumericValue * 2),
+                          GestureDetector(
+                            onTap: () async {
+                              final imagePath = await pickMedia();
+                              if (imagePath != null) {
+                                setState(() {
+                                  _profilePicture = imagePath;
+                                });
+                              }
+                            },
+                            child: Center(
+                              child: Container(
+                                height: AppConstants.defaultNumericValue * 7,
+                                width: AppConstants.defaultNumericValue * 7,
+                                decoration: _profilePicture != null
+                                    ? BoxDecoration(
+                                        color: Theme.of(context)
+                                            .scaffoldBackgroundColor,
+                                        borderRadius: BorderRadius.circular(
+                                            AppConstants.defaultNumericValue *
+                                                7),
+                                        image: DecorationImage(
+                                          image:
+                                              FileImage(File(_profilePicture!)),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : BoxDecoration(
+                                        color: Theme.of(context)
+                                            .scaffoldBackgroundColor,
+                                        borderRadius: BorderRadius.circular(
+                                            AppConstants.defaultNumericValue *
+                                                3.5),
+                                      ),
+                                child: _profilePicture == null
+                                    ? Center(
+                                        child: Icon(
+                                          CupertinoIcons.person_circle_fill,
+                                          color: AppConstants.primaryColor,
+                                          size:
+                                              AppConstants.defaultNumericValue *
+                                                  7,
+                                        ),
+                                      )
+                                    : null,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                              height: AppConstants.defaultNumericValue * 2),
+                          UserDetailsTakingScreen(
+                            nameController: _fullNameController,
+                            onGenderSelected: (gender) {
+                              setState(() {
+                                _gender = gender;
+                              });
+                            },
+                            gender: _gender,
+                            birthday: _birthday,
+                            onBirthdaySelected: (birthday) {
+                              setState(() {
+                                _birthday = birthday;
+                              });
+                            },
+                            birthdayController: _birthdayController,
+                            selectedInterests: _interests,
+                            onSelectInterest: (notSelected, interest) {
+                              setState(() {
+                                if (notSelected) {
+                                  if (_interests.length >=
+                                      AppConfig.maxNumOfInterests) {
+                                    EasyLoading.showToast(
+                                        "You can only select ${AppConfig.maxNumOfInterests} interests",
+                                        toastPosition:
+                                            EasyLoadingToastPosition.bottom);
+                                  } else {
+                                    _interests.add(interest);
+                                  }
+                                } else {
+                                  _interests.remove(interest);
+                                }
+                              });
+                            },
+                            onNext: () {
+                              if (_formKey.currentState!.validate()) {
+                                if (_gender != null) {
+                                  if (_interests.isNotEmpty) {
+                                    _pageController.nextPage(
+                                      duration:
+                                          const Duration(milliseconds: 500),
+                                      curve: Curves.easeInOut,
+                                    );
+                                  } else {
+                                    EasyLoading.showToast(
+                                        "Please select at least one interest",
+                                        toastPosition:
+                                            EasyLoadingToastPosition.bottom);
+                                  }
+                                } else {
+                                  EasyLoading.showToast(
+                                      "Please select your your gender",
+                                      toastPosition:
+                                          EasyLoadingToastPosition.bottom);
+                                }
+                              }
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                     _UserLocationScreen(
                       onLocationChanged: (location) {
@@ -266,105 +361,113 @@ class UserDetailsTakingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(AppConstants.defaultNumericValue * 2),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: AppConstants.defaultNumericValue),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  "Welcome to ${AppConfig.appName}",
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          "My name is",
+          style: Theme.of(context)
+              .textTheme
+              .headlineSmall!
+              .copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: AppConstants.defaultNumericValue),
+        TextFormField(
+          controller: nameController,
+          autofocus: true,
+          validator: (value) {
+            if (value!.isEmpty) {
+              return 'Please enter your name';
+            }
+            return null;
+          },
+          decoration: const InputDecoration(
+            label: Text('Name'),
+          ),
+        ),
+        const SizedBox(height: AppConstants.defaultNumericValue),
+        Text(
+          "Please enter your full name. You ${AppConfig.canChangeName ? "can" : "cannot"} change it later.",
+          style: Theme.of(context)
+              .textTheme
+              .bodySmall!
+              .copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: AppConstants.defaultNumericValue * 2),
+        Text(
+          "I am",
+          style: Theme.of(context)
+              .textTheme
+              .headlineSmall!
+              .copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: AppConstants.defaultNumericValue),
+        Wrap(
+          alignment: WrapAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: () {
+                onGenderSelected(AppConfig.maleText);
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  vertical: AppConstants.defaultNumericValue / 1.5,
+                  horizontal: AppConstants.defaultNumericValue,
+                ),
+                decoration: BoxDecoration(
+                  color: gender == AppConfig.maleText
+                      ? AppConstants.primaryColor.withOpacity(0.4)
+                      : null,
+                  border:
+                      Border.all(color: AppConstants.primaryColor, width: 2),
+                  borderRadius: BorderRadius.circular(
+                      AppConstants.defaultNumericValue * 2),
+                ),
+                child: Text(
+                  AppConfig.maleText.toUpperCase(),
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headline5!.copyWith(
-                      color: AppConstants.primaryColor,
-                      fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: AppConstants.defaultNumericValue / 2),
-                Text("Please fill in your details to continue.",
-                    style: Theme.of(context).textTheme.caption!)
-              ],
-            ),
-          ),
-          const SizedBox(height: AppConstants.defaultNumericValue * 3),
-          Text(
-            "My name is",
-            style: Theme.of(context)
-                .textTheme
-                .headline5!
-                .copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: AppConstants.defaultNumericValue),
-          TextFormField(
-            controller: nameController,
-            autofocus: true,
-            validator: (value) {
-              if (value!.isEmpty) {
-                return 'Please enter your name';
-              }
-              return null;
-            },
-            decoration: const InputDecoration(
-              label: Text('Name'),
-            ),
-          ),
-          const SizedBox(height: AppConstants.defaultNumericValue),
-          Text(
-            "Please enter your full name. You ${AppConfig.canChangeName ? "can" : "cannot"} change it later.",
-            style: Theme.of(context)
-                .textTheme
-                .caption!
-                .copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: AppConstants.defaultNumericValue * 2),
-          Text(
-            "I am",
-            style: Theme.of(context)
-                .textTheme
-                .headline5!
-                .copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: AppConstants.defaultNumericValue),
-          Wrap(
-            alignment: WrapAlignment.center,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  onGenderSelected(AppConfig.maleText);
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: AppConstants.defaultNumericValue / 1.5,
-                    horizontal: AppConstants.defaultNumericValue,
-                  ),
-                  decoration: BoxDecoration(
-                    color: gender == AppConfig.maleText
-                        ? AppConstants.primaryColor.withOpacity(0.4)
-                        : null,
-                    border:
-                        Border.all(color: AppConstants.primaryColor, width: 2),
-                    borderRadius: BorderRadius.circular(
-                        AppConstants.defaultNumericValue * 2),
-                  ),
-                  child: Text(
-                    AppConfig.maleText.toUpperCase(),
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyText1!
-                        .copyWith(fontWeight: FontWeight.bold),
-                  ),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge!
+                      .copyWith(fontWeight: FontWeight.bold),
                 ),
               ),
+            ),
+            const SizedBox(width: AppConstants.defaultNumericValue),
+            GestureDetector(
+              onTap: () {
+                onGenderSelected(AppConfig.femaleText);
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  vertical: AppConstants.defaultNumericValue / 1.5,
+                  horizontal: AppConstants.defaultNumericValue,
+                ),
+                decoration: BoxDecoration(
+                  color: gender == AppConfig.femaleText
+                      ? AppConstants.primaryColor.withOpacity(0.4)
+                      : null,
+                  border:
+                      Border.all(color: AppConstants.primaryColor, width: 2),
+                  borderRadius: BorderRadius.circular(
+                      AppConstants.defaultNumericValue * 2),
+                ),
+                child: Text(
+                  AppConfig.femaleText.toUpperCase(),
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge!
+                      .copyWith(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            if (AppConfig.allowTransGender)
               const SizedBox(width: AppConstants.defaultNumericValue),
+            if (AppConfig.allowTransGender)
               GestureDetector(
                 onTap: () {
-                  onGenderSelected(AppConfig.femaleText);
+                  onGenderSelected(AppConfig.transText);
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(
@@ -372,7 +475,7 @@ class UserDetailsTakingScreen extends StatelessWidget {
                     horizontal: AppConstants.defaultNumericValue,
                   ),
                   decoration: BoxDecoration(
-                    color: gender == AppConfig.femaleText
+                    color: gender == AppConfig.transText
                         ? AppConstants.primaryColor.withOpacity(0.4)
                         : null,
                     border:
@@ -381,156 +484,122 @@ class UserDetailsTakingScreen extends StatelessWidget {
                         AppConstants.defaultNumericValue * 2),
                   ),
                   child: Text(
-                    AppConfig.femaleText.toUpperCase(),
+                    AppConfig.transText.toUpperCase(),
                     textAlign: TextAlign.center,
                     style: Theme.of(context)
                         .textTheme
-                        .bodyText1!
+                        .bodyLarge!
                         .copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
-              if (AppConfig.allowTransGender)
-                const SizedBox(width: AppConstants.defaultNumericValue),
-              if (AppConfig.allowTransGender)
-                GestureDetector(
-                  onTap: () {
-                    onGenderSelected(AppConfig.transText);
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: AppConstants.defaultNumericValue / 1.5,
-                      horizontal: AppConstants.defaultNumericValue,
-                    ),
-                    decoration: BoxDecoration(
-                      color: gender == AppConfig.transText
-                          ? AppConstants.primaryColor.withOpacity(0.4)
-                          : null,
-                      border: Border.all(
-                          color: AppConstants.primaryColor, width: 2),
-                      borderRadius: BorderRadius.circular(
-                          AppConstants.defaultNumericValue * 2),
-                    ),
-                    child: Text(
-                      AppConfig.transText.toUpperCase(),
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyText1!
-                          .copyWith(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-            ],
+          ],
+        ),
+        const SizedBox(height: AppConstants.defaultNumericValue),
+        Text(
+          "Select your gender to get noticed!",
+          style: Theme.of(context)
+              .textTheme
+              .bodySmall!
+              .copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: AppConstants.defaultNumericValue * 2),
+        Text(
+          "My birthday is",
+          style: Theme.of(context)
+              .textTheme
+              .headlineSmall!
+              .copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: AppConstants.defaultNumericValue),
+        TextFormField(
+          controller: birthdayController,
+          autofocus: true,
+          readOnly: true,
+          textAlign: TextAlign.center,
+          style: Theme.of(context)
+              .textTheme
+              .bodyLarge!
+              .copyWith(fontWeight: FontWeight.bold),
+          decoration: const InputDecoration(
+            hintText: "MM/DD/YYYY",
+            // border: InputBorder.none,
           ),
-          const SizedBox(height: AppConstants.defaultNumericValue),
-          Text(
-            "Select your gender to get noticed!",
-            style: Theme.of(context)
-                .textTheme
-                .caption!
-                .copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: AppConstants.defaultNumericValue * 2),
-          Text(
-            "My birthday is",
-            style: Theme.of(context)
-                .textTheme
-                .headline5!
-                .copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: AppConstants.defaultNumericValue),
-          TextFormField(
-            controller: birthdayController,
-            autofocus: true,
-            readOnly: true,
-            textAlign: TextAlign.center,
-            style: Theme.of(context)
-                .textTheme
-                .bodyLarge!
-                .copyWith(fontWeight: FontWeight.bold),
-            decoration: const InputDecoration(
-              hintText: "MM/DD/YYYY",
-              // border: InputBorder.none,
-            ),
-            validator: (value) {
-              if (value!.isEmpty) {
-                return 'Please Select Your Birthday';
+          validator: (value) {
+            if (value!.isEmpty) {
+              return 'Please Select Your Birthday';
+            }
+            return null;
+          },
+          onTap: () {
+            const duration = Duration(days: 365 * AppConfig.minimumAgeRequired);
+            showDatePicker(
+                    context: context,
+                    firstDate: DateTime(1900),
+                    lastDate: DateTime.now().subtract(duration),
+                    initialDate: birthday ?? DateTime.now().subtract(duration))
+                .then((value) {
+              if (value != null) {
+                onBirthdaySelected(value);
+                birthdayController.text =
+                    DateFormat("MM/dd/yyyy").format(value);
               }
-              return null;
-            },
-            onTap: () {
-              const duration =
-                  Duration(days: 365 * AppConfig.minimumAgeRequired);
-              showDatePicker(
-                      context: context,
-                      firstDate: DateTime(1900),
-                      lastDate: DateTime.now().subtract(duration),
-                      initialDate:
-                          birthday ?? DateTime.now().subtract(duration))
-                  .then((value) {
-                if (value != null) {
-                  onBirthdaySelected(value);
-                  birthdayController.text =
-                      DateFormat("MM/dd/yyyy").format(value);
-                }
-              });
-            },
-          ),
-          const SizedBox(height: AppConstants.defaultNumericValue),
-          Text(
-            "You must be ${AppConfig.minimumAgeRequired} years old to use this app!\nYour age will be shown to other users.",
-            style: Theme.of(context)
-                .textTheme
-                .caption!
-                .copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: AppConstants.defaultNumericValue * 2),
-          Text(
-            "My Interests",
-            style: Theme.of(context)
-                .textTheme
-                .headline5!
-                .copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: AppConstants.defaultNumericValue),
-          Wrap(
-            spacing: AppConstants.defaultNumericValue / 2,
-            children: AppConfig.interests
-                .map(
-                  (interest) => ChoiceChip(
-                    label:
-                        Text(interest[0].toUpperCase() + interest.substring(1)),
-                    selected: selectedInterests.contains(interest),
-                    shape: selectedInterests.contains(interest)
-                        ? RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                AppConstants.defaultNumericValue * 2),
-                            side: BorderSide(
-                                color: AppConstants.primaryColor, width: 1),
-                          )
-                        : null,
-                    selectedColor: AppConstants.primaryColor.withOpacity(0.3),
-                    onSelected: (notSelected) {
-                      onSelectInterest(notSelected, interest);
-                    },
-                  ),
-                )
-                .toList(),
-          ),
-          const SizedBox(height: AppConstants.defaultNumericValue),
-          Text(
-            "Please select your interests to get noticed!\nYou can select ${AppConfig.maxNumOfInterests} interests at most.",
-            style: Theme.of(context)
-                .textTheme
-                .caption!
-                .copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: AppConstants.defaultNumericValue * 2),
-          CustomButton(onPressed: onNext, text: "Continue".toUpperCase()),
-          const SizedBox(height: AppConstants.defaultNumericValue * 2),
-        ],
-      ),
+            });
+          },
+        ),
+        const SizedBox(height: AppConstants.defaultNumericValue),
+        Text(
+          "You must be ${AppConfig.minimumAgeRequired} years old to use this app!\nYour age will be shown to other users.",
+          style: Theme.of(context)
+              .textTheme
+              .bodySmall!
+              .copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: AppConstants.defaultNumericValue * 2),
+        Text(
+          "My Interests",
+          style: Theme.of(context)
+              .textTheme
+              .headlineSmall!
+              .copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: AppConstants.defaultNumericValue),
+        Wrap(
+          spacing: AppConstants.defaultNumericValue / 2,
+          children: AppConfig.interests
+              .map(
+                (interest) => ChoiceChip(
+                  label:
+                      Text(interest[0].toUpperCase() + interest.substring(1)),
+                  selected: selectedInterests.contains(interest),
+                  shape: selectedInterests.contains(interest)
+                      ? RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                              AppConstants.defaultNumericValue * 2),
+                          side: BorderSide(
+                              color: AppConstants.primaryColor, width: 1),
+                        )
+                      : null,
+                  selectedColor: AppConstants.primaryColor.withOpacity(0.3),
+                  onSelected: (notSelected) {
+                    onSelectInterest(notSelected, interest);
+                  },
+                ),
+              )
+              .toList(),
+        ),
+        const SizedBox(height: AppConstants.defaultNumericValue),
+        Text(
+          "Please select your interests to get noticed!\nYou can select ${AppConfig.maxNumOfInterests} interests at most.",
+          style: Theme.of(context)
+              .textTheme
+              .bodySmall!
+              .copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: AppConstants.defaultNumericValue * 2),
+        CustomButton(onPressed: onNext, text: "Continue".toUpperCase()),
+        const SizedBox(height: AppConstants.defaultNumericValue * 2),
+      ],
     );
   }
 }
@@ -559,7 +628,7 @@ class _UserLocationScreen extends StatelessWidget {
             "My location is",
             style: Theme.of(context)
                 .textTheme
-                .headline5!
+                .headlineSmall!
                 .copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: AppConstants.defaultNumericValue),
@@ -619,7 +688,7 @@ class _UserLocationScreen extends StatelessWidget {
             "You must set your location to use this app!\nOther users need to know the distance between you and them to use the app.",
             style: Theme.of(context)
                 .textTheme
-                .caption!
+                .bodySmall!
                 .copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: AppConstants.defaultNumericValue * 2),

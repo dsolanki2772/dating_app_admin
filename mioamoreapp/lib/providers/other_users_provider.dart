@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mioamoreapp/config/config.dart';
@@ -7,6 +8,7 @@ import 'package:mioamoreapp/models/user_account_settings_model.dart';
 import 'package:mioamoreapp/models/user_profile_model.dart';
 import 'package:mioamoreapp/providers/auth_providers.dart';
 import 'package:mioamoreapp/providers/block_user_provider.dart';
+import 'package:mioamoreapp/providers/subscriptions/is_subscribed_provider.dart';
 import 'package:mioamoreapp/providers/user_profile_provider.dart';
 
 final filteredOtherUsersProvider =
@@ -20,6 +22,7 @@ final filteredOtherUsersProvider =
   });
 
   final myProfileProvider = ref.watch(userProfileFutureProvider);
+  final isPremiumUserRef = ref.watch(isPremiumUserProvider);
 
   List<UserProfileModel> filteredUserList = [];
 
@@ -72,6 +75,17 @@ final filteredOtherUsersProvider =
       }
     }
   });
+
+  bool isPremiumUser = false;
+  isPremiumUserRef.whenData((value) {
+    isPremiumUser = value;
+  });
+
+  if (!isPremiumUser) {
+    filteredUserList.removeWhere((element) {
+      return element.userAccountSettingsModel.showOnlyToPremiumUsers ?? false;
+    });
+  }
 
   return filteredUserList;
 });
@@ -162,20 +176,20 @@ Future<List<UserProfileModel>> getAllOtherUsers(String currentUserId) async {
   }).toList();
 
   if (!AppConfig.userProfileShowWithoutImages) {
-    print("Removing users without profile picture");
+    debugPrint("Removing users without profile picture");
     allOtherUsers.removeWhere((element) {
       bool isNotProfilePicture =
           element.profilePicture == null || element.profilePicture!.isEmpty;
       bool isOtherPicturesEmpty = element.mediaFiles.isEmpty;
 
-      print("isNotProfilePicture: $isNotProfilePicture");
-      print("isOtherOicturesEmpty: $isOtherPicturesEmpty");
+      debugPrint("isNotProfilePicture: $isNotProfilePicture");
+      debugPrint("isOtherOicturesEmpty: $isOtherPicturesEmpty");
 
       return isNotProfilePicture || isOtherPicturesEmpty;
     });
   }
 
-  print("allOtherUsers: ${allOtherUsers.length}");
+  debugPrint("allOtherUsers: ${allOtherUsers.length}");
 
   return allOtherUsers;
 }

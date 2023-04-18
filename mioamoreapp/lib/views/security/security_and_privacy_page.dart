@@ -72,7 +72,7 @@ class _SecurityAndPrivacyPageState
                   title: const Text('Verification Status'),
                   subtitle: Text(
                     widget.user.isVerified ? "Verified" : "Not Verified",
-                    style: Theme.of(context).textTheme.subtitle2!.copyWith(
+                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
                         fontWeight: FontWeight.bold,
                         color:
                             widget.user.isVerified ? Colors.green : Colors.red),
@@ -106,13 +106,13 @@ class _SecurityAndPrivacyPageState
                 children: [
                   Text(
                     'Danger Zone',
-                    style: Theme.of(context).textTheme.subtitle2!.copyWith(
+                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
                         color: Colors.red, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'Deleting your account will permanently delete all your data and you will not be able to recover it.\n\nHowever, You can reactivate your account by logging in again in 30 days of your account deletion request.',
-                    style: Theme.of(context).textTheme.caption!.copyWith(
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
                         color: Colors.red, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
@@ -163,7 +163,7 @@ class _SecurityAndPrivacyPageState
                                         await ref
                                             .read(authProvider)
                                             .signOut()
-                                            .then((value) {
+                                            .then((value) async {
                                           Navigator.pop(context);
                                           Navigator.pop(context);
                                           Navigator.pop(context);

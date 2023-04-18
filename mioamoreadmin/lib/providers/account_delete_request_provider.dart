@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreadmin/helpers/firebase_constants.dart';
@@ -61,7 +62,7 @@ class AccountDeleteRequestProvider {
       return true;
     } on Exception catch (e) {
       EasyLoading.dismiss();
-      print(e.toString());
+      debugPrint(e.toString());
       return false;
     }
   }

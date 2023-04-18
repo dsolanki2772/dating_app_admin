@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mioamoreapp/config/config.dart';
-
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/providers/auth_providers.dart';
 import 'package:mioamoreapp/providers/user_profile_provider.dart';
@@ -14,6 +13,7 @@ import 'package:mioamoreapp/views/company/faq_page.dart';
 import 'package:mioamoreapp/views/company/privacy_policy.dart';
 import 'package:mioamoreapp/views/company/terms_and_conditions.dart';
 import 'package:mioamoreapp/views/custom/custom_icon_button.dart';
+import 'package:mioamoreapp/views/custom/subscription_builder.dart';
 import 'package:mioamoreapp/views/security/security_and_privacy_page.dart';
 import 'package:mioamoreapp/views/settings/account_settings.dart';
 import 'package:mioamoreapp/views/tabs/profile/profile_page.dart';
@@ -99,6 +99,36 @@ class AppDrawer extends ConsumerWidget {
               child: Column(
                 children: [
                   const ProfileCompletenessAndGetVerifiedWidget(),
+                  SubscriptionBuilder(
+                    builder: (context, isPremiumUser) {
+                      if (isPremiumUser) {
+                        return const SizedBox();
+                      } else {
+                        return Card(
+                          elevation: 0,
+                          margin: const EdgeInsets.all(
+                              AppConstants.defaultNumericValue / 2),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: AppConstants.defaultNumericValue,
+                                vertical: AppConstants.defaultNumericValue / 2),
+                            leading: const Icon(
+                              CupertinoIcons.star_fill,
+                              color: Colors.amber,
+                            ),
+                            minLeadingWidth: 0,
+                            title: const Text('Upgrade to Premium'),
+                            subtitle: const Text(
+                                'Remove ads and get access to premium features'),
+                            onTap: () {
+                              SubscriptionBuilder.showSubscriptionBottomSheet(
+                                  context: context);
+                            },
+                          ),
+                        );
+                      }
+                    },
+                  ),
                   DrawerItem(
                     onPressed: () {
                       Navigator.push(
@@ -116,16 +146,7 @@ class AppDrawer extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: AppConstants.defaultNumericValue / 2),
-                  // DrawerItem(
-                  //   onPressed: () {},
-                  //   title: 'Notifications',
-                  //   leadingIcon: CupertinoIcons.bell_solid,
-                  //   trailing: const Icon(
-                  //     Icons.toggle_off,
-                  //     color: Colors.white70,
-                  //   ),
-                  // ),
-                  // const SizedBox(height: AppConstants.defaultNumericValue / 2),
+
                   DrawerItem(
                     onPressed: () {
                       Navigator.push(
