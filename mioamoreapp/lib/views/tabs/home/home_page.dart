@@ -76,10 +76,10 @@ class _HomePageState extends State<HomePage> {
         contents: [
           TargetContent(
             align: ContentAlign.bottom,
-            child: Column(
+            child: const Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
                   "Menu",
                   style: TextStyle(
@@ -109,10 +109,10 @@ class _HomePageState extends State<HomePage> {
         contents: [
           TargetContent(
             align: ContentAlign.bottom,
-            child: Column(
+            child: const Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
                   "Location",
                   style: TextStyle(
@@ -141,10 +141,10 @@ class _HomePageState extends State<HomePage> {
         contents: [
           TargetContent(
             align: ContentAlign.bottom,
-            child: Column(
+            child: const Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
                   "Notifications",
                   style: TextStyle(
@@ -173,10 +173,10 @@ class _HomePageState extends State<HomePage> {
         contents: [
           TargetContent(
             align: ContentAlign.bottom,
-            child: Column(
+            child: const Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
                   "Explore",
                   style: TextStyle(

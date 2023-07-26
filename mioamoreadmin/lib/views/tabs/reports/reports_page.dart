@@ -16,14 +16,14 @@ class ReportsPage extends ConsumerWidget {
     final allReportsRef = ref.watch(allReportsProvider);
 
     return NavigationView(
-      appBar: NavigationAppBar(
+      appBar: const NavigationAppBar(
         title: Row(
-          children: const [
+          children: [
             Text('Reports'),
             SizedBox(width: 16),
           ],
         ),
-        leading: const Icon(FluentIcons.list),
+        leading: Icon(FluentIcons.list),
       ),
       content: allReportsRef.when(
         data: (data) {

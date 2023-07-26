@@ -54,13 +54,13 @@ class _AppSettingsPageState extends ConsumerState<AppSettingsDialog> {
         ],
       ),
       actions: [
-        TextButton(
+        fluent.HyperlinkButton(
           onPressed: () {
             Navigator.of(context).pop();
           },
           child: const Text('Cancel'),
         ),
-        TextButton(
+        fluent.HyperlinkButton(
           onPressed: () async {
             AppSettingsModel appSettingsModel = AppSettingsModel(
               isChattingEnabledBeforeMatch: _isChattingEnabledBeforeMatch,

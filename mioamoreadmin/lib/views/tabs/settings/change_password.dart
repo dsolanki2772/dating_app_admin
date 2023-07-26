@@ -79,13 +79,13 @@ class _ChangePasswordState extends ConsumerState<ChangePasswordDialog> {
         ),
       ),
       actions: [
-        TextButton(
+        HyperlinkButton(
           onPressed: () {
             Navigator.of(context).pop();
           },
           child: const Text('Cancel'),
         ),
-        TextButton(
+        HyperlinkButton(
           onPressed: () async {
             if (_formKey.currentState!.validate()) {
               if (DemoConstants.isDemo) {

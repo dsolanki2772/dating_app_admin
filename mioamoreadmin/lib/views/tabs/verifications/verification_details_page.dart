@@ -107,13 +107,13 @@ class _VerificationDetailsPageState
                             content: const Text(
                                 "Are you sure you want to approve this verification?"),
                             actions: [
-                              TextButton(
+                              HyperlinkButton(
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
                                 child: const Text("Cancel"),
                               ),
-                              TextButton(
+                              HyperlinkButton(
                                 onPressed: () async {
                                   EasyLoading.show(status: 'Updating...');
                                   await VerificationProvider.updateForm(newForm)
@@ -166,13 +166,13 @@ class _VerificationDetailsPageState
                             content: const Text(
                                 "Are you sure you want to reject this verification?"),
                             actions: [
-                              TextButton(
+                              HyperlinkButton(
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
                                 child: const Text("Cancel"),
                               ),
-                              TextButton(
+                              HyperlinkButton(
                                 onPressed: () async {
                                   EasyLoading.show(status: 'Updating...');
                                   await VerificationProvider.updateForm(newForm)

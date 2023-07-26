@@ -80,13 +80,13 @@ class AccountDeleteRequestsPage extends ConsumerWidget {
                                   content: const Text(
                                       'Are you sure you want to delete this user?'),
                                   actions: [
-                                    TextButton(
+                                    HyperlinkButton(
                                       child: const Text('Cancel'),
                                       onPressed: () {
                                         Navigator.of(context).pop();
                                       },
                                     ),
-                                    TextButton(
+                                    HyperlinkButton(
                                       child: const Text('Delete'),
                                       onPressed: () async {
                                         await AccountDeleteRequestProvider
