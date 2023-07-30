@@ -15,13 +15,14 @@ class UserCardWidget extends StatefulWidget {
   final VoidCallback onTapCross;
   final VoidCallback onTapHeart;
   final VoidCallback onTapBolt;
-
+  final VoidCallback? onNavigateBack;
   const UserCardWidget({
     Key? key,
     required this.user,
     required this.onTapCross,
     required this.onTapHeart,
     required this.onTapBolt,
+    this.onNavigateBack,
   }) : super(key: key);
 
   @override
@@ -57,11 +58,15 @@ class _UserCardWidgetState extends State<UserCardWidget> {
             )
           : const SizedBox(),
       footer: GestureDetector(
-        onTap: () {
-          Navigator.push(
-              context,
-              CupertinoPageRoute(
-                  builder: (context) => UserDetailsPage(user: widget.user)));
+        onTap: () async {
+          await Navigator.push(
+            context,
+            CupertinoPageRoute(
+              builder: (context) => UserDetailsPage(user: widget.user),
+            ),
+          ).then((value) {
+            widget.onNavigateBack?.call();
+          });
         },
         child: ClipRRect(
           borderRadius: const BorderRadius.only(

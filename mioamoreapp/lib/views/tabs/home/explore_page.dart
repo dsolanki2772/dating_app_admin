@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,7 +17,11 @@ import 'package:mioamoreapp/views/custom/subscription_builder.dart';
 import 'package:mioamoreapp/views/others/user_image_card.dart';
 
 class ExplorePage extends ConsumerStatefulWidget {
-  const ExplorePage({super.key});
+  final int? index;
+  const ExplorePage({
+    super.key,
+    this.index,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _ExplorePageState();
@@ -118,6 +121,7 @@ class _ExplorePageState extends ConsumerState<ExplorePage> {
             child: SubscriptionBuilder(
               builder: (context, isPremiumUser) {
                 return ExploreUsersBody(
+                  index: widget.index,
                   query: _searchController.text,
                   isPremiumUser: isPremiumUser,
                 );
@@ -133,10 +137,12 @@ class _ExplorePageState extends ConsumerState<ExplorePage> {
 class ExploreUsersBody extends ConsumerStatefulWidget {
   final String? query;
   final bool isPremiumUser;
+  final int? index;
   const ExploreUsersBody({
     super.key,
     this.query,
     required this.isPremiumUser,
+    this.index,
   });
 
   @override
@@ -144,8 +150,10 @@ class ExploreUsersBody extends ConsumerStatefulWidget {
 }
 
 class _ExploreUsersBodyState extends ConsumerState<ExploreUsersBody> {
+  int? _index;
   @override
   void initState() {
+    _index = widget.index;
     if (!widget.isPremiumUser && isAdmobAvailable) {
       InterstitialAd.load(
         adUnitId: Platform.isAndroid
@@ -188,6 +196,7 @@ class _ExploreUsersBodyState extends ConsumerState<ExploreUsersBody> {
             }
 
             return DefaultTabController(
+              initialIndex: _index ?? 0,
               length: AppConfig.interests.length,
               child: Column(
                 children: [

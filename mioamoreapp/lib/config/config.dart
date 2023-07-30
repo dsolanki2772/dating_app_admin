@@ -264,3 +264,27 @@ class SubscriptionConstants {
   static const String entitlementId =
       ""; //!! Create the entitlement id in revenue cat and paste here
 }
+
+// Free and Premium User Limitations
+class FreeiumLimitation {
+  FreeiumLimitation._();
+
+  //!! Maximum number of likes a free user can send
+  static const int maxDailyLikeLimitFree = 10; // Make it 0 for unlimited
+
+  //!! Maximum number of super likes a free user can send
+  static const int maxDailySuperLikeLimitFree = 1; // Make it 0 for unlimited
+
+  //!! Maximum number of dislikes a free user can send
+  static const int maxDailyDislikeLimitFree = 5; // Make it 0 for unlimited
+
+  //!! Maximum number of likes a premium user can send
+  static const int maxDailyLikeLimitPremium = 100; // Make it 0 for unlimited
+
+  //!! Maximum number of super likes a premium user can send
+  static const int maxDailySuperLikeLimitPremium =
+      10; // Make it 0 for unlimited
+
+  //!! Maximum number of dislikes a premium user can send
+  static const int maxDailyDislikeLimitPremium = 50; // Make it 0 for unlimited
+}

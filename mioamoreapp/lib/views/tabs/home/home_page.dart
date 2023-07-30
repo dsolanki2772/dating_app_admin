@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -51,6 +50,8 @@ class _HomePageState extends State<HomePage> {
   final _exploreKey = GlobalKey();
 
   final List<TargetFocus> _targets = [];
+
+  bool _showLoading = false;
 
   @override
   void initState() {
@@ -335,37 +336,47 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Expanded(
-              child: Consumer(
-                builder: (context, ref, child) {
-                  final filteredUsers = ref.watch(filteredOtherUsersProvider);
+              child: _showLoading
+                  ? const Center(child: CircularProgressIndicator.adaptive())
+                  : Consumer(
+                      builder: (context, ref, child) {
+                        final filteredUsers =
+                            ref.watch(filteredOtherUsersProvider);
 
-                  return filteredUsers.when(
-                    data: (data) {
-                      debugPrint("Filtered Users: ${data.length}");
+                        return filteredUsers.when(
+                          data: (data) {
+                            debugPrint("Filtered Users: ${data.length}");
 
-                      return data.isEmpty
-                          ? const HomePageNoUsersFoundWidget()
-                          : SubscriptionBuilder(
-                              // children: [
-                              //   FilterInteraction(users: data),
-                              // ],
-                              builder: (context, isPremiumUser) {
-                                return FilterInteraction(
-                                  isPremiumUser: isPremiumUser,
-                                  users: data,
-                                );
-                              },
-                            );
-                    },
-                    error: (_, __) => const Center(
-                      child: Text("Something Went Wrong!"),
+                            return data.isEmpty
+                                ? const HomePageNoUsersFoundWidget()
+                                : SubscriptionBuilder(
+                                    builder: (context, isPremiumUser) {
+                                      return FilterInteraction(
+                                        isPremiumUser: isPremiumUser,
+                                        users: data,
+                                        onNavigateBack: () async {
+                                          setState(() {
+                                            _showLoading = true;
+                                          });
+                                          await Future.delayed(const Duration(
+                                              milliseconds: 500));
+                                          setState(() {
+                                            _showLoading = false;
+                                          });
+                                        },
+                                      );
+                                    },
+                                  );
+                          },
+                          error: (_, __) => const Center(
+                            child: Text("Something Went Wrong!"),
+                          ),
+                          loading: () => const Center(
+                            child: CircularProgressIndicator.adaptive(),
+                          ),
+                        );
+                      },
                     ),
-                    loading: () => const Center(
-                      child: CircularProgressIndicator.adaptive(),
-                    ),
-                  );
-                },
-              ),
             ),
           ],
         ),
@@ -430,11 +441,12 @@ class NotificationButton extends ConsumerWidget {
 class FilterInteraction extends ConsumerWidget {
   final bool isPremiumUser;
   final List<UserProfileModel> users;
-
+  final VoidCallback? onNavigateBack;
   const FilterInteraction({
     Key? key,
     required this.isPremiumUser,
     required this.users,
+    this.onNavigateBack,
   }) : super(key: key);
 
   @override
@@ -454,11 +466,20 @@ class FilterInteraction extends ConsumerWidget {
 
         debugPrint("Filtered Users: ${filteredUsers.length}");
 
+        // Freeium Limitations
+        final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day);
+
+        final interactionsToday =
+            data.where((element) => element.createdAt.isAfter(today)).toList();
+
         return filteredUsers.isEmpty
             ? const NoItemFoundWidget(text: "No users found")
             : HomeBody(
                 users: filteredUsers,
                 isPremiumUser: isPremiumUser,
+                interactionsToday: interactionsToday,
+                onNavigateBack: onNavigateBack,
               );
       },
       error: (_, __) => const Center(
@@ -473,11 +494,15 @@ class FilterInteraction extends ConsumerWidget {
 
 class HomeBody extends ConsumerStatefulWidget {
   final List<UserProfileModel> users;
+  final List<UserInteractionModel> interactionsToday;
   final bool isPremiumUser;
+  final VoidCallback? onNavigateBack;
   const HomeBody({
     Key? key,
     required this.isPremiumUser,
     required this.users,
+    required this.interactionsToday,
+    this.onNavigateBack,
   }) : super(key: key);
 
   @override
@@ -660,6 +685,59 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
 
   @override
   Widget build(BuildContext context) {
+    // Check limits
+
+    int totalLiked = widget.interactionsToday
+        .where((element) => element.isLike)
+        .toList()
+        .length;
+
+    int totalSuperLiked = widget.interactionsToday
+        .where((element) => element.isSuperLike)
+        .toList()
+        .length;
+
+    int totalDisliked = widget.interactionsToday
+        .where((element) => element.isDislike)
+        .toList()
+        .length;
+
+    bool canLike = true;
+    bool canSuperLike = true;
+    bool canDislike = true;
+
+    if (widget.isPremiumUser) {
+      if (FreeiumLimitation.maxDailyLikeLimitPremium != 0 &&
+          totalLiked >= FreeiumLimitation.maxDailyLikeLimitPremium) {
+        canLike = false;
+      }
+
+      if (FreeiumLimitation.maxDailySuperLikeLimitPremium != 0 &&
+          totalSuperLiked >= FreeiumLimitation.maxDailySuperLikeLimitPremium) {
+        canSuperLike = false;
+      }
+
+      if (FreeiumLimitation.maxDailyDislikeLimitPremium != 0 &&
+          totalDisliked >= FreeiumLimitation.maxDailyDislikeLimitPremium) {
+        canDislike = false;
+      }
+    } else {
+      if (FreeiumLimitation.maxDailyLikeLimitFree != 0 &&
+          totalLiked >= FreeiumLimitation.maxDailyLikeLimitFree) {
+        canLike = false;
+      }
+
+      if (FreeiumLimitation.maxDailySuperLikeLimitFree != 0 &&
+          totalSuperLiked >= FreeiumLimitation.maxDailySuperLikeLimitFree) {
+        canSuperLike = false;
+      }
+
+      if (FreeiumLimitation.maxDailyDislikeLimitFree != 0 &&
+          totalDisliked >= FreeiumLimitation.maxDailyDislikeLimitFree) {
+        canDislike = false;
+      }
+    }
+
     final currentUserProfile = ref.watch(userProfileFutureProvider);
 
     return currentUserProfile.when(
@@ -701,77 +779,109 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
                   );
 
                   return UserCardWidget(
+                    onNavigateBack: widget.onNavigateBack,
                     user: _swipeItems[index].content,
                     onTapBolt: () async {
-                      _matchEngine.currentItem?.superLike();
-                      final newInteraction = interaction.copyWith(
-                          isSuperLike: true, createdAt: DateTime.now());
+                      if (canSuperLike) {
+                        _matchEngine.currentItem?.superLike();
+                        final newInteraction = interaction.copyWith(
+                            isSuperLike: true, createdAt: DateTime.now());
 
-                      await createInteraction(newInteraction)
-                          .then((result) async {
-                        if (result) {
-                          await getExistingInteraction(user.id, myUserId)
-                              .then((otherUserInteraction) {
-                            if (otherUserInteraction != null) {
-                              showMatchingDialog(
-                                  context: context,
-                                  currentUser: data,
-                                  otherUser: user);
-                            } else {
-                              createInteractionNotification(
-                                  title: "You have a new Interaction!",
-                                  body: "${user.fullName} has super liked you!",
-                                  receiverId: user.id,
-                                  currentUser: data);
-                            }
-                          });
+                        await createInteraction(newInteraction)
+                            .then((result) async {
+                          if (result) {
+                            await getExistingInteraction(user.id, myUserId)
+                                .then((otherUserInteraction) {
+                              if (otherUserInteraction != null) {
+                                showMatchingDialog(
+                                    context: context,
+                                    currentUser: data,
+                                    otherUser: user);
+                              } else {
+                                createInteractionNotification(
+                                    title: "You have a new Interaction!",
+                                    body:
+                                        "${user.fullName} has super liked you!",
+                                    receiverId: user.id,
+                                    currentUser: data);
+                              }
+                            });
+                          }
+                        });
+
+                        if (_isInterstitialAdLoaded) {
+                          _interstitialAd?.show();
+                          _isInterstitialAdLoaded = false;
                         }
-                      });
-
-                      if (_isInterstitialAdLoaded) {
-                        _interstitialAd?.show();
-                        _isInterstitialAdLoaded = false;
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              "You have reached your daily super like limit",
+                            ),
+                          ),
+                        );
                       }
                     },
                     onTapCross: () async {
-                      _matchEngine.currentItem?.nope();
-                      final newInteraction = interaction.copyWith(
-                          isDislike: true, createdAt: DateTime.now());
-                      await createInteraction(newInteraction);
+                      if (canDislike) {
+                        _matchEngine.currentItem?.nope();
+                        final newInteraction = interaction.copyWith(
+                            isDislike: true, createdAt: DateTime.now());
+                        await createInteraction(newInteraction);
 
-                      if (_isInterstitialAdLoaded) {
-                        _interstitialAd?.show();
-                        _isInterstitialAdLoaded = false;
+                        if (_isInterstitialAdLoaded) {
+                          _interstitialAd?.show();
+                          _isInterstitialAdLoaded = false;
+                        }
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              "You have reached your daily dislike limit",
+                            ),
+                          ),
+                        );
                       }
                     },
                     onTapHeart: () async {
-                      _matchEngine.currentItem?.like();
-                      final newInteraction = interaction.copyWith(
-                          isLike: true, createdAt: DateTime.now());
-                      await createInteraction(newInteraction)
-                          .then((result) async {
-                        if (result) {
-                          await getExistingInteraction(user.id, myUserId)
-                              .then((otherUserInteraction) {
-                            if (otherUserInteraction != null) {
-                              showMatchingDialog(
-                                  context: context,
-                                  currentUser: data,
-                                  otherUser: user);
-                            } else {
-                              createInteractionNotification(
-                                  title: "You have a new Interaction!",
-                                  body: "${user.fullName} has liked you!",
-                                  receiverId: user.id,
-                                  currentUser: data);
-                            }
-                          });
-                        }
-                      });
+                      if (canLike) {
+                        _matchEngine.currentItem?.like();
+                        final newInteraction = interaction.copyWith(
+                            isLike: true, createdAt: DateTime.now());
+                        await createInteraction(newInteraction)
+                            .then((result) async {
+                          if (result) {
+                            await getExistingInteraction(user.id, myUserId)
+                                .then((otherUserInteraction) {
+                              if (otherUserInteraction != null) {
+                                showMatchingDialog(
+                                    context: context,
+                                    currentUser: data,
+                                    otherUser: user);
+                              } else {
+                                createInteractionNotification(
+                                    title: "You have a new Interaction!",
+                                    body: "${user.fullName} has liked you!",
+                                    receiverId: user.id,
+                                    currentUser: data);
+                              }
+                            });
+                          }
+                        });
 
-                      if (_isInterstitialAdLoaded) {
-                        _interstitialAd?.show();
-                        _isInterstitialAdLoaded = false;
+                        if (_isInterstitialAdLoaded) {
+                          _interstitialAd?.show();
+                          _isInterstitialAdLoaded = false;
+                        }
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              "You have reached your daily like limit",
+                            ),
+                          ),
+                        );
                       }
                     },
                   );
