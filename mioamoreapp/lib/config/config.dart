@@ -247,7 +247,7 @@ class IOSAdUnits {
 
 ///
 /// Subscription Settings
-/// !! You need to create a subscription plan in your app store and play store then create the api keys in revenue cat and paste them here.
+///!! You need to create a subscription plan in your app store and play store then create the api keys in revenue cat and paste them here.
 
 class SubscriptionConstants {
   SubscriptionConstants._();
@@ -266,8 +266,8 @@ class SubscriptionConstants {
 }
 
 // Free and Premium User Limitations
-class FreeiumLimitation {
-  FreeiumLimitation._();
+class FreemiumLimitation {
+  FreemiumLimitation._();
 
   //!! Maximum number of likes a free user can send
   static const int maxDailyLikeLimitFree = 10; // Make it 0 for unlimited

@@ -84,36 +84,40 @@ class _UserCardWidgetState extends State<UserCardWidget> {
                   const SizedBox(height: AppConstants.defaultNumericValue),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: AppConstants.defaultNumericValue),
-                        child: Text.rich(
-                          TextSpan(
-                            children: [
-                              TextSpan(
-                                text: '${widget.user.fullName} ',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 21,
-                                ),
-                              ),
-                              if (widget
-                                      .user.userAccountSettingsModel.showAge !=
-                                  false)
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: AppConstants.defaultNumericValue),
+                          child: Text.rich(
+                            TextSpan(
+                              children: [
                                 TextSpan(
-                                  text: (DateTime.now()
-                                              .difference(widget.user.birthDay)
-                                              .inDays ~/
-                                          365)
-                                      .toString(),
+                                  text: '${widget.user.fullName} ',
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
+                                    fontSize: 21,
                                   ),
                                 ),
-                            ],
+                                if (widget.user.userAccountSettingsModel
+                                        .showAge !=
+                                    false)
+                                  TextSpan(
+                                    text: (DateTime.now()
+                                                .difference(
+                                                    widget.user.birthDay)
+                                                .inDays ~/
+                                            365)
+                                        .toString(),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                              ],
+                            ),
                           ),
                         ),
                       ),

@@ -466,7 +466,7 @@ class FilterInteraction extends ConsumerWidget {
 
         debugPrint("Filtered Users: ${filteredUsers.length}");
 
-        // Freeium Limitations
+        // Freemium Limitations
         final now = DateTime.now();
         final today = DateTime(now.year, now.month, now.day);
 
@@ -707,33 +707,33 @@ class _HomeBodyState extends ConsumerState<HomeBody> {
     bool canDislike = true;
 
     if (widget.isPremiumUser) {
-      if (FreeiumLimitation.maxDailyLikeLimitPremium != 0 &&
-          totalLiked >= FreeiumLimitation.maxDailyLikeLimitPremium) {
+      if (FreemiumLimitation.maxDailyLikeLimitPremium != 0 &&
+          totalLiked >= FreemiumLimitation.maxDailyLikeLimitPremium) {
         canLike = false;
       }
 
-      if (FreeiumLimitation.maxDailySuperLikeLimitPremium != 0 &&
-          totalSuperLiked >= FreeiumLimitation.maxDailySuperLikeLimitPremium) {
+      if (FreemiumLimitation.maxDailySuperLikeLimitPremium != 0 &&
+          totalSuperLiked >= FreemiumLimitation.maxDailySuperLikeLimitPremium) {
         canSuperLike = false;
       }
 
-      if (FreeiumLimitation.maxDailyDislikeLimitPremium != 0 &&
-          totalDisliked >= FreeiumLimitation.maxDailyDislikeLimitPremium) {
+      if (FreemiumLimitation.maxDailyDislikeLimitPremium != 0 &&
+          totalDisliked >= FreemiumLimitation.maxDailyDislikeLimitPremium) {
         canDislike = false;
       }
     } else {
-      if (FreeiumLimitation.maxDailyLikeLimitFree != 0 &&
-          totalLiked >= FreeiumLimitation.maxDailyLikeLimitFree) {
+      if (FreemiumLimitation.maxDailyLikeLimitFree != 0 &&
+          totalLiked >= FreemiumLimitation.maxDailyLikeLimitFree) {
         canLike = false;
       }
 
-      if (FreeiumLimitation.maxDailySuperLikeLimitFree != 0 &&
-          totalSuperLiked >= FreeiumLimitation.maxDailySuperLikeLimitFree) {
+      if (FreemiumLimitation.maxDailySuperLikeLimitFree != 0 &&
+          totalSuperLiked >= FreemiumLimitation.maxDailySuperLikeLimitFree) {
         canSuperLike = false;
       }
 
-      if (FreeiumLimitation.maxDailyDislikeLimitFree != 0 &&
-          totalDisliked >= FreeiumLimitation.maxDailyDislikeLimitFree) {
+      if (FreemiumLimitation.maxDailyDislikeLimitFree != 0 &&
+          totalDisliked >= FreemiumLimitation.maxDailyDislikeLimitFree) {
         canDislike = false;
       }
     }
