@@ -209,6 +209,11 @@ const String locationApiKey = "AIzaSyDvkwrf9abC92F6SFdYEDmmYIgdvBrLi9o";
 ///
 
 //! Enable Admob Ads or not. If you don't want ads, set this to false. If you want ads, set this to true and set the ad ids below.
+
+// You must remove the configuration from the android manifest file if you don't want ads. Otherwise, the app will not compile.
+
+// You must remove the configuration from the info.plist file if you don't want ads. Otherwise, the app will not compile.
+
 const bool isAdmobAvailable = false;
 
 class AndroidAdUnits {
