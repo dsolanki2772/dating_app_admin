@@ -129,7 +129,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     textAlign: TextAlign.center,
                     style: FluentTheme.of(context).typography.body,
                   ),
-                  TextButton(
+                  HyperlinkButton(
                     onPressed: () {
                       showDialog(
                           context: context,
@@ -255,13 +255,13 @@ class _ResetPasswordFormState extends ConsumerState<ResetPasswordForm> {
         ),
       ),
       actions: [
-        TextButton(
+        HyperlinkButton(
           onPressed: () {
             Navigator.of(context).pop();
           },
           child: const Text('Cancel'),
         ),
-        TextButton(
+        HyperlinkButton(
           onPressed: () async {
             if (_formKey.currentState!.validate()) {
               await AuthProvider.forgotPassword(

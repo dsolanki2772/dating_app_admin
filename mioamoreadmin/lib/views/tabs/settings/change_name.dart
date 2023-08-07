@@ -48,13 +48,13 @@ class _ChangeNameDialogState extends ConsumerState<ChangeNameDialog> {
         ),
       ),
       actions: [
-        TextButton(
+        HyperlinkButton(
           onPressed: () {
             Navigator.of(context).pop();
           },
           child: const Text('Cancel'),
         ),
-        TextButton(
+        HyperlinkButton(
           onPressed: () async {
             if (_formKey.currentState!.validate()) {
               final AdminModel newModel = widget.admin.copyWith(

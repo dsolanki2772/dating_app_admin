@@ -195,13 +195,13 @@ class _CreateNewAdminPopupState extends ConsumerState<CreateNewAdminPopup> {
         ),
       ),
       actions: [
-        TextButton(
+        HyperlinkButton(
           onPressed: () {
             Navigator.of(context).pop();
           },
           child: const Text('Cancel'),
         ),
-        TextButton(
+        HyperlinkButton(
           onPressed: () async {
             if (_formKey.currentState!.validate()) {
               await AuthProvider.registerNewAdmin(
@@ -282,13 +282,13 @@ class _EditAdminPermissionState extends ConsumerState<EditAdminPermission> {
                     content: const Text(
                         'Are you sure you want to delete this admin?'),
                     actions: [
-                      TextButton(
+                      HyperlinkButton(
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
                         child: const Text('Cancel'),
                       ),
-                      TextButton(
+                      HyperlinkButton(
                         onPressed: () async {
                           EasyLoading.show(status: "Deleting Admin...");
                           await AdminProvider.deleteAdmin(
@@ -350,13 +350,13 @@ class _EditAdminPermissionState extends ConsumerState<EditAdminPermission> {
         ),
       ),
       actions: [
-        TextButton(
+        HyperlinkButton(
           onPressed: () {
             Navigator.of(context).pop();
           },
           child: const Text('Cancel'),
         ),
-        TextButton(
+        HyperlinkButton(
           onPressed: () async {
             EasyLoading.show(status: "Saving Admin...");
 

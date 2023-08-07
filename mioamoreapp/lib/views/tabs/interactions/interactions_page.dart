@@ -261,90 +261,114 @@ class _InteractionsPageState extends ConsumerState<InteractionsPage> {
                                     child: NoItemFoundWidget(
                                         text: 'No liked user found!'),
                                   )
-                                : GridView.builder(
-                                    itemCount: likedUsers.length,
-                                    padding: const EdgeInsets.all(
-                                        AppConstants.defaultNumericValue / 2),
-                                    gridDelegate:
-                                        const SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2,
-                                      childAspectRatio: 0.8,
-                                      crossAxisSpacing:
-                                          AppConstants.defaultNumericValue / 2,
-                                      mainAxisSpacing:
-                                          AppConstants.defaultNumericValue / 2,
-                                    ),
-                                    itemBuilder: (context, index) {
-                                      return GestureDetector(
-                                        onLongPress: () {
-                                          onLongPressUserCard(
-                                              likedUsers[index].interaction.id);
-                                        },
-                                        child: UserImageCard(
-                                            user: likedUsers[index].user),
-                                      );
+                                : RefreshIndicator(
+                                    onRefresh: () async {
+                                      ref.invalidate(interactionFutureProvider);
                                     },
+                                    child: GridView.builder(
+                                      itemCount: likedUsers.length,
+                                      padding: const EdgeInsets.all(
+                                          AppConstants.defaultNumericValue / 2),
+                                      gridDelegate:
+                                          const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                        childAspectRatio: 0.8,
+                                        crossAxisSpacing:
+                                            AppConstants.defaultNumericValue /
+                                                2,
+                                        mainAxisSpacing:
+                                            AppConstants.defaultNumericValue /
+                                                2,
+                                      ),
+                                      itemBuilder: (context, index) {
+                                        return GestureDetector(
+                                          onLongPress: () {
+                                            onLongPressUserCard(
+                                                likedUsers[index]
+                                                    .interaction
+                                                    .id);
+                                          },
+                                          child: UserImageCard(
+                                              user: likedUsers[index].user),
+                                        );
+                                      },
+                                    ),
                                   ),
                             superLikedUsers.isEmpty
                                 ? const Center(
                                     child: NoItemFoundWidget(
                                         text: 'No superliked user found!'),
                                   )
-                                : GridView.builder(
-                                    itemCount: superLikedUsers.length,
-                                    padding: const EdgeInsets.all(
-                                        AppConstants.defaultNumericValue / 2),
-                                    gridDelegate:
-                                        const SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2,
-                                      childAspectRatio: 0.8,
-                                      crossAxisSpacing:
-                                          AppConstants.defaultNumericValue / 2,
-                                      mainAxisSpacing:
-                                          AppConstants.defaultNumericValue / 2,
-                                    ),
-                                    itemBuilder: (context, index) {
-                                      return GestureDetector(
-                                        onLongPress: () {
-                                          onLongPressUserCard(
-                                              superLikedUsers[index]
-                                                  .interaction
-                                                  .id);
-                                        },
-                                        child: UserImageCard(
-                                            user: superLikedUsers[index].user),
-                                      );
+                                : RefreshIndicator(
+                                    onRefresh: () async {
+                                      ref.invalidate(interactionFutureProvider);
                                     },
+                                    child: GridView.builder(
+                                      itemCount: superLikedUsers.length,
+                                      padding: const EdgeInsets.all(
+                                          AppConstants.defaultNumericValue / 2),
+                                      gridDelegate:
+                                          const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                        childAspectRatio: 0.8,
+                                        crossAxisSpacing:
+                                            AppConstants.defaultNumericValue /
+                                                2,
+                                        mainAxisSpacing:
+                                            AppConstants.defaultNumericValue /
+                                                2,
+                                      ),
+                                      itemBuilder: (context, index) {
+                                        return GestureDetector(
+                                          onLongPress: () {
+                                            onLongPressUserCard(
+                                                superLikedUsers[index]
+                                                    .interaction
+                                                    .id);
+                                          },
+                                          child: UserImageCard(
+                                              user:
+                                                  superLikedUsers[index].user),
+                                        );
+                                      },
+                                    ),
                                   ),
                             dislikedUsers.isEmpty
                                 ? const Center(
                                     child: NoItemFoundWidget(
                                         text: 'No disliked user found!'))
-                                : GridView.builder(
-                                    itemCount: dislikedUsers.length,
-                                    padding: const EdgeInsets.all(
-                                        AppConstants.defaultNumericValue / 2),
-                                    gridDelegate:
-                                        const SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2,
-                                      childAspectRatio: 0.8,
-                                      crossAxisSpacing:
-                                          AppConstants.defaultNumericValue / 2,
-                                      mainAxisSpacing:
-                                          AppConstants.defaultNumericValue / 2,
-                                    ),
-                                    itemBuilder: (context, index) {
-                                      return GestureDetector(
-                                        onLongPress: () {
-                                          onLongPressUserCard(
-                                              dislikedUsers[index]
-                                                  .interaction
-                                                  .id);
-                                        },
-                                        child: UserImageCard(
-                                            user: dislikedUsers[index].user),
-                                      );
+                                : RefreshIndicator(
+                                    onRefresh: () async {
+                                      ref.invalidate(interactionFutureProvider);
                                     },
+                                    child: GridView.builder(
+                                      itemCount: dislikedUsers.length,
+                                      padding: const EdgeInsets.all(
+                                          AppConstants.defaultNumericValue / 2),
+                                      gridDelegate:
+                                          const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                        childAspectRatio: 0.8,
+                                        crossAxisSpacing:
+                                            AppConstants.defaultNumericValue /
+                                                2,
+                                        mainAxisSpacing:
+                                            AppConstants.defaultNumericValue /
+                                                2,
+                                      ),
+                                      itemBuilder: (context, index) {
+                                        return GestureDetector(
+                                          onLongPress: () {
+                                            onLongPressUserCard(
+                                                dislikedUsers[index]
+                                                    .interaction
+                                                    .id);
+                                          },
+                                          child: UserImageCard(
+                                              user: dislikedUsers[index].user),
+                                        );
+                                      },
+                                    ),
                                   ),
                           ],
                         ),

@@ -28,8 +28,8 @@ class UserIsBannedPage extends ConsumerWidget {
               style: TextStyle(fontSize: 30),
             ),
             bannedUserModel.isLifetimeBan
-                ? Column(
-                    children: const [
+                ? const Column(
+                    children: [
                       SizedBox(height: 24),
                       Text(
                         'You are banned for life!\n'

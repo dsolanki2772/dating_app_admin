@@ -5,7 +5,7 @@ import 'package:mioamoreapp/models/user_interaction_model.dart';
 import 'package:mioamoreapp/providers/auth_providers.dart';
 
 final interactionFutureProvider =
-    FutureProvider.autoDispose<List<UserInteractionModel>>((ref) async {
+    FutureProvider<List<UserInteractionModel>>((ref) async {
   final interactionCollection = FirebaseFirestore.instance
       .collection(FirebaseConstants.userInteractionCollection);
 

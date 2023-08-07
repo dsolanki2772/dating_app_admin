@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:mioamoreapp/config/config.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/models/match_model.dart';
 import 'package:mioamoreapp/models/notification_model.dart';
@@ -21,9 +22,11 @@ import 'package:mioamoreapp/providers/other_users_provider.dart';
 import 'package:mioamoreapp/providers/user_profile_provider.dart';
 import 'package:mioamoreapp/views/custom/custom_button.dart';
 import 'package:mioamoreapp/views/custom/custom_icon_button.dart';
+import 'package:mioamoreapp/views/custom/subscription_builder.dart';
 import 'package:mioamoreapp/views/others/photo_view_page.dart';
 import 'package:mioamoreapp/views/others/report_page.dart';
 import 'package:mioamoreapp/views/others/user_card_widget.dart';
+import 'package:mioamoreapp/views/tabs/home/explore_page.dart';
 import 'package:mioamoreapp/views/tabs/home/home_page.dart';
 import 'package:mioamoreapp/views/tabs/messages/components/chat_page.dart';
 
@@ -180,134 +183,240 @@ class UserDetailsPage extends ConsumerWidget {
       currentUserProfileModel = userProfile;
     });
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          DetailsBody(user: user, matchId: matchId, myUserId: myUserId),
-          if (matchId != null)
-            Positioned(
-              bottom: 0,
-              child: ClipRRect(
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                  child: Container(
-                    color: Theme.of(context)
-                        .scaffoldBackgroundColor
-                        .withOpacity(0.8),
-                    padding: const EdgeInsets.only(
-                        bottom: AppConstants.defaultNumericValue * 2,
-                        top: AppConstants.defaultNumericValue),
-                    width: MediaQuery.of(context).size.width,
-                    child: Center(
-                      child: CustomButton(
-                        text: "Send a Message",
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ChatPage(
-                                otherUserId: user.userId,
-                                matchId: matchId!,
-                              ),
-                            ),
-                          );
-                        },
+    return SubscriptionBuilder(
+      builder: (context, isPremiumUser) {
+        // Freemium Limitations
+        final List<UserInteractionModel> data = [];
+        final interactionProvider = ref.watch(interactionFutureProvider);
+        interactionProvider.whenData((value) {
+          data.addAll(value);
+        });
+
+        final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day);
+
+        final interactionsToday =
+            data.where((element) => element.createdAt.isAfter(today)).toList();
+
+        // Check limits
+
+        int totalLiked = interactionsToday
+            .where((element) => element.isLike)
+            .toList()
+            .length;
+
+        int totalSuperLiked = interactionsToday
+            .where((element) => element.isSuperLike)
+            .toList()
+            .length;
+
+        int totalDisliked = interactionsToday
+            .where((element) => element.isDislike)
+            .toList()
+            .length;
+
+        bool canLike = true;
+        bool canSuperLike = true;
+        bool canDislike = true;
+
+        if (isPremiumUser) {
+          if (FreemiumLimitation.maxDailyLikeLimitPremium != 0 &&
+              totalLiked >= FreemiumLimitation.maxDailyLikeLimitPremium) {
+            canLike = false;
+          }
+
+          if (FreemiumLimitation.maxDailySuperLikeLimitPremium != 0 &&
+              totalSuperLiked >=
+                  FreemiumLimitation.maxDailySuperLikeLimitPremium) {
+            canSuperLike = false;
+          }
+
+          if (FreemiumLimitation.maxDailyDislikeLimitPremium != 0 &&
+              totalDisliked >= FreemiumLimitation.maxDailyDislikeLimitPremium) {
+            canDislike = false;
+          }
+        } else {
+          if (FreemiumLimitation.maxDailyLikeLimitFree != 0 &&
+              totalLiked >= FreemiumLimitation.maxDailyLikeLimitFree) {
+            canLike = false;
+          }
+
+          if (FreemiumLimitation.maxDailySuperLikeLimitFree != 0 &&
+              totalSuperLiked >=
+                  FreemiumLimitation.maxDailySuperLikeLimitFree) {
+            canSuperLike = false;
+          }
+
+          if (FreemiumLimitation.maxDailyDislikeLimitFree != 0 &&
+              totalDisliked >= FreemiumLimitation.maxDailyDislikeLimitFree) {
+            canDislike = false;
+          }
+        }
+
+        return Scaffold(
+          body: Stack(
+            children: [
+              DetailsBody(user: user, matchId: matchId, myUserId: myUserId),
+              if (matchId != null)
+                Positioned(
+                  bottom: 0,
+                  child: ClipRRect(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                      child: Container(
+                        color: Theme.of(context)
+                            .scaffoldBackgroundColor
+                            .withOpacity(0.8),
+                        padding: const EdgeInsets.only(
+                            bottom: AppConstants.defaultNumericValue * 2,
+                            top: AppConstants.defaultNumericValue),
+                        width: MediaQuery.of(context).size.width,
+                        child: Center(
+                          child: CustomButton(
+                            text: "Send a Message",
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ChatPage(
+                                    otherUserId: user.userId,
+                                    matchId: matchId!,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ),
-          if (matchId == null)
-            Positioned(
-              bottom: 0,
-              child: ClipRRect(
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                  child: Container(
-                    color: Theme.of(context)
-                        .scaffoldBackgroundColor
-                        .withOpacity(0.8),
-                    padding: const EdgeInsets.only(
-                        bottom: AppConstants.defaultNumericValue * 2,
-                        top: AppConstants.defaultNumericValue),
-                    width: MediaQuery.of(context).size.width,
-                    child: UserLikeActions(
-                      onTapCross: () async {
-                        final newInteraction = interaction.copyWith(
-                            isDislike: true, createdAt: DateTime.now());
-                        await createInteraction(newInteraction).then((value) {
-                          Navigator.pop(context);
-                          ref.invalidate(interactionFutureProvider);
-                        });
-                      },
-                      onTapBolt: () async {
-                        final newInteraction = interaction.copyWith(
-                            isSuperLike: true, createdAt: DateTime.now());
-                        await createInteraction(newInteraction)
-                            .then((result) async {
-                          if (result && currentUserProfileModel != null) {
-                            await getExistingInteraction(user.id, myUserId)
-                                .then((otherUserInteraction) async {
-                              if (otherUserInteraction != null) {
-                                await showMatchingDialog(
-                                        context: context,
-                                        currentUser: currentUserProfileModel!,
-                                        otherUser: user)
-                                    .then((value) {
-                                  Navigator.pop(context);
-                                });
-                              } else {
-                                createInteractionNotification(
-                                    title: "You have a new Interaction!",
-                                    body: "Someone has super liked you!",
-                                    receiverId: user.userId,
-                                    currentUser: currentUserProfileModel!);
+              if (matchId == null)
+                Positioned(
+                  bottom: 0,
+                  child: ClipRRect(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                      child: Container(
+                        color: Theme.of(context)
+                            .scaffoldBackgroundColor
+                            .withOpacity(0.8),
+                        padding: const EdgeInsets.only(
+                            bottom: AppConstants.defaultNumericValue * 2,
+                            top: AppConstants.defaultNumericValue),
+                        width: MediaQuery.of(context).size.width,
+                        child: UserLikeActions(
+                          onTapCross: () async {
+                            if (canDislike) {
+                              final newInteraction = interaction.copyWith(
+                                  isDislike: true, createdAt: DateTime.now());
+                              await createInteraction(newInteraction)
+                                  .then((value) {
                                 Navigator.pop(context);
-                              }
-                            });
-                          }
+                                ref.invalidate(interactionFutureProvider);
+                              });
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      "You have reached your daily limit of dislikes!"),
+                                ),
+                              );
+                            }
+                          },
+                          onTapBolt: () async {
+                            if (canSuperLike) {
+                              final newInteraction = interaction.copyWith(
+                                  isSuperLike: true, createdAt: DateTime.now());
+                              await createInteraction(newInteraction)
+                                  .then((result) async {
+                                if (result && currentUserProfileModel != null) {
+                                  await getExistingInteraction(
+                                          user.id, myUserId)
+                                      .then((otherUserInteraction) async {
+                                    if (otherUserInteraction != null) {
+                                      await showMatchingDialog(
+                                              context: context,
+                                              currentUser:
+                                                  currentUserProfileModel!,
+                                              otherUser: user)
+                                          .then((value) {
+                                        Navigator.pop(context);
+                                      });
+                                    } else {
+                                      createInteractionNotification(
+                                          title: "You have a new Interaction!",
+                                          body: "Someone has super liked you!",
+                                          receiverId: user.userId,
+                                          currentUser:
+                                              currentUserProfileModel!);
+                                      Navigator.pop(context);
+                                    }
+                                  });
+                                }
 
-                          ref.invalidate(interactionFutureProvider);
-                        });
-                      },
-                      onTapHeart: () async {
-                        final newInteraction = interaction.copyWith(
-                            isLike: true, createdAt: DateTime.now());
-                        await createInteraction(newInteraction)
-                            .then((result) async {
-                          if (result && currentUserProfileModel != null) {
-                            await getExistingInteraction(user.id, myUserId)
-                                .then((otherUserInteraction) async {
-                              if (otherUserInteraction != null) {
-                                await showMatchingDialog(
-                                        context: context,
-                                        currentUser: currentUserProfileModel!,
-                                        otherUser: user)
-                                    .then((value) {
-                                  Navigator.pop(context);
-                                });
-                              } else {
-                                createInteractionNotification(
-                                    title: "You have a new Interaction!",
-                                    body: "Someone has liked you!",
-                                    receiverId: user.userId,
-                                    currentUser: currentUserProfileModel!);
-                                Navigator.pop(context);
-                              }
-                            });
-                          }
+                                ref.invalidate(interactionFutureProvider);
+                              });
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      "You have reached your daily limit of super likes!"),
+                                ),
+                              );
+                            }
+                          },
+                          onTapHeart: () async {
+                            if (canLike) {
+                              final newInteraction = interaction.copyWith(
+                                  isLike: true, createdAt: DateTime.now());
+                              await createInteraction(newInteraction)
+                                  .then((result) async {
+                                if (result && currentUserProfileModel != null) {
+                                  await getExistingInteraction(
+                                          user.id, myUserId)
+                                      .then((otherUserInteraction) async {
+                                    if (otherUserInteraction != null) {
+                                      await showMatchingDialog(
+                                              context: context,
+                                              currentUser:
+                                                  currentUserProfileModel!,
+                                              otherUser: user)
+                                          .then((value) {
+                                        Navigator.pop(context);
+                                      });
+                                    } else {
+                                      createInteractionNotification(
+                                          title: "You have a new Interaction!",
+                                          body: "Someone has liked you!",
+                                          receiverId: user.userId,
+                                          currentUser:
+                                              currentUserProfileModel!);
+                                      Navigator.pop(context);
+                                    }
+                                  });
+                                }
 
-                          ref.invalidate(interactionFutureProvider);
-                        });
-                      },
+                                ref.invalidate(interactionFutureProvider);
+                              });
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      "You have reached your daily limit of likes!"),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-            )
-        ],
-      ),
+                )
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -772,8 +881,8 @@ class _DetailsBodyState extends ConsumerState<DetailsBody> {
                           .titleLarge!
                           .copyWith(fontWeight: FontWeight.bold),
                     ),
-                    Consumer(
-                      builder: (context, ref, child) {
+                    Builder(
+                      builder: (context) {
                         final myProfile = ref.watch(userProfileFutureProvider);
                         return myProfile.when(
                           data: (data) {
@@ -806,21 +915,52 @@ class _DetailsBodyState extends ConsumerState<DetailsBody> {
                         runSpacing: AppConstants.defaultNumericValue / 2,
                         alignment: WrapAlignment.start,
                         children: widget.user.interests.map((interest) {
-                          return Container(
-                            decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(
-                                    AppConstants.defaultNumericValue / 2),
+                          int? index;
+                          for (var element in AppConfig.interests) {
+                            if (element.toLowerCase().trim() ==
+                                interest.toLowerCase().trim()) {
+                              index = AppConfig.interests.indexOf(element);
+                            }
+                          }
+
+                          return GestureDetector(
+                            onTap: () {
+                              if (index != null) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        ExplorePage(index: index),
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content:
+                                        Text("The interest is not available!"),
+                                  ),
+                                );
+                              }
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(
+                                      AppConstants.defaultNumericValue / 2),
+                                ),
+                                color:
+                                    AppConstants.primaryColor.withOpacity(0.1),
                               ),
-                              color: AppConstants.primaryColor.withOpacity(0.1),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: AppConstants.defaultNumericValue,
+                                  vertical:
+                                      AppConstants.defaultNumericValue / 2),
+                              child: Text(interest[0].toUpperCase() +
+                                  interest.substring(1)),
                             ),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: AppConstants.defaultNumericValue,
-                                vertical: AppConstants.defaultNumericValue / 2),
-                            child: Text(interest[0].toUpperCase() +
-                                interest.substring(1)),
                           );
-                        }).toList()),
+                        }).toList(),
+                      ),
               ),
               const SizedBox(height: AppConstants.defaultNumericValue * 2),
               Padding(

@@ -209,6 +209,11 @@ const String locationApiKey = "Location API Key";
 ///
 
 //! Enable Admob Ads or not. If you don't want ads, set this to false. If you want ads, set this to true and set the ad ids below.
+
+// You must remove the configuration from the android manifest file if you don't want ads. Otherwise, the app will not compile.
+
+// You must remove the configuration from the info.plist file if you don't want ads. Otherwise, the app will not compile.
+
 const bool isAdmobAvailable = false;
 
 class AndroidAdUnits {
@@ -245,7 +250,7 @@ class IOSAdUnits {
 
 ///
 /// Subscription Settings
-/// !! You need to create a subscription plan in your app store and play store then create the api keys in revenue cat and paste them here.
+///!! You need to create a subscription plan in your app store and play store then create the api keys in revenue cat and paste them here.
 
 class SubscriptionConstants {
   SubscriptionConstants._();
@@ -261,4 +266,28 @@ class SubscriptionConstants {
   // Revenue Cat Entitlement Id
   static const String entitlementId =
       ""; //!! Create the entitlement id in revenue cat and paste here
+}
+
+// Free and Premium User Limitations
+class FreemiumLimitation {
+  FreemiumLimitation._();
+
+  //!! Maximum number of likes a free user can send
+  static const int maxDailyLikeLimitFree = 10; // Make it 0 for unlimited
+
+  //!! Maximum number of super likes a free user can send
+  static const int maxDailySuperLikeLimitFree = 1; // Make it 0 for unlimited
+
+  //!! Maximum number of dislikes a free user can send
+  static const int maxDailyDislikeLimitFree = 5; // Make it 0 for unlimited
+
+  //!! Maximum number of likes a premium user can send
+  static const int maxDailyLikeLimitPremium = 100; // Make it 0 for unlimited
+
+  //!! Maximum number of super likes a premium user can send
+  static const int maxDailySuperLikeLimitPremium =
+      10; // Make it 0 for unlimited
+
+  //!! Maximum number of dislikes a premium user can send
+  static const int maxDailyDislikeLimitPremium = 50; // Make it 0 for unlimited
 }

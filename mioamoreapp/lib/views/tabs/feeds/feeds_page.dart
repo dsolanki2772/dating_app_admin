@@ -197,117 +197,111 @@ class _SingleFeedPostState extends ConsumerState<SingleFeedPost> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          GestureDetector(
-            onTap: () {
-              //TODO: open profile page
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                UserCirlePicture(
-                    imageUrl: widget.user.profilePicture,
-                    size: AppConstants.defaultNumericValue * 2.5),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(widget.user.fullName,
-                          style: Theme.of(context).textTheme.titleMedium),
-                      Text(
-                        DateFormatter.toWholeDateTime(widget.feed.createdAt),
-                        textAlign: TextAlign.end,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall!
-                            .copyWith(fontSize: 10),
-                      ),
-                    ],
-                  ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              UserCirlePicture(
+                  imageUrl: widget.user.profilePicture,
+                  size: AppConstants.defaultNumericValue * 2.5),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(widget.user.fullName,
+                        style: Theme.of(context).textTheme.titleMedium),
+                    Text(
+                      DateFormatter.toWholeDateTime(widget.feed.createdAt),
+                      textAlign: TextAlign.end,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall!
+                          .copyWith(fontSize: 10),
+                    ),
+                  ],
                 ),
-                if (widget.feed.userId ==
-                    ref.watch(currentUserStateProvider)!.uid)
-                  CustomPopupMenu(
-                    menuBuilder: () => ClipRRect(
-                      borderRadius: BorderRadius.circular(
-                          AppConstants.defaultNumericValue / 2),
-                      child: Container(
-                        decoration: const BoxDecoration(color: Colors.white),
-                        child: IntrinsicWidth(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              MoreMenuTitle(
-                                title: 'Edit',
-                                onTap: () async {
-                                  _moreMenuController.hideMenu();
-                                  Navigator.push(
-                                    context,
-                                    CupertinoPageRoute(
-                                        builder: (context) =>
-                                            EditFeedPage(feed: widget.feed)),
-                                  );
-                                },
-                              ),
-                              MoreMenuTitle(
-                                title: 'Delete',
-                                onTap: () {
-                                  _moreMenuController.hideMenu();
+              ),
+              if (widget.feed.userId ==
+                  ref.watch(currentUserStateProvider)!.uid)
+                CustomPopupMenu(
+                  menuBuilder: () => ClipRRect(
+                    borderRadius: BorderRadius.circular(
+                        AppConstants.defaultNumericValue / 2),
+                    child: Container(
+                      decoration: const BoxDecoration(color: Colors.white),
+                      child: IntrinsicWidth(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            MoreMenuTitle(
+                              title: 'Edit',
+                              onTap: () async {
+                                _moreMenuController.hideMenu();
+                                Navigator.push(
+                                  context,
+                                  CupertinoPageRoute(
+                                      builder: (context) =>
+                                          EditFeedPage(feed: widget.feed)),
+                                );
+                              },
+                            ),
+                            MoreMenuTitle(
+                              title: 'Delete',
+                              onTap: () {
+                                _moreMenuController.hideMenu();
 
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          title: const Text("Delete Feed"),
-                                          content: const Text(
-                                              "Are you sure you want to delete this feed?"),
-                                          actions: [
-                                            TextButton(
-                                              child: const Text("Cancel"),
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                            ),
-                                            Consumer(
-                                              builder: (context, ref, child) {
-                                                return TextButton(
-                                                  child: const Text("Delete"),
-                                                  onPressed: () async {
-                                                    await deleteFeed(
-                                                            widget.feed.id)
-                                                        .then((value) {
-                                                      ref.invalidate(
-                                                          getFeedsProvider);
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    });
-                                                  },
-                                                );
-                                              },
-                                            )
-                                          ],
-                                        );
-                                      });
-                                },
-                              ),
-                            ],
-                          ),
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: const Text("Delete Feed"),
+                                        content: const Text(
+                                            "Are you sure you want to delete this feed?"),
+                                        actions: [
+                                          TextButton(
+                                            child: const Text("Cancel"),
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                          Consumer(
+                                            builder: (context, ref, child) {
+                                              return TextButton(
+                                                child: const Text("Delete"),
+                                                onPressed: () async {
+                                                  await deleteFeed(
+                                                          widget.feed.id)
+                                                      .then((value) {
+                                                    ref.invalidate(
+                                                        getFeedsProvider);
+                                                    Navigator.of(context).pop();
+                                                  });
+                                                },
+                                              );
+                                            },
+                                          )
+                                        ],
+                                      );
+                                    });
+                              },
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                    pressType: PressType.singleClick,
-                    verticalMargin: 0,
-                    controller: _moreMenuController,
-                    showArrow: true,
-                    arrowColor: Colors.white,
-                    barrierColor: AppConstants.primaryColor.withOpacity(0.1),
-                    child: GestureDetector(
-                      child: const Icon(CupertinoIcons.ellipsis_vertical),
-                    ),
                   ),
-              ],
-            ),
+                  pressType: PressType.singleClick,
+                  verticalMargin: 0,
+                  controller: _moreMenuController,
+                  showArrow: true,
+                  arrowColor: Colors.white,
+                  barrierColor: AppConstants.primaryColor.withOpacity(0.1),
+                  child: GestureDetector(
+                    child: const Icon(CupertinoIcons.ellipsis_vertical),
+                  ),
+                ),
+            ],
           ),
           const SizedBox(
             height: 16,

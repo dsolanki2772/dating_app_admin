@@ -15,13 +15,14 @@ class UserCardWidget extends StatefulWidget {
   final VoidCallback onTapCross;
   final VoidCallback onTapHeart;
   final VoidCallback onTapBolt;
-
+  final VoidCallback? onNavigateBack;
   const UserCardWidget({
     Key? key,
     required this.user,
     required this.onTapCross,
     required this.onTapHeart,
     required this.onTapBolt,
+    this.onNavigateBack,
   }) : super(key: key);
 
   @override
@@ -57,11 +58,15 @@ class _UserCardWidgetState extends State<UserCardWidget> {
             )
           : const SizedBox(),
       footer: GestureDetector(
-        onTap: () {
-          Navigator.push(
-              context,
-              CupertinoPageRoute(
-                  builder: (context) => UserDetailsPage(user: widget.user)));
+        onTap: () async {
+          await Navigator.push(
+            context,
+            CupertinoPageRoute(
+              builder: (context) => UserDetailsPage(user: widget.user),
+            ),
+          ).then((value) {
+            widget.onNavigateBack?.call();
+          });
         },
         child: ClipRRect(
           borderRadius: const BorderRadius.only(
@@ -79,36 +84,40 @@ class _UserCardWidgetState extends State<UserCardWidget> {
                   const SizedBox(height: AppConstants.defaultNumericValue),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: AppConstants.defaultNumericValue),
-                        child: Text.rich(
-                          TextSpan(
-                            children: [
-                              TextSpan(
-                                text: '${widget.user.fullName} ',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 21,
-                                ),
-                              ),
-                              if (widget
-                                      .user.userAccountSettingsModel.showAge !=
-                                  false)
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: AppConstants.defaultNumericValue),
+                          child: Text.rich(
+                            TextSpan(
+                              children: [
                                 TextSpan(
-                                  text: (DateTime.now()
-                                              .difference(widget.user.birthDay)
-                                              .inDays ~/
-                                          365)
-                                      .toString(),
+                                  text: '${widget.user.fullName} ',
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
+                                    fontSize: 21,
                                   ),
                                 ),
-                            ],
+                                if (widget.user.userAccountSettingsModel
+                                        .showAge !=
+                                    false)
+                                  TextSpan(
+                                    text: (DateTime.now()
+                                                .difference(
+                                                    widget.user.birthDay)
+                                                .inDays ~/
+                                            365)
+                                        .toString(),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                              ],
+                            ),
                           ),
                         ),
                       ),

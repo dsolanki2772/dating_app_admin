@@ -968,7 +968,7 @@ final _emojiPickerConfig = Config(
   skinToneDialogBgColor: Colors.white,
   skinToneIndicatorColor: Colors.grey,
   enableSkinTones: true,
-  showRecentsTab: true,
+  // showRecentsTab: true,
   recentsLimit: 40,
   categoryIcons: const CategoryIcons(),
   buttonMode: ButtonMode.CUPERTINO,

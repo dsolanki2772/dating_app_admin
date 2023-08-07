@@ -26,7 +26,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     super.initState();
 
     if (widget.isNetwork) {
-      _controller = VideoPlayerController.network(widget.videoUrl)
+      _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl))
         ..initialize().then((_) {
           setState(() {});
           _controller.play();
