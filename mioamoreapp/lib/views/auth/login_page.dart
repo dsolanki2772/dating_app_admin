@@ -9,6 +9,7 @@ import 'package:mioamoreapp/models/country_code.dart';
 import 'package:mioamoreapp/providers/auth_providers.dart';
 import 'package:mioamoreapp/providers/country_codes_provider.dart';
 import 'package:mioamoreapp/providers/get_current_location_provider.dart';
+import 'package:mioamoreapp/providers/version_provider.dart';
 import 'package:mioamoreapp/views/auth/login_with_phone_page.dart';
 import 'package:mioamoreapp/views/auth/select_country_page.dart';
 import 'package:mioamoreapp/views/company/privacy_policy.dart';
@@ -22,6 +23,7 @@ class LoginPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
+    final versionRef = ref.watch(versionProvider);
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
@@ -179,6 +181,20 @@ class LoginPage extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: AppConstants.defaultNumericValue),
+              versionRef.when(
+                data: (data) {
+                  return Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      data,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  );
+                },
+                error: (error, stackTrace) => const SizedBox(),
+                loading: () => const SizedBox(),
+              ),
 
               // //
               //   TextButton(

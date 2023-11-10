@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mioamoreapp/helpers/url_launcher_helper.dart';
 import 'package:mioamoreapp/providers/feed_provider.dart';
 import 'package:mioamoreapp/views/settings/verification/verification_steps.dart';
 import 'package:mioamoreapp/views/tabs/feeds/feeds_page.dart';
@@ -374,6 +375,13 @@ class UserAboutView extends StatelessWidget {
               ? "Not Set!"
               : data.phoneNumber!),
         ),
+        // My Purpose
+        ListTile(
+          title: const Text("My Purpose"),
+          subtitle: Text(data.myPurpose == null || data.myPurpose!.isEmpty
+              ? "Not Set!"
+              : data.myPurpose!),
+        ),
         ListTile(
           title: const Text("About Me"),
           subtitle: Text(data.about == null || data.about!.isEmpty
@@ -387,6 +395,214 @@ class UserAboutView extends StatelessWidget {
         ListTile(
           title: const Text("Gender"),
           subtitle: Text(data.gender.toUpperCase()),
+        ),
+        ListTile(
+          title: const Text("Social Accounts"),
+          subtitle: Wrap(
+            spacing: AppConstants.defaultNumericValue / 2,
+            children: [
+              if (data.instagramUsername != null &&
+                  data.instagramUsername!.isNotEmpty)
+                ActionChip(
+                  onPressed: () async {
+                    UrlLauncherHelper.launchURL(Uri.parse(
+                        "https://www.instagram.com/${data.instagramUsername}"));
+                  },
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppConstants.defaultNumericValue / 2,
+                    vertical: AppConstants.defaultNumericValue / 4,
+                  ),
+                  backgroundColor: AppConstants.primaryColor.withOpacity(0.1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                        AppConstants.defaultNumericValue * 2),
+                    side:
+                        BorderSide(color: AppConstants.primaryColor, width: 1),
+                  ),
+                  avatar: Image.asset(
+                    instagramIcon,
+                    width: AppConstants.defaultNumericValue * 2,
+                    height: AppConstants.defaultNumericValue * 2,
+                  ),
+                  label: Text(data.instagramUsername![0].toUpperCase() +
+                      data.instagramUsername!.substring(1)),
+                )
+              else
+                ActionChip(
+                  onPressed: () {},
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppConstants.defaultNumericValue / 2,
+                    vertical: AppConstants.defaultNumericValue / 4,
+                  ),
+                  avatar: Image.asset(
+                    instagramIcon,
+                    width: AppConstants.defaultNumericValue * 2,
+                    height: AppConstants.defaultNumericValue * 2,
+                  ),
+                  label: const Text("Not Set!"),
+                ),
+              if (data.snapchatUsername != null &&
+                  data.snapchatUsername!.isNotEmpty)
+                ActionChip(
+                  onPressed: () async {
+                    UrlLauncherHelper.launchURL(Uri.parse(
+                        "https://www.snapchat.com/add/${data.snapchatUsername}"));
+                  },
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppConstants.defaultNumericValue / 2,
+                    vertical: AppConstants.defaultNumericValue / 4,
+                  ),
+                  backgroundColor: AppConstants.primaryColor.withOpacity(0.1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                        AppConstants.defaultNumericValue * 2),
+                    side:
+                        BorderSide(color: AppConstants.primaryColor, width: 1),
+                  ),
+                  avatar: Image.asset(
+                    snapchatIcon,
+                    width: AppConstants.defaultNumericValue * 2,
+                    height: AppConstants.defaultNumericValue * 2,
+                  ),
+                  label: Text(data.snapchatUsername![0].toUpperCase() +
+                      data.snapchatUsername!.substring(1)),
+                )
+              else
+                ActionChip(
+                  onPressed: () {},
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppConstants.defaultNumericValue / 2,
+                    vertical: AppConstants.defaultNumericValue / 4,
+                  ),
+                  avatar: Image.asset(
+                    snapchatIcon,
+                    width: AppConstants.defaultNumericValue * 2,
+                    height: AppConstants.defaultNumericValue * 2,
+                  ),
+                  label: const Text("Not Set!"),
+                ),
+              if (data.twitterUsername != null &&
+                  data.twitterUsername!.isNotEmpty)
+                ActionChip(
+                  onPressed: () async {
+                    UrlLauncherHelper.launchURL(Uri.parse(
+                        "https://www.twitter.com/${data.twitterUsername}"));
+                  },
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppConstants.defaultNumericValue / 2,
+                    vertical: AppConstants.defaultNumericValue / 4,
+                  ),
+                  backgroundColor: AppConstants.primaryColor.withOpacity(0.1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                        AppConstants.defaultNumericValue * 2),
+                    side:
+                        BorderSide(color: AppConstants.primaryColor, width: 1),
+                  ),
+                  avatar: Image.asset(
+                    twitterIcon,
+                    width: AppConstants.defaultNumericValue * 2,
+                    height: AppConstants.defaultNumericValue * 2,
+                  ),
+                  label: Text(data.twitterUsername![0].toUpperCase() +
+                      data.twitterUsername!.substring(1)),
+                )
+              else
+                ActionChip(
+                  onPressed: () {},
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppConstants.defaultNumericValue / 2,
+                    vertical: AppConstants.defaultNumericValue / 4,
+                  ),
+                  avatar: Image.asset(
+                    twitterIcon,
+                    width: AppConstants.defaultNumericValue * 2,
+                    height: AppConstants.defaultNumericValue * 2,
+                  ),
+                  label: const Text("Not Set!"),
+                ),
+              if (data.facebookUsername != null &&
+                  data.facebookUsername!.isNotEmpty)
+                ActionChip(
+                  onPressed: () async {
+                    UrlLauncherHelper.launchURL(Uri.parse(
+                        "https://www.facebook.com/${data.facebookUsername}"));
+                  },
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppConstants.defaultNumericValue / 2,
+                    vertical: AppConstants.defaultNumericValue / 4,
+                  ),
+                  backgroundColor: AppConstants.primaryColor.withOpacity(0.1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                        AppConstants.defaultNumericValue * 2),
+                    side:
+                        BorderSide(color: AppConstants.primaryColor, width: 1),
+                  ),
+                  avatar: Image.asset(
+                    facebookIcon,
+                    width: AppConstants.defaultNumericValue * 2,
+                    height: AppConstants.defaultNumericValue * 2,
+                  ),
+                  label: Text(data.facebookUsername![0].toUpperCase() +
+                      data.facebookUsername!.substring(1)),
+                )
+              else
+                ActionChip(
+                  onPressed: () {},
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppConstants.defaultNumericValue / 2,
+                    vertical: AppConstants.defaultNumericValue / 4,
+                  ),
+                  avatar: Image.asset(
+                    facebookIcon,
+                    width: AppConstants.defaultNumericValue * 2,
+                    height: AppConstants.defaultNumericValue * 2,
+                  ),
+                  label: const Text("Not Set!"),
+                ),
+              if (data.tiktokUsername != null &&
+                  data.tiktokUsername!.isNotEmpty)
+                ActionChip(
+                  onPressed: () async {
+                    UrlLauncherHelper.launchURL(Uri.parse(
+                        "https://www.tiktok.com/@${data.tiktokUsername}"));
+                  },
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppConstants.defaultNumericValue / 2,
+                    vertical: AppConstants.defaultNumericValue / 4,
+                  ),
+                  backgroundColor: AppConstants.primaryColor.withOpacity(0.1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                        AppConstants.defaultNumericValue * 2),
+                    side:
+                        BorderSide(color: AppConstants.primaryColor, width: 1),
+                  ),
+                  avatar: Image.asset(
+                    tiktokIcon,
+                    width: AppConstants.defaultNumericValue * 2,
+                    height: AppConstants.defaultNumericValue * 2,
+                  ),
+                  label: Text(data.tiktokUsername![0].toUpperCase() +
+                      data.tiktokUsername!.substring(1)),
+                )
+              else
+                ActionChip(
+                  onPressed: () {},
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppConstants.defaultNumericValue / 2,
+                    vertical: AppConstants.defaultNumericValue / 4,
+                  ),
+                  avatar: Image.asset(
+                    tiktokIcon,
+                    width: AppConstants.defaultNumericValue * 2,
+                    height: AppConstants.defaultNumericValue * 2,
+                  ),
+                  label: const Text("Not Set!"),
+                ),
+            ],
+          ),
         ),
         ListTile(
           title: const Text("Interests"),
@@ -623,31 +839,80 @@ class ProfileCompletenessAndGetVerifiedWidget extends ConsumerWidget {
 }
 
 int _getProfilePercentageComplete(UserProfileModel profile) {
-  int total = 100;
+  // int total = 100;
 
-  if (profile.about == null || profile.about!.isEmpty) {
-    total -= 10;
+  // if (profile.about == null || profile.about!.isEmpty) {
+  //   total -= 10;
+  // }
+
+  // if ((profile.phoneNumber == null || profile.phoneNumber!.isEmpty) &&
+  //     (profile.email == null || profile.email!.isEmpty)) {
+  //   total -= 10;
+  // }
+
+  // // Images
+  // if (profile.mediaFiles.isEmpty) {
+  //   total -= 10;
+  // }
+
+  // // Interests
+  // if (profile.interests.isEmpty) {
+  //   total -= 10;
+  // }
+
+  // //Profile Picture
+  // if (profile.profilePicture == null || profile.profilePicture!.isEmpty) {
+  //   total -= 10;
+  // }
+
+  // return total;
+
+  int totalItems = 7;
+
+  int totalFilled = 0;
+
+  if (profile.about != null && profile.about!.isNotEmpty) {
+    totalFilled++;
   }
 
-  if ((profile.phoneNumber == null || profile.phoneNumber!.isEmpty) &&
-      (profile.email == null || profile.email!.isEmpty)) {
-    total -= 10;
+  if (profile.phoneNumber != null && profile.phoneNumber!.isNotEmpty) {
+    totalFilled++;
   }
 
-  // Images
-  if (profile.mediaFiles.isEmpty) {
-    total -= 10;
+  if (profile.email != null && profile.email!.isNotEmpty) {
+    totalFilled++;
   }
 
-  // Interests
-  if (profile.interests.isEmpty) {
-    total -= 10;
+  if (profile.mediaFiles.isNotEmpty) {
+    totalFilled++;
   }
 
-  //Profile Picture
-  if (profile.profilePicture == null || profile.profilePicture!.isEmpty) {
-    total -= 10;
+  if (profile.interests.isNotEmpty) {
+    totalFilled++;
   }
 
-  return total;
+  if (profile.profilePicture != null && profile.profilePicture!.isNotEmpty) {
+    totalFilled++;
+  }
+
+  bool isInsta = profile.instagramUsername != null &&
+      profile.instagramUsername!.isNotEmpty;
+  bool isSnap =
+      profile.snapchatUsername != null && profile.snapchatUsername!.isNotEmpty;
+  bool isTwitter =
+      profile.twitterUsername != null && profile.twitterUsername!.isNotEmpty;
+  bool isFacebook =
+      profile.facebookUsername != null && profile.facebookUsername!.isNotEmpty;
+  bool isTiktok =
+      profile.tiktokUsername != null && profile.tiktokUsername!.isNotEmpty;
+
+  bool isAnySocial = isInsta || isSnap || isTwitter || isFacebook || isTiktok;
+
+  if (isAnySocial) {
+    totalFilled++;
+  }
+
+  double percentage = (totalFilled / totalItems) * 100;
+
+  return percentage.toInt();
 }

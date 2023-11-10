@@ -26,9 +26,7 @@ void main() async {
     MobileAds.instance.initialize();
   }
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   FirebaseMessaging.onBackgroundMessage(_handleBackgroundNotification);
 
@@ -58,13 +56,14 @@ class MyApp extends StatelessWidget {
       builder: EasyLoading.init(),
       theme: ThemeData(
         primarySwatch: _primarySwatch,
-        textTheme: GoogleFonts.varelaRoundTextTheme(
+        textTheme: GoogleFonts.notoSansTextTheme(
           Theme.of(context).textTheme,
         ),
         appBarTheme: AppBarTheme(
-            elevation: 0,
-            centerTitle: true,
-            backgroundColor: AppConstants.primaryColor),
+          elevation: 0,
+          centerTitle: true,
+          backgroundColor: AppConstants.primaryColor,
+        ),
       ),
       home: const SplashScreen(),
     );

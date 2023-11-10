@@ -1,6 +1,4 @@
 import 'dart:convert';
-
-import 'package:collection/collection.dart';
 import 'package:mioamoreapp/models/user_account_settings_model.dart';
 
 class UserProfileModel {
@@ -12,6 +10,15 @@ class UserProfileModel {
   String? phoneNumber;
   String gender;
   String? about;
+
+// NEW Variables
+  String? myPurpose;
+  String? instagramUsername;
+  String? snapchatUsername;
+  String? twitterUsername;
+  String? facebookUsername;
+  String? tiktokUsername;
+
   DateTime birthDay;
   List<String> mediaFiles;
   List<String> interests;
@@ -27,6 +34,12 @@ class UserProfileModel {
     this.phoneNumber,
     required this.gender,
     this.about,
+    this.myPurpose,
+    this.instagramUsername,
+    this.snapchatUsername,
+    this.twitterUsername,
+    this.facebookUsername,
+    this.tiktokUsername,
     required this.birthDay,
     required this.mediaFiles,
     required this.interests,
@@ -44,6 +57,12 @@ class UserProfileModel {
     String? phoneNumber,
     String? gender,
     String? about,
+    String? myPurpose,
+    String? instagramUsername,
+    String? snapchatUsername,
+    String? twitterUsername,
+    String? facebookUsername,
+    String? tiktokUsername,
     DateTime? birthDay,
     List<String>? mediaFiles,
     List<String>? interests,
@@ -60,6 +79,12 @@ class UserProfileModel {
       phoneNumber: phoneNumber ?? this.phoneNumber,
       gender: gender ?? this.gender,
       about: about ?? this.about,
+      myPurpose: myPurpose ?? this.myPurpose,
+      instagramUsername: instagramUsername ?? this.instagramUsername,
+      snapchatUsername: snapchatUsername ?? this.snapchatUsername,
+      twitterUsername: twitterUsername ?? this.twitterUsername,
+      facebookUsername: facebookUsername ?? this.facebookUsername,
+      tiktokUsername: tiktokUsername ?? this.tiktokUsername,
       birthDay: birthDay ?? this.birthDay,
       mediaFiles: mediaFiles ?? this.mediaFiles,
       interests: interests ?? this.interests,
@@ -89,6 +114,25 @@ class UserProfileModel {
     if (about != null) {
       result.addAll({'about': about});
     }
+    if (myPurpose != null) {
+      result.addAll({'myPurpose': myPurpose});
+    }
+    if (instagramUsername != null) {
+      result.addAll({'instagramUsername': instagramUsername});
+    }
+    if (snapchatUsername != null) {
+      result.addAll({'snapchatUsername': snapchatUsername});
+    }
+    if (twitterUsername != null) {
+      result.addAll({'twitterUsername': twitterUsername});
+    }
+    if (facebookUsername != null) {
+      result.addAll({'facebookUsername': facebookUsername});
+    }
+    if (tiktokUsername != null) {
+      result.addAll({'tiktokUsername': tiktokUsername});
+    }
+
     result.addAll({'birthDay': birthDay.millisecondsSinceEpoch});
     result.addAll({'mediaFiles': mediaFiles});
     result.addAll({'interests': interests});
@@ -110,6 +154,12 @@ class UserProfileModel {
       phoneNumber: map['phoneNumber'],
       gender: map['gender'] ?? '',
       about: map['about'],
+      myPurpose: map['myPurpose'],
+      instagramUsername: map['instagramUsername'],
+      snapchatUsername: map['snapchatUsername'],
+      twitterUsername: map['twitterUsername'],
+      facebookUsername: map['facebookUsername'],
+      tiktokUsername: map['tiktokUsername'],
       birthDay: DateTime.fromMillisecondsSinceEpoch(map['birthDay']),
       mediaFiles: List<String>.from(map['mediaFiles']),
       interests: List<String>.from(map['interests']),
@@ -124,49 +174,4 @@ class UserProfileModel {
 
   factory UserProfileModel.fromJson(String source) =>
       UserProfileModel.fromMap(json.decode(source));
-
-  @override
-  String toString() {
-    return 'UserProfileModel(id: $id, userId: $userId, fullName: $fullName, email: $email, profilePicture: $profilePicture, phoneNumber: $phoneNumber, gender: $gender, about: $about, birthDay: $birthDay, mediaFiles: $mediaFiles, interests: $interests, userAccountSettingsModel: $userAccountSettingsModel, isVerified: $isVerified, isOnline: $isOnline)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    final listEquals = const DeepCollectionEquality().equals;
-
-    return other is UserProfileModel &&
-        other.id == id &&
-        other.userId == userId &&
-        other.fullName == fullName &&
-        other.email == email &&
-        other.profilePicture == profilePicture &&
-        other.phoneNumber == phoneNumber &&
-        other.gender == gender &&
-        other.about == about &&
-        other.birthDay == birthDay &&
-        listEquals(other.mediaFiles, mediaFiles) &&
-        listEquals(other.interests, interests) &&
-        other.userAccountSettingsModel == userAccountSettingsModel &&
-        other.isVerified == isVerified &&
-        other.isOnline == isOnline;
-  }
-
-  @override
-  int get hashCode {
-    return id.hashCode ^
-        userId.hashCode ^
-        fullName.hashCode ^
-        email.hashCode ^
-        profilePicture.hashCode ^
-        phoneNumber.hashCode ^
-        gender.hashCode ^
-        about.hashCode ^
-        birthDay.hashCode ^
-        mediaFiles.hashCode ^
-        interests.hashCode ^
-        userAccountSettingsModel.hashCode ^
-        isVerified.hashCode ^
-        isOnline.hashCode;
-  }
 }

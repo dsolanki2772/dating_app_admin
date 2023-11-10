@@ -7,6 +7,7 @@ import 'package:mioamoreapp/config/config.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
 import 'package:mioamoreapp/providers/auth_providers.dart';
 import 'package:mioamoreapp/providers/user_profile_provider.dart';
+import 'package:mioamoreapp/providers/version_provider.dart';
 import 'package:mioamoreapp/views/company/about_us.dart';
 import 'package:mioamoreapp/views/company/contact_us.dart';
 import 'package:mioamoreapp/views/company/faq_page.dart';
@@ -26,6 +27,7 @@ class AppDrawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     final userProfileRef = ref.watch(userProfileFutureProvider);
+    final versionRef = ref.watch(versionProvider);
     return Drawer(
       backgroundColor: AppConstants.primaryColor,
       child: Column(
@@ -281,6 +283,19 @@ class AppDrawer extends ConsumerWidget {
                         color: Colors.white70,
                       ),
                     ),
+                  versionRef.when(
+                    data: (data) {
+                      return Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Text(
+                          data,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      );
+                    },
+                    error: (error, stackTrace) => const SizedBox(),
+                    loading: () => const SizedBox(),
+                  ),
                 ],
               ),
             ),
@@ -301,6 +316,8 @@ class AppDrawer extends ConsumerWidget {
             },
             title: 'Log Out',
           ),
+          // const SizedBox(height: AppConstants.defaultNumericValue / 2),
+
           const SizedBox(height: AppConstants.defaultNumericValue / 2),
         ],
       ),

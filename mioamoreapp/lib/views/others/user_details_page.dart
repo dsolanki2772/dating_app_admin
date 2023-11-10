@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mioamoreapp/config/config.dart';
 import 'package:mioamoreapp/helpers/constants.dart';
+import 'package:mioamoreapp/helpers/url_launcher_helper.dart';
 import 'package:mioamoreapp/models/match_model.dart';
 import 'package:mioamoreapp/models/notification_model.dart';
 import 'package:mioamoreapp/models/user_interaction_model.dart';
@@ -797,7 +798,7 @@ class _DetailsBodyState extends ConsumerState<DetailsBody> {
                                     ),
                                   if (data != null)
                                     Text(
-                                      '${(Geolocator.distanceBetween(data.userAccountSettingsModel.location.latitude, data.userAccountSettingsModel.location.longitude, widget.user.userAccountSettingsModel.location.latitude, widget.user.userAccountSettingsModel.location.longitude) / 1000).toStringAsFixed(2)} km away',
+                                      '${(Geolocator.distanceBetween(widget.user.userAccountSettingsModel.location.latitude, widget.user.userAccountSettingsModel.location.longitude, widget.user.userAccountSettingsModel.location.latitude, widget.user.userAccountSettingsModel.location.longitude) / 1000).toStringAsFixed(2)} km away',
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodySmall!
@@ -866,6 +867,27 @@ class _DetailsBodyState extends ConsumerState<DetailsBody> {
                     widget.user.about == null || widget.user.about!.isEmpty
                         ? "Not Available"
                         : widget.user.about!),
+              ),
+              const SizedBox(height: AppConstants.defaultNumericValue * 2),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: AppConstants.defaultNumericValue),
+                child: Text(
+                  "Why I'm Here",
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge!
+                      .copyWith(fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(height: AppConstants.defaultNumericValue / 2),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: AppConstants.defaultNumericValue),
+                child: Text(widget.user.myPurpose == null ||
+                        widget.user.myPurpose!.isEmpty
+                    ? "Not Mentioned!"
+                    : widget.user.myPurpose!),
               ),
               const SizedBox(height: AppConstants.defaultNumericValue * 2),
               Padding(
@@ -962,7 +984,236 @@ class _DetailsBodyState extends ConsumerState<DetailsBody> {
                         }).toList(),
                       ),
               ),
-              const SizedBox(height: AppConstants.defaultNumericValue * 2),
+              const SizedBox(height: AppConstants.defaultNumericValue),
+              ListTile(
+                title: Text(
+                  "Social Accounts",
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge!
+                      .copyWith(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(
+                      top: AppConstants.defaultNumericValue / 2),
+                  child: Wrap(
+                    spacing: AppConstants.defaultNumericValue / 2,
+                    children: [
+                      if (widget.user.instagramUsername != null &&
+                          widget.user.instagramUsername!.isNotEmpty)
+                        ActionChip(
+                          onPressed: () async {
+                            UrlLauncherHelper.launchURL(Uri.parse(
+                                "https://www.instagram.com/${widget.user.instagramUsername}"));
+                          },
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppConstants.defaultNumericValue / 2,
+                            vertical: AppConstants.defaultNumericValue / 4,
+                          ),
+                          backgroundColor:
+                              AppConstants.primaryColor.withOpacity(0.1),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                AppConstants.defaultNumericValue * 2),
+                            side: BorderSide(
+                                color: AppConstants.primaryColor, width: 1),
+                          ),
+                          avatar: Image.asset(
+                            instagramIcon,
+                            width: AppConstants.defaultNumericValue * 2,
+                            height: AppConstants.defaultNumericValue * 2,
+                          ),
+                          label: Text(
+                              widget.user.instagramUsername![0].toUpperCase() +
+                                  widget.user.instagramUsername!.substring(1)),
+                        )
+                      else
+                        ActionChip(
+                          onPressed: () {},
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppConstants.defaultNumericValue / 2,
+                            vertical: AppConstants.defaultNumericValue / 4,
+                          ),
+                          avatar: Image.asset(
+                            instagramIcon,
+                            width: AppConstants.defaultNumericValue * 2,
+                            height: AppConstants.defaultNumericValue * 2,
+                          ),
+                          label: const Text("Not Set!"),
+                        ),
+                      if (widget.user.snapchatUsername != null &&
+                          widget.user.snapchatUsername!.isNotEmpty)
+                        ActionChip(
+                          onPressed: () async {
+                            UrlLauncherHelper.launchURL(Uri.parse(
+                                "https://www.snapchat.com/add/${widget.user.snapchatUsername}"));
+                          },
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppConstants.defaultNumericValue / 2,
+                            vertical: AppConstants.defaultNumericValue / 4,
+                          ),
+                          backgroundColor:
+                              AppConstants.primaryColor.withOpacity(0.1),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                AppConstants.defaultNumericValue * 2),
+                            side: BorderSide(
+                                color: AppConstants.primaryColor, width: 1),
+                          ),
+                          avatar: Image.asset(
+                            snapchatIcon,
+                            width: AppConstants.defaultNumericValue * 2,
+                            height: AppConstants.defaultNumericValue * 2,
+                          ),
+                          label: Text(
+                              widget.user.snapchatUsername![0].toUpperCase() +
+                                  widget.user.snapchatUsername!.substring(1)),
+                        )
+                      else
+                        ActionChip(
+                          onPressed: () {},
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppConstants.defaultNumericValue / 2,
+                            vertical: AppConstants.defaultNumericValue / 4,
+                          ),
+                          avatar: Image.asset(
+                            snapchatIcon,
+                            width: AppConstants.defaultNumericValue * 2,
+                            height: AppConstants.defaultNumericValue * 2,
+                          ),
+                          label: const Text("Not Set!"),
+                        ),
+                      if (widget.user.twitterUsername != null &&
+                          widget.user.twitterUsername!.isNotEmpty)
+                        ActionChip(
+                          onPressed: () async {
+                            UrlLauncherHelper.launchURL(Uri.parse(
+                                "https://www.twitter.com/${widget.user.twitterUsername}"));
+                          },
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppConstants.defaultNumericValue / 2,
+                            vertical: AppConstants.defaultNumericValue / 4,
+                          ),
+                          backgroundColor:
+                              AppConstants.primaryColor.withOpacity(0.1),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                AppConstants.defaultNumericValue * 2),
+                            side: BorderSide(
+                                color: AppConstants.primaryColor, width: 1),
+                          ),
+                          avatar: Image.asset(
+                            twitterIcon,
+                            width: AppConstants.defaultNumericValue * 2,
+                            height: AppConstants.defaultNumericValue * 2,
+                          ),
+                          label: Text(
+                              widget.user.twitterUsername![0].toUpperCase() +
+                                  widget.user.twitterUsername!.substring(1)),
+                        )
+                      else
+                        ActionChip(
+                          onPressed: () {},
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppConstants.defaultNumericValue / 2,
+                            vertical: AppConstants.defaultNumericValue / 4,
+                          ),
+                          avatar: Image.asset(
+                            twitterIcon,
+                            width: AppConstants.defaultNumericValue * 2,
+                            height: AppConstants.defaultNumericValue * 2,
+                          ),
+                          label: const Text("Not Set!"),
+                        ),
+                      if (widget.user.facebookUsername != null &&
+                          widget.user.facebookUsername!.isNotEmpty)
+                        ActionChip(
+                          onPressed: () async {
+                            UrlLauncherHelper.launchURL(Uri.parse(
+                                "https://www.facebook.com/${widget.user.facebookUsername}"));
+                          },
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppConstants.defaultNumericValue / 2,
+                            vertical: AppConstants.defaultNumericValue / 4,
+                          ),
+                          backgroundColor:
+                              AppConstants.primaryColor.withOpacity(0.1),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                AppConstants.defaultNumericValue * 2),
+                            side: BorderSide(
+                                color: AppConstants.primaryColor, width: 1),
+                          ),
+                          avatar: Image.asset(
+                            facebookIcon,
+                            width: AppConstants.defaultNumericValue * 2,
+                            height: AppConstants.defaultNumericValue * 2,
+                          ),
+                          label: Text(
+                              widget.user.facebookUsername![0].toUpperCase() +
+                                  widget.user.facebookUsername!.substring(1)),
+                        )
+                      else
+                        ActionChip(
+                          onPressed: () {},
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppConstants.defaultNumericValue / 2,
+                            vertical: AppConstants.defaultNumericValue / 4,
+                          ),
+                          avatar: Image.asset(
+                            facebookIcon,
+                            width: AppConstants.defaultNumericValue * 2,
+                            height: AppConstants.defaultNumericValue * 2,
+                          ),
+                          label: const Text("Not Set!"),
+                        ),
+                      if (widget.user.tiktokUsername != null &&
+                          widget.user.tiktokUsername!.isNotEmpty)
+                        ActionChip(
+                          onPressed: () async {
+                            UrlLauncherHelper.launchURL(Uri.parse(
+                                "https://www.tiktok.com/@${widget.user.tiktokUsername}"));
+                          },
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppConstants.defaultNumericValue / 2,
+                            vertical: AppConstants.defaultNumericValue / 4,
+                          ),
+                          backgroundColor:
+                              AppConstants.primaryColor.withOpacity(0.1),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                AppConstants.defaultNumericValue * 2),
+                            side: BorderSide(
+                                color: AppConstants.primaryColor, width: 1),
+                          ),
+                          avatar: Image.asset(
+                            tiktokIcon,
+                            width: AppConstants.defaultNumericValue * 2,
+                            height: AppConstants.defaultNumericValue * 2,
+                          ),
+                          label: Text(
+                              widget.user.tiktokUsername![0].toUpperCase() +
+                                  widget.user.tiktokUsername!.substring(1)),
+                        )
+                      else
+                        ActionChip(
+                          onPressed: () {},
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppConstants.defaultNumericValue / 2,
+                            vertical: AppConstants.defaultNumericValue / 4,
+                          ),
+                          avatar: Image.asset(
+                            tiktokIcon,
+                            width: AppConstants.defaultNumericValue * 2,
+                            height: AppConstants.defaultNumericValue * 2,
+                          ),
+                          label: const Text("Not Set!"),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppConstants.defaultNumericValue),
               Padding(
                 padding: const EdgeInsets.symmetric(
                     horizontal: AppConstants.defaultNumericValue),
@@ -1058,7 +1309,7 @@ class _DetailsBodyState extends ConsumerState<DetailsBody> {
 //         ref.watch(favouriteUsersStreamProvider);
 //     return _favouriteUsersStreamProvider.when(
 //         data: (data) {
-//           bool _isFavorite = data.contains(user.id);
+//           bool _isFavorite = widget.user.contains(user.id);
 
 //           return CustomIconButton(
 //             icon:

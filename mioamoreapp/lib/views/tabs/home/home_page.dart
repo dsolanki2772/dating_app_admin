@@ -215,6 +215,7 @@ class _HomePageState extends State<HomePage> {
       },
       onSkip: () {
         debugPrint("skip");
+        return false;
       },
       onFinish: () {
         debugPrint("finish");
