@@ -7,7 +7,7 @@ import 'package:mioamoreapp/views/auth/login_with_phone_page.dart';
 import 'package:mioamoreapp/views/custom/custom_headline.dart';
 
 class SelectCountryPage extends ConsumerStatefulWidget {
-  const SelectCountryPage({Key? key}) : super(key: key);
+  const SelectCountryPage({super.key});
 
   @override
   ConsumerState<SelectCountryPage> createState() => _SelectCountryPageState();

@@ -7,10 +7,10 @@ class VideoPlayerPage extends StatefulWidget {
   final String videoUrl;
   final bool isNetwork;
   const VideoPlayerPage({
-    Key? key,
+    super.key,
     required this.videoUrl,
     required this.isNetwork,
-  }) : super(key: key);
+  });
 
   @override
   State<VideoPlayerPage> createState() => _VideoPlayerPageState();
@@ -131,7 +131,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
 class VideoPlayerThumbNail extends StatelessWidget {
   final VoidCallback onTap;
 
-  const VideoPlayerThumbNail({Key? key, required this.onTap}) : super(key: key);
+  const VideoPlayerThumbNail({super.key, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

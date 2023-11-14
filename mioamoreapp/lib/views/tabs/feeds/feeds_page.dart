@@ -24,7 +24,7 @@ import 'package:mioamoreapp/views/tabs/home/home_page.dart';
 import 'package:mioamoreapp/views/tabs/messages/components/chat_page.dart';
 
 class FeedsPage extends ConsumerWidget {
-  const FeedsPage({Key? key}) : super(key: key);
+  const FeedsPage({super.key});
 
   @override
   Widget build(BuildContext context, ref) {
@@ -67,7 +67,7 @@ class FeedsPage extends ConsumerWidget {
 }
 
 class FeedsBody extends ConsumerWidget {
-  const FeedsBody({Key? key}) : super(key: key);
+  const FeedsBody({super.key});
 
   @override
   Widget build(BuildContext context, ref) {
@@ -119,7 +119,7 @@ class FeedsBody extends ConsumerWidget {
 }
 
 class CreateNewPostSection extends ConsumerWidget {
-  const CreateNewPostSection({Key? key}) : super(key: key);
+  const CreateNewPostSection({super.key});
 
   @override
   Widget build(BuildContext context, ref) {
@@ -175,10 +175,10 @@ class SingleFeedPost extends ConsumerStatefulWidget {
   final FeedModel feed;
   final UserProfileModel user;
   const SingleFeedPost({
-    Key? key,
+    super.key,
     required this.feed,
     required this.user,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<SingleFeedPost> createState() => _SingleFeedPostState();
@@ -334,9 +334,9 @@ class _SingleFeedPostState extends ConsumerState<SingleFeedPost> {
 class PostText extends StatefulWidget {
   final String postText;
   const PostText({
-    Key? key,
+    super.key,
     required this.postText,
-  }) : super(key: key);
+  });
 
   @override
   State<PostText> createState() => _PostTextState();
@@ -369,9 +369,9 @@ class _PostTextState extends State<PostText> {
 class PostImages extends StatelessWidget {
   final FeedModel post;
   const PostImages({
-    Key? key,
+    super.key,
     required this.post,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -503,10 +503,10 @@ class PostSingleImage extends StatelessWidget {
   final String imageUrl;
   final String? moreNumberOfImages;
   const PostSingleImage({
-    Key? key,
+    super.key,
     required this.imageUrl,
     this.moreNumberOfImages,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

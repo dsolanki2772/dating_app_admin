@@ -6,10 +6,10 @@ class NoItemFoundWidget extends StatelessWidget {
   final String? text;
   final bool isSmall;
   const NoItemFoundWidget({
-    Key? key,
+    super.key,
     this.text,
     this.isSmall = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

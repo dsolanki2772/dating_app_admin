@@ -59,5 +59,17 @@ const String facebookLogo = "assets/logos/facebook.png";
 const String googleLogo = "assets/logos/google.png";
 const String twitterLogo = "assets/logos/twitter.png";
 
+/// Icons
+const String facebookIcon = "assets/icons/facebook.png";
+const String instagramIcon = "assets/icons/instagram.png";
+const String snapchatIcon = "assets/icons/snapchat.png";
+const String twitterIcon = "assets/icons/twitterx.png";
+const String tiktokIcon = "assets/icons/tiktok.png";
+
+const String defaultImage =
+    "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80";
+const String profilePicture =
+    "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80";
+
 final emailVerificationRedExp = RegExp(
     r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");

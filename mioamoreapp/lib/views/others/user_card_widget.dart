@@ -17,13 +17,13 @@ class UserCardWidget extends StatefulWidget {
   final VoidCallback onTapBolt;
   final VoidCallback? onNavigateBack;
   const UserCardWidget({
-    Key? key,
+    super.key,
     required this.user,
     required this.onTapCross,
     required this.onTapHeart,
     required this.onTapBolt,
     this.onNavigateBack,
-  }) : super(key: key);
+  });
 
   @override
   State<UserCardWidget> createState() => _UserCardWidgetState();
@@ -354,12 +354,12 @@ class UserLikeActions extends StatelessWidget {
   final VoidCallback onTapHeart;
   final bool showShadow;
   const UserLikeActions({
-    Key? key,
+    super.key,
     required this.onTapCross,
     required this.onTapBolt,
     required this.onTapHeart,
     this.showShadow = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

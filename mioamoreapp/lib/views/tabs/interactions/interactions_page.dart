@@ -13,11 +13,10 @@ import 'package:mioamoreapp/views/custom/custom_app_bar.dart';
 import 'package:mioamoreapp/views/custom/custom_headline.dart';
 import 'package:mioamoreapp/views/custom/custom_icon_button.dart';
 import 'package:mioamoreapp/views/custom/lottie/no_item_found_widget.dart';
-
 import 'package:mioamoreapp/views/others/user_image_card.dart';
 
 class InteractionsPage extends ConsumerStatefulWidget {
-  const InteractionsPage({Key? key}) : super(key: key);
+  const InteractionsPage({super.key});
 
   @override
   ConsumerState<InteractionsPage> createState() => _InteractionsPageState();

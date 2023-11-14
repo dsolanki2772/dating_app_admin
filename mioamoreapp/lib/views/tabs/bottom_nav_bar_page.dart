@@ -20,7 +20,7 @@ import 'package:mioamoreapp/views/tabs/profile/first_time_update_profile_page.da
 
 class BottomNavBarPage extends ConsumerStatefulWidget {
   final String userId;
-  const BottomNavBarPage({Key? key, required this.userId}) : super(key: key);
+  const BottomNavBarPage({super.key, required this.userId});
 
   @override
   ConsumerState<BottomNavBarPage> createState() => _BottomNavBarPageState();
@@ -120,10 +120,10 @@ class _BottomNavBarPageState extends ConsumerState<BottomNavBarPage>
                           ),
                           bottomNavigationBar: Container(
                             decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(30),
-                                topRight: Radius.circular(30),
-                              ),
+                              // borderRadius: const BorderRadius.only(
+                              //   topLeft: Radius.circular(30),
+                              //   topRight: Radius.circular(30),
+                              // ),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.05),
@@ -233,9 +233,9 @@ final List<_BottomNavBarItem> _navItems = [
 class MessageConsumerBottomNavIcon extends ConsumerWidget {
   final IconData icon;
   const MessageConsumerBottomNavIcon({
-    Key? key,
+    super.key,
     required this.icon,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -263,10 +263,10 @@ class MessageIcon extends StatelessWidget {
   final int unreadCount;
   final IconData icon;
   const MessageIcon({
-    Key? key,
+    super.key,
     required this.unreadCount,
     required this.icon,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

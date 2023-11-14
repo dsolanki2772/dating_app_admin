@@ -6,11 +6,11 @@ class CustomAppBar extends StatelessWidget {
   final Widget? title;
   final Widget? trailing;
   const CustomAppBar({
-    Key? key,
+    super.key,
     this.leading,
     this.title,
     this.trailing,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -11,9 +11,9 @@ import 'package:mioamoreapp/views/custom/custom_headline.dart';
 class LoginWithPhoneNumberPage extends ConsumerStatefulWidget {
   final CountryCode countryCode;
   const LoginWithPhoneNumberPage({
-    Key? key,
+    super.key,
     required this.countryCode,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<LoginWithPhoneNumberPage> createState() =>

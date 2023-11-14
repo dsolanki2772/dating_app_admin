@@ -11,10 +11,10 @@ class UserImageCard extends StatelessWidget {
   final String? matchId;
   final UserProfileModel user;
   const UserImageCard({
-    Key? key,
+    super.key,
     this.matchId,
     required this.user,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

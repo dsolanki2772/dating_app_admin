@@ -9,7 +9,7 @@ import 'package:mioamoreapp/views/custom/custom_icon_button.dart';
 import 'package:mioamoreapp/views/others/webview_page.dart';
 
 class AboutUs extends StatelessWidget {
-  const AboutUs({Key? key}) : super(key: key);
+  const AboutUs({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(

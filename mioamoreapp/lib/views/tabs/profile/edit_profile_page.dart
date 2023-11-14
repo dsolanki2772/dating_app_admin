@@ -14,8 +14,7 @@ import 'package:mioamoreapp/views/custom/custom_button.dart';
 
 class EditProfilePage extends ConsumerStatefulWidget {
   final UserProfileModel userProfileModel;
-  const EditProfilePage({Key? key, required this.userProfileModel})
-      : super(key: key);
+  const EditProfilePage({super.key, required this.userProfileModel});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -28,6 +27,13 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   final _emailController = TextEditingController();
   final _phoneNumberController = TextEditingController();
   final _aboutController = TextEditingController();
+  final _myPurposeController = TextEditingController();
+  final _instagramUsernameController = TextEditingController();
+  final _snapchatUsernameController = TextEditingController();
+  final _twitterUsernameController = TextEditingController();
+  final _facebookUsernameController = TextEditingController();
+  final _tiktokUsernameController = TextEditingController();
+
   String? _profilePicture;
   final List<String> _interests = [];
   final List<String> _medias = [
@@ -40,6 +46,17 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     _emailController.text = widget.userProfileModel.email ?? "";
     _phoneNumberController.text = widget.userProfileModel.phoneNumber ?? "";
     _aboutController.text = widget.userProfileModel.about ?? "";
+    _myPurposeController.text = widget.userProfileModel.myPurpose ?? "";
+    _instagramUsernameController.text =
+        widget.userProfileModel.instagramUsername ?? "";
+    _snapchatUsernameController.text =
+        widget.userProfileModel.snapchatUsername ?? "";
+    _twitterUsernameController.text =
+        widget.userProfileModel.twitterUsername ?? "";
+    _facebookUsernameController.text =
+        widget.userProfileModel.facebookUsername ?? "";
+    _tiktokUsernameController.text =
+        widget.userProfileModel.tiktokUsername ?? "";
     _profilePicture = widget.userProfileModel.profilePicture;
     _interests.addAll(widget.userProfileModel.interests);
     for (var i = 0; i < _medias.length; i++) {
@@ -58,6 +75,12 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
         email: _emailController.text.trim(),
         phoneNumber: _phoneNumberController.text.trim(),
         about: _aboutController.text.trim(),
+        myPurpose: _myPurposeController.text.trim(),
+        instagramUsername: _instagramUsernameController.text.trim(),
+        snapchatUsername: _snapchatUsernameController.text.trim(),
+        twitterUsername: _twitterUsernameController.text.trim(),
+        facebookUsername: _facebookUsernameController.text.trim(),
+        tiktokUsername: _tiktokUsernameController.text.trim(),
         profilePicture: _profilePicture,
         interests: _interests,
         mediaFiles: _medias,
@@ -188,6 +211,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                     controller: _fullNameController,
                     decoration: const InputDecoration(
                       labelText: "Full Name",
+                      prefixIcon: Icon(CupertinoIcons.person),
                     ),
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -202,6 +226,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   decoration: const InputDecoration(
                     labelText: "Email",
+                    prefixIcon: Icon(CupertinoIcons.mail),
                   ),
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -218,6 +243,16 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   decoration: const InputDecoration(
                     labelText: "Phone Number",
+                    prefixIcon: Icon(CupertinoIcons.phone),
+                  ),
+                ),
+                const SizedBox(height: AppConstants.defaultNumericValue),
+                TextFormField(
+                  controller: _myPurposeController,
+                  maxLines: null,
+                  decoration: const InputDecoration(
+                    labelText: "My Purpose",
+                    prefixIcon: Icon(CupertinoIcons.heart),
                   ),
                 ),
                 const SizedBox(height: AppConstants.defaultNumericValue),
@@ -226,12 +261,13 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                   maxLines: null,
                   decoration: const InputDecoration(
                     labelText: "About",
+                    prefixIcon: Icon(CupertinoIcons.info),
                   ),
                 ),
-                const SizedBox(height: AppConstants.defaultNumericValue),
+                const SizedBox(height: AppConstants.defaultNumericValue * 2),
                 Text(
                   "Interests",
-                  style: Theme.of(context).textTheme.bodySmall,
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: AppConstants.defaultNumericValue / 2),
                 Wrap(
@@ -280,11 +316,143 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                   textAlign: TextAlign.end,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
-                const SizedBox(height: AppConstants.defaultNumericValue),
+                const SizedBox(height: AppConstants.defaultNumericValue * 2),
                 Text(
-                  "Images",
-                  style: Theme.of(context).textTheme.bodySmall,
+                  "Social Accounts",
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
+                const SizedBox(height: AppConstants.defaultNumericValue / 2),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(instagramIcon, width: 32),
+                    const SizedBox(width: AppConstants.defaultNumericValue / 4),
+                    Expanded(
+                      child: CupertinoTextField(
+                        controller: _instagramUsernameController,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppConstants.defaultNumericValue / 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        prefix: const Padding(
+                          padding: EdgeInsets.only(
+                              left: AppConstants.defaultNumericValue / 2),
+                          child: Text("instagram.com/"),
+                        ),
+                        prefixMode: OverlayVisibilityMode.always,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppConstants.defaultNumericValue),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(snapchatIcon, width: 32),
+                    const SizedBox(width: AppConstants.defaultNumericValue / 4),
+                    Expanded(
+                      child: CupertinoTextField(
+                        controller: _snapchatUsernameController,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppConstants.defaultNumericValue / 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        prefix: const Padding(
+                          padding: EdgeInsets.only(
+                              left: AppConstants.defaultNumericValue / 2),
+                          child: Text("snapchat.com/add/"),
+                        ),
+                        prefixMode: OverlayVisibilityMode.always,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppConstants.defaultNumericValue),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(twitterIcon, width: 32),
+                    const SizedBox(width: AppConstants.defaultNumericValue / 4),
+                    Expanded(
+                      child: CupertinoTextField(
+                        controller: _twitterUsernameController,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppConstants.defaultNumericValue / 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        prefix: const Padding(
+                          padding: EdgeInsets.only(
+                              left: AppConstants.defaultNumericValue / 2),
+                          child: Text("twitter.com/"),
+                        ),
+                        prefixMode: OverlayVisibilityMode.always,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppConstants.defaultNumericValue),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(facebookIcon, width: 32),
+                    const SizedBox(width: AppConstants.defaultNumericValue / 4),
+                    Expanded(
+                      child: CupertinoTextField(
+                        controller: _facebookUsernameController,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppConstants.defaultNumericValue / 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        prefix: const Padding(
+                          padding: EdgeInsets.only(
+                              left: AppConstants.defaultNumericValue / 2),
+                          child: Text("facebook.com/"),
+                        ),
+                        prefixMode: OverlayVisibilityMode.always,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppConstants.defaultNumericValue),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(tiktokIcon, width: 32),
+                    const SizedBox(width: AppConstants.defaultNumericValue / 4),
+                    Expanded(
+                      child: CupertinoTextField(
+                        controller: _tiktokUsernameController,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppConstants.defaultNumericValue / 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        prefix: const Padding(
+                          padding: EdgeInsets.only(
+                              left: AppConstants.defaultNumericValue / 2),
+                          child: Text("tiktok.com/@"),
+                        ),
+                        prefixMode: OverlayVisibilityMode.always,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppConstants.defaultNumericValue * 2),
+                Text("Images", style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: AppConstants.defaultNumericValue / 2),
                 Wrap(
                   spacing: AppConstants.defaultNumericValue / 2.1,
@@ -383,7 +551,8 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                 CustomButton(
                   onPressed: _onSave,
                   text: "Save",
-                )
+                ),
+                const SizedBox(height: AppConstants.defaultNumericValue * 4),
               ],
             ),
           ),

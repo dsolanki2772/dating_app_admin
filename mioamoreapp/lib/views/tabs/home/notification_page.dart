@@ -18,7 +18,7 @@ import 'package:mioamoreapp/views/tabs/home/home_page.dart';
 import 'package:mioamoreapp/views/tabs/messages/components/chat_page.dart';
 
 class NotificationPage extends ConsumerStatefulWidget {
-  const NotificationPage({Key? key}) : super(key: key);
+  const NotificationPage({super.key});
 
   @override
   ConsumerState<NotificationPage> createState() => _NotificationPageState();
@@ -101,7 +101,7 @@ class _NotificationPageState extends ConsumerState<NotificationPage> {
 }
 
 class NotificationBody extends ConsumerWidget {
-  const NotificationBody({Key? key}) : super(key: key);
+  const NotificationBody({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

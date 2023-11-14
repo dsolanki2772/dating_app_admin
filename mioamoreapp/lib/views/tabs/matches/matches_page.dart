@@ -17,7 +17,7 @@ import 'package:mioamoreapp/views/others/user_image_card.dart';
 import 'package:mioamoreapp/views/tabs/home/home_page.dart';
 
 class MatchesConsumerPage extends ConsumerWidget {
-  const MatchesConsumerPage({Key? key}) : super(key: key);
+  const MatchesConsumerPage({super.key});
 
   @override
   Widget build(BuildContext context, ref) {
@@ -67,9 +67,9 @@ class MatchesConsumerPage extends ConsumerWidget {
 class MatchesPage extends ConsumerStatefulWidget {
   final List<MatchedUsersView> matchesView;
   const MatchesPage({
-    Key? key,
+    super.key,
     required this.matchesView,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _MatchBodyState();

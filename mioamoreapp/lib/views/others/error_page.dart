@@ -5,7 +5,7 @@ import 'package:mioamoreapp/main.dart';
 import 'package:mioamoreapp/views/custom/custom_button.dart';
 
 class ErrorPage extends ConsumerWidget {
-  const ErrorPage({Key? key}) : super(key: key);
+  const ErrorPage({super.key});
 
   @override
   Widget build(BuildContext context, ref) {

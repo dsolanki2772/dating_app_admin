@@ -10,14 +10,14 @@ class CustomIconButton extends StatelessWidget {
   final Color? backgroundColor;
 
   const CustomIconButton({
-    Key? key,
+    super.key,
     required this.onPressed,
     required this.icon,
     this.padding,
     this.margin,
     this.color,
     this.backgroundColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
