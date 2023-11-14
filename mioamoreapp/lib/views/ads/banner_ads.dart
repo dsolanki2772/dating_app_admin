@@ -4,7 +4,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:mioamoreapp/config/config.dart';
 
 class MyBannerAd extends StatefulWidget {
-  const MyBannerAd({Key? key}) : super(key: key);
+  const MyBannerAd({super.key});
 
   @override
   State<MyBannerAd> createState() => _MyBannerAdState();

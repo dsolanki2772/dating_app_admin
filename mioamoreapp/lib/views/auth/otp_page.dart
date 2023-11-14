@@ -14,9 +14,9 @@ import 'package:mioamoreapp/views/custom/custom_headline.dart';
 class OtpPage extends ConsumerStatefulWidget {
   final String phoneNumber;
   const OtpPage({
-    Key? key,
+    super.key,
     required this.phoneNumber,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<OtpPage> createState() => _OtpPageState();

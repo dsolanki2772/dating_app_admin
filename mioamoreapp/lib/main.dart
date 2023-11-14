@@ -43,7 +43,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +71,7 @@ class MyApp extends StatelessWidget {
 }
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -99,7 +99,7 @@ class _SplashScreenState extends State<SplashScreen> {
 }
 
 class LandingWidget extends ConsumerStatefulWidget {
-  const LandingWidget({Key? key}) : super(key: key);
+  const LandingWidget({super.key});
 
   @override
   ConsumerState<LandingWidget> createState() => _LandingWidgetState();

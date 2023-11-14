@@ -8,7 +8,7 @@ import 'package:mioamoreapp/views/others/loading_page.dart';
 import 'package:mioamoreapp/views/tabs/home/home_page.dart';
 
 class BlockingPage extends ConsumerWidget {
-  const BlockingPage({Key? key}) : super(key: key);
+  const BlockingPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

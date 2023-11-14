@@ -8,11 +8,11 @@ class PhotoViewPage extends StatefulWidget {
   final String? title;
   final int index;
   const PhotoViewPage({
-    Key? key,
+    super.key,
     required this.images,
     this.title,
     this.index = 0,
-  }) : super(key: key);
+  });
 
   @override
   State<PhotoViewPage> createState() => _PhotoViewPageState();

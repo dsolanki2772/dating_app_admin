@@ -15,9 +15,9 @@ import 'package:mioamoreapp/views/others/set_user_location_page.dart';
 class AccountSettingsLandingWidget extends ConsumerWidget {
   final Widget Function(UserProfileModel data)? builder;
   const AccountSettingsLandingWidget({
-    Key? key,
+    super.key,
     this.builder,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -39,7 +39,7 @@ class AccountSettingsLandingWidget extends ConsumerWidget {
 
 class AccountSettingsPage extends ConsumerStatefulWidget {
   final UserProfileModel user;
-  const AccountSettingsPage({Key? key, required this.user}) : super(key: key);
+  const AccountSettingsPage({super.key, required this.user});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -499,11 +499,10 @@ class _GenderButton extends StatelessWidget {
   final String text;
   final bool isSelected;
   const _GenderButton({
-    Key? key,
     required this.onPressed,
     required this.text,
     required this.isSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

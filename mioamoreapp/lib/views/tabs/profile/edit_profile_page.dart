@@ -14,8 +14,7 @@ import 'package:mioamoreapp/views/custom/custom_button.dart';
 
 class EditProfilePage extends ConsumerStatefulWidget {
   final UserProfileModel userProfileModel;
-  const EditProfilePage({Key? key, required this.userProfileModel})
-      : super(key: key);
+  const EditProfilePage({super.key, required this.userProfileModel});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>

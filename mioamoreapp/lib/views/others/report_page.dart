@@ -16,9 +16,9 @@ import 'package:mioamoreapp/views/tabs/home/home_page.dart';
 class ReportPage extends ConsumerStatefulWidget {
   final UserProfileModel userProfileModel;
   const ReportPage({
-    Key? key,
+    super.key,
     required this.userProfileModel,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<ReportPage> createState() => _ReportPageState();
@@ -212,9 +212,9 @@ class _ReportPageState extends ConsumerState<ReportPage> {
 class AddNewImageWidget extends StatelessWidget {
   final VoidCallback onPressed;
   const AddNewImageWidget({
-    Key? key,
+    super.key,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

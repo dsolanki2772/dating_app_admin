@@ -9,7 +9,7 @@ import 'package:mioamoreapp/views/custom/custom_icon_button.dart';
 import 'package:mioamoreapp/views/others/webview_page.dart';
 
 class PrivacyPolicy extends StatelessWidget {
-  const PrivacyPolicy({Key? key}) : super(key: key);
+  const PrivacyPolicy({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(

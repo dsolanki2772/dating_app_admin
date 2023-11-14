@@ -8,9 +8,9 @@ import 'package:mioamoreapp/views/custom/custom_button.dart';
 class EditFeedPage extends ConsumerStatefulWidget {
   final FeedModel feed;
   const EditFeedPage({
-    Key? key,
+    super.key,
     required this.feed,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _EditFeedPageState();

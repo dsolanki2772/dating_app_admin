@@ -5,11 +5,11 @@ class CustomHeadLine extends StatelessWidget {
   final Color firstPartColor;
   final Color secondPartColor;
   const CustomHeadLine({
-    Key? key,
+    super.key,
     required this.text,
     this.firstPartColor = Colors.black,
     required this.secondPartColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

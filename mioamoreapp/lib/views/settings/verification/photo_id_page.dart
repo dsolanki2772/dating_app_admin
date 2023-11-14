@@ -7,10 +7,10 @@ class PhotoIdPage extends StatefulWidget {
   final File? frontView;
   final File? backView;
   const PhotoIdPage({
-    Key? key,
+    super.key,
     this.frontView,
     this.backView,
-  }) : super(key: key);
+  });
 
   @override
   State<PhotoIdPage> createState() => _PhotoIdPageState();

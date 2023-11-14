@@ -11,9 +11,9 @@ import 'package:mioamoreapp/views/others/video_player_page.dart';
 class ChatMediaGalleryConsumerPage extends ConsumerWidget {
   final String matchId;
   const ChatMediaGalleryConsumerPage({
-    Key? key,
+    super.key,
     required this.matchId,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,9 +37,9 @@ class ChatMediaGalleryConsumerPage extends ConsumerWidget {
 class ChatMediaGalleryPage extends StatefulWidget {
   final List<ChatItemModel> chats;
   const ChatMediaGalleryPage({
-    Key? key,
+    super.key,
     required this.chats,
-  }) : super(key: key);
+  });
 
   @override
   State<ChatMediaGalleryPage> createState() => _ChatMediaGalleryPageState();

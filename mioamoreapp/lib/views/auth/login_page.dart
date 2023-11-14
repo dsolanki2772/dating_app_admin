@@ -19,7 +19,7 @@ import 'package:mioamoreapp/views/others/error_page.dart';
 import 'package:mioamoreapp/views/others/loading_page.dart';
 
 class LoginPage extends ConsumerWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   Widget build(BuildContext context, ref) {
@@ -215,7 +215,7 @@ class LoginPage extends ConsumerWidget {
 }
 
 class PhoneLoginLandingWidget extends ConsumerWidget {
-  const PhoneLoginLandingWidget({Key? key}) : super(key: key);
+  const PhoneLoginLandingWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -258,11 +258,11 @@ class LoginButton extends StatelessWidget {
   final Widget icon;
   final String text;
   const LoginButton({
-    Key? key,
+    super.key,
     required this.onPressed,
     required this.icon,
     required this.text,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

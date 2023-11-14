@@ -35,7 +35,7 @@ import 'package:mioamoreapp/views/tabs/home/app_drawer.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -388,8 +388,8 @@ class _HomePageState extends State<HomePage> {
 
 class NotificationButton extends ConsumerWidget {
   const NotificationButton({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, ref) {
@@ -444,11 +444,11 @@ class FilterInteraction extends ConsumerWidget {
   final List<UserProfileModel> users;
   final VoidCallback? onNavigateBack;
   const FilterInteraction({
-    Key? key,
+    super.key,
     required this.isPremiumUser,
     required this.users,
     this.onNavigateBack,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -499,12 +499,12 @@ class HomeBody extends ConsumerStatefulWidget {
   final bool isPremiumUser;
   final VoidCallback? onNavigateBack;
   const HomeBody({
-    Key? key,
+    super.key,
     required this.isPremiumUser,
     required this.users,
     required this.interactionsToday,
     this.onNavigateBack,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<HomeBody> createState() => _HomeBodyState();
@@ -902,10 +902,10 @@ class UserCirlePicture extends StatelessWidget {
   final String? imageUrl;
   final double? size;
   const UserCirlePicture({
-    Key? key,
+    super.key,
     required this.imageUrl,
     this.size,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -945,8 +945,8 @@ class UserCirlePicture extends StatelessWidget {
 
 class HomePageNoUsersFoundWidget extends ConsumerWidget {
   const HomePageNoUsersFoundWidget({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

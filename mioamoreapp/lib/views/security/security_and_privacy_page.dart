@@ -12,7 +12,7 @@ import 'package:mioamoreapp/views/security/blocking_page.dart';
 import 'package:mioamoreapp/views/settings/verification/verification_steps.dart';
 
 class SecurityAndPrivacyLandingPage extends ConsumerWidget {
-  const SecurityAndPrivacyLandingPage({Key? key}) : super(key: key);
+  const SecurityAndPrivacyLandingPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -32,8 +32,7 @@ class SecurityAndPrivacyLandingPage extends ConsumerWidget {
 
 class SecurityAndPrivacyPage extends ConsumerStatefulWidget {
   final UserProfileModel user;
-  const SecurityAndPrivacyPage({Key? key, required this.user})
-      : super(key: key);
+  const SecurityAndPrivacyPage({super.key, required this.user});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>

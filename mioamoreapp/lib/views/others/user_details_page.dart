@@ -35,10 +35,10 @@ class UserDetailsPage extends ConsumerWidget {
   final UserProfileModel user;
   final String? matchId;
   const UserDetailsPage({
-    Key? key,
+    super.key,
     required this.user,
     this.matchId,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, ref) {
@@ -424,11 +424,11 @@ class UserDetailsPage extends ConsumerWidget {
 
 class DetailsBody extends ConsumerStatefulWidget {
   const DetailsBody({
-    Key? key,
+    super.key,
     required this.user,
     required this.myUserId,
     required this.matchId,
-  }) : super(key: key);
+  });
 
   final UserProfileModel user;
   final String myUserId;

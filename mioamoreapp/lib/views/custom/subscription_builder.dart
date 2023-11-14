@@ -10,8 +10,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 class SubscriptionBuilder extends ConsumerWidget {
   final Widget Function(BuildContext context, bool isPremiumUser) builder;
 
-  const SubscriptionBuilder({Key? key, required this.builder})
-      : super(key: key);
+  const SubscriptionBuilder({super.key, required this.builder});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

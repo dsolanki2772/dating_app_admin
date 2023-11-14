@@ -17,8 +17,8 @@ import 'package:mioamoreapp/views/others/set_user_location_page.dart';
 
 class FirstTimeUserProfilePage extends ConsumerStatefulWidget {
   const FirstTimeUserProfilePage({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   ConsumerState<FirstTimeUserProfilePage> createState() =>
@@ -347,7 +347,7 @@ class UserDetailsTakingScreen extends StatelessWidget {
   final Function(bool, String) onSelectInterest;
   final VoidCallback onNext;
   const UserDetailsTakingScreen({
-    Key? key,
+    super.key,
     required this.nameController,
     required this.onGenderSelected,
     this.gender,
@@ -357,7 +357,7 @@ class UserDetailsTakingScreen extends StatelessWidget {
     required this.selectedInterests,
     required this.onSelectInterest,
     required this.onNext,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -610,12 +610,11 @@ class _UserLocationScreen extends StatelessWidget {
   final VoidCallback onNext;
   final VoidCallback onBack;
   const _UserLocationScreen({
-    Key? key,
     required this.onLocationChanged,
     this.location,
     required this.onNext,
     required this.onBack,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

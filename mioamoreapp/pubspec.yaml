@@ -54,7 +54,7 @@ dependencies:
   emoji_picker_flutter: ^1.5.1
   custom_pop_up_menu: ^1.2.4
   auto_size_text: ^3.0.0
-  geolocator: ^9.0.2
+  geolocator: ^10.1.0
   http: ^0.13.5
   geocoding: ^2.0.5
   swipe_cards: ^2.0.0+1
@@ -62,7 +62,7 @@ dependencies:
   sign_in_with_apple: ^5.0.0
   flutter_facebook_auth: ^5.0.7
   encrypt: ^5.0.1
-  social_media_recorder: ^0.2.0
+  social_media_recorder: ^1.1.1
   voice_message_package: ^1.0.41
   google_mobile_ads: ^3.0.0
   firebase_messaging: ^14.2.4
@@ -72,7 +72,7 @@ dependencies:
   tutorial_coach_mark: ^1.2.4
   lottie: ^2.2.0
   video_player: ^2.5.1
-  purchases_flutter: ^5.3.0
+  purchases_flutter: ^6.2.0
   package_info_plus: ^4.2.0
 
 
@@ -91,7 +91,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.0
+  flutter_lints: ^3.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

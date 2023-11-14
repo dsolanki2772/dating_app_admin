@@ -11,7 +11,7 @@ import 'package:mioamoreapp/providers/user_profile_provider.dart';
 import 'package:mioamoreapp/views/tabs/home/home_page.dart';
 
 class FeedPostPage extends ConsumerStatefulWidget {
-  const FeedPostPage({Key? key}) : super(key: key);
+  const FeedPostPage({super.key});
 
   @override
   ConsumerState<FeedPostPage> createState() => _FeedPostPageState();
@@ -272,10 +272,10 @@ class CreateNewPostBottomButtons extends StatelessWidget {
   final VoidCallback onPressedOpenGallery;
   final VoidCallback onPressedOpenCamera;
   const CreateNewPostBottomButtons({
-    Key? key,
+    super.key,
     required this.onPressedOpenGallery,
     required this.onPressedOpenCamera,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -306,11 +306,11 @@ class CreatePostBottomButtonsBar extends StatelessWidget {
   final VoidCallback onPressedOpenGallery;
   final VoidCallback onPressedOpenCamera;
   const CreatePostBottomButtonsBar({
-    Key? key,
+    super.key,
     required this.onPressedHideBottomButton,
     required this.onPressedOpenGallery,
     required this.onPressedOpenCamera,
-  }) : super(key: key);
+  });
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -351,7 +351,7 @@ class CreatePostBottomButtonsBar extends StatelessWidget {
 }
 
 class CretePostNameSection extends ConsumerWidget {
-  const CretePostNameSection({Key? key}) : super(key: key);
+  const CretePostNameSection({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

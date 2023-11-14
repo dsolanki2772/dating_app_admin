@@ -29,7 +29,7 @@ import 'package:mioamoreapp/views/tabs/home/home_page.dart';
 import 'package:mioamoreapp/views/tabs/messages/components/chat_page.dart';
 
 class MessageConsumerPage extends ConsumerWidget {
-  const MessageConsumerPage({Key? key}) : super(key: key);
+  const MessageConsumerPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -59,10 +59,10 @@ class MessagesPage extends ConsumerStatefulWidget {
   final List<MessageViewModel> messages;
   final bool isPremiumUser;
   const MessagesPage({
-    Key? key,
+    super.key,
     required this.messages,
     required this.isPremiumUser,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<MessagesPage> createState() => _MessagesPageState();
@@ -222,9 +222,9 @@ class _MessagesPageState extends ConsumerState<MessagesPage> {
 class ConversationTile extends ConsumerWidget {
   final MessageViewModel messageViewModel;
   const ConversationTile({
-    Key? key,
+    super.key,
     required this.messageViewModel,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, ref) {

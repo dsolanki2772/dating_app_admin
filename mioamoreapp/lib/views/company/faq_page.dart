@@ -9,7 +9,7 @@ import 'package:mioamoreapp/views/custom/custom_icon_button.dart';
 import 'package:mioamoreapp/views/others/webview_page.dart';
 
 class FaqPage extends StatelessWidget {
-  const FaqPage({Key? key}) : super(key: key);
+  const FaqPage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(

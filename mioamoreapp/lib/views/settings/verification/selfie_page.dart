@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mioamoreapp/views/custom/custom_button.dart';
@@ -8,9 +7,9 @@ class SelfiePage extends StatefulWidget {
   final File? selfie;
 
   const SelfiePage({
-    Key? key,
+    super.key,
     this.selfie,
-  }) : super(key: key);
+  });
 
   @override
   State<SelfiePage> createState() => _SelfiePageState();

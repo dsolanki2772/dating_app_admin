@@ -17,7 +17,7 @@ import 'package:mioamoreapp/views/custom/custom_headline.dart';
 import 'package:mioamoreapp/views/custom/custom_icon_button.dart';
 
 class ProfilePage extends ConsumerWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context, ref) {
@@ -284,9 +284,9 @@ class ProfilePage extends ConsumerWidget {
 class ProfileBottomPart extends StatefulWidget {
   final UserProfileModel data;
   const ProfileBottomPart({
-    Key? key,
+    super.key,
     required this.data,
-  }) : super(key: key);
+  });
 
   @override
   State<ProfileBottomPart> createState() => _ProfileBottomPartState();
@@ -359,9 +359,9 @@ Widget getProfileBodyView(int index, UserProfileModel data) {
 class UserAboutView extends StatelessWidget {
   final UserProfileModel data;
   const UserAboutView({
-    Key? key,
+    super.key,
     required this.data,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -635,9 +635,9 @@ class UserAboutView extends StatelessWidget {
 class UserGalleryView extends StatelessWidget {
   final UserProfileModel data;
   const UserGalleryView({
-    Key? key,
+    super.key,
     required this.data,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -689,9 +689,9 @@ class UserGalleryView extends StatelessWidget {
 class UserFeedsView extends ConsumerWidget {
   final UserProfileModel user;
   const UserFeedsView({
-    Key? key,
+    super.key,
     required this.user,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

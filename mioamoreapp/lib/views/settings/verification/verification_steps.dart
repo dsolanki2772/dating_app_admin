@@ -16,7 +16,7 @@ import 'package:mioamoreapp/views/settings/verification/selfie_page.dart';
 class GetVerifiedPage extends ConsumerStatefulWidget {
   final UserProfileModel user;
 
-  const GetVerifiedPage({Key? key, required this.user}) : super(key: key);
+  const GetVerifiedPage({super.key, required this.user});
 
   @override
   ConsumerState<GetVerifiedPage> createState() => _GetVerifiedPageState();
@@ -67,10 +67,9 @@ class _VerifiedPart extends StatelessWidget {
   final VerificationFormModel data;
   final VoidCallback onPressedSubmitAgain;
   const _VerifiedPart({
-    Key? key,
     required this.data,
     required this.onPressedSubmitAgain,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -166,9 +165,8 @@ class _VerifiedPart extends StatelessWidget {
 class _NotVerifiedPart extends ConsumerStatefulWidget {
   final bool submitAgain;
   const _NotVerifiedPart({
-    Key? key,
     required this.submitAgain,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<_NotVerifiedPart> createState() => _NotVerifiedPartState();
@@ -336,12 +334,12 @@ class VerificationSingleStep extends StatelessWidget {
   final IconData trailingIcon;
   final VoidCallback onTap;
   const VerificationSingleStep({
-    Key? key,
+    super.key,
     required this.leadingIcon,
     required this.title,
     required this.trailingIcon,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

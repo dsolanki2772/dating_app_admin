@@ -20,9 +20,7 @@ import 'package:mioamoreapp/views/settings/account_settings.dart';
 import 'package:mioamoreapp/views/tabs/profile/profile_page.dart';
 
 class AppDrawer extends ConsumerWidget {
-  const AppDrawer({
-    Key? key,
-  }) : super(key: key);
+  const AppDrawer({super.key});
 
   @override
   Widget build(BuildContext context, ref) {
@@ -331,12 +329,12 @@ class DrawerItem extends StatelessWidget {
   final Widget? trailing;
   final String title;
   const DrawerItem({
-    Key? key,
+    super.key,
     required this.onPressed,
     required this.leadingIcon,
     this.trailing,
     required this.title,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

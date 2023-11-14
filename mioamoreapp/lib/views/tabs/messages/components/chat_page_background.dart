@@ -10,9 +10,9 @@ import 'package:mioamoreapp/providers/chat_wallpaper_provider.dart';
 class ChatPageBackground extends ConsumerWidget {
   final Widget child;
   const ChatPageBackground({
-    Key? key,
+    super.key,
     required this.child,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, ref) {
@@ -56,7 +56,7 @@ class ChatPageBackground extends ConsumerWidget {
 }
 
 class ChatWallpaperPage extends ConsumerWidget {
-  const ChatWallpaperPage({Key? key}) : super(key: key);
+  const ChatWallpaperPage({super.key});
 
   @override
   Widget build(BuildContext context, ref) {
@@ -150,7 +150,7 @@ class ChatWallpaperPage extends ConsumerWidget {
 }
 
 class ChatWallpaperSolidColors extends ConsumerWidget {
-  const ChatWallpaperSolidColors({Key? key}) : super(key: key);
+  const ChatWallpaperSolidColors({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

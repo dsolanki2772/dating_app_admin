@@ -15,7 +15,7 @@ import 'package:mioamoreapp/views/others/error_page.dart';
 import 'package:mioamoreapp/views/others/loading_page.dart';
 
 class SetUserLocation extends ConsumerStatefulWidget {
-  const SetUserLocation({Key? key}) : super(key: key);
+  const SetUserLocation({super.key});
 
   @override
   ConsumerState<SetUserLocation> createState() => _SetUserLocationState();
@@ -167,7 +167,7 @@ class _SetUserLocationState extends ConsumerState<SetUserLocation> {
                                   )
                                 : const SizedBox();
                           },
-                        ).toList()
+                        )
                       ],
                     ),
                   );

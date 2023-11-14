@@ -34,10 +34,10 @@ class ChatPage extends ConsumerStatefulWidget {
   final String otherUserId;
   final String matchId;
   const ChatPage({
-    Key? key,
+    super.key,
     required this.otherUserId,
     required this.matchId,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<ChatPage> createState() => _ChatPageState();
@@ -278,11 +278,11 @@ class ChatBody extends ConsumerStatefulWidget {
   final String? searchQuery;
   final VoidCallback onSearchClear;
   const ChatBody({
-    Key? key,
+    super.key,
     required this.matchId,
     required this.searchQuery,
     required this.onSearchClear,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<ChatBody> createState() => _ChatBodyState();
@@ -380,12 +380,12 @@ class ChatTopBar extends ConsumerStatefulWidget {
 
   final String matchId;
   const ChatTopBar({
-    Key? key,
+    super.key,
     required this.otherUser,
     required this.myUserId,
     required this.onSearch,
     required this.matchId,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<ChatTopBar> createState() => _ChatTopBarState();
@@ -665,7 +665,7 @@ class ChatTextFieldAndOthers extends StatefulWidget {
   final Function(String?) onFileSelected;
 
   const ChatTextFieldAndOthers({
-    Key? key,
+    super.key,
     required this.chatController,
     required this.onTapEmoji,
     required this.onTapVoice,
@@ -680,7 +680,7 @@ class ChatTextFieldAndOthers extends StatefulWidget {
     required this.onVideoSelected,
     required this.onAudioSelected,
     required this.onFileSelected,
-  }) : super(key: key);
+  });
 
   @override
   State<ChatTextFieldAndOthers> createState() => _ChatTextFieldAndOthersState();
@@ -890,10 +890,10 @@ class MoreMenuTitle extends StatelessWidget {
 
   final String title;
   const MoreMenuTitle({
-    Key? key,
+    super.key,
     required this.onTap,
     required this.title,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -919,11 +919,11 @@ class ChatAddMenuItem extends StatelessWidget {
   final IconData icon;
   final String title;
   const ChatAddMenuItem({
-    Key? key,
+    super.key,
     required this.onTap,
     required this.icon,
     required this.title,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -979,11 +979,11 @@ class MessageSingleTile extends ConsumerWidget {
   final String matchId;
   final bool isSearching;
   const MessageSingleTile({
-    Key? key,
+    super.key,
     required this.chat,
     required this.matchId,
     required this.isSearching,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -1140,7 +1140,7 @@ class MessageSingleTile extends ConsumerWidget {
 
 class VoiceRecorder extends ConsumerWidget {
   final String matchId;
-  const VoiceRecorder({Key? key, required this.matchId}) : super(key: key);
+  const VoiceRecorder({super.key, required this.matchId});
 
   @override
   Widget build(BuildContext context, ref) {
@@ -1179,7 +1179,7 @@ class VoiceRecorder extends ConsumerWidget {
               ),
               backGroundColor: AppConstants.primaryColor,
               radius: BorderRadius.circular(8),
-              sendRequestFunction: (soundFile) async {
+              sendRequestFunction: (soundFile, _) async {
                 final chatData = ref.read(chatProvider);
                 final currentTime = DateTime.now();
 
