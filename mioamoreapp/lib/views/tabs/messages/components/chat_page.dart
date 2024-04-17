@@ -260,7 +260,14 @@ class _ChatPageState extends ConsumerState<ChatPage> {
                         _onEmojiSelected(emoji);
                       },
                       onBackspacePressed: _onBackspacePressed,
-                      config: _emojiPickerConfig,
+                      config: Config(
+                        categoryViewConfig: CategoryViewConfig(
+                          iconColorSelected: AppConstants.primaryColor,
+                          indicatorColor: AppConstants.primaryColor,
+                        ),
+                        bottomActionBarConfig:
+                            const BottomActionBarConfig(enabled: false),
+                      ),
                     ),
                   ),
                 ),
@@ -954,26 +961,6 @@ class ChatAddMenuItem extends StatelessWidget {
   }
 }
 
-final _emojiPickerConfig = Config(
-  columns: 7,
-  emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
-  verticalSpacing: 0,
-  horizontalSpacing: 0,
-  initCategory: Category.RECENT,
-  bgColor: Colors.black.withOpacity(0.05),
-  indicatorColor: AppConstants.primaryColor,
-  iconColor: Colors.grey,
-  iconColorSelected: AppConstants.primaryColor,
-  backspaceColor: AppConstants.primaryColor,
-  skinToneDialogBgColor: Colors.white,
-  skinToneIndicatorColor: Colors.grey,
-  enableSkinTones: true,
-  // showRecentsTab: true,
-  recentsLimit: 40,
-  categoryIcons: const CategoryIcons(),
-  buttonMode: ButtonMode.CUPERTINO,
-);
-
 class MessageSingleTile extends ConsumerWidget {
   final ChatItemModel chat;
   final String matchId;
@@ -1084,18 +1071,18 @@ class MessageSingleTile extends ConsumerWidget {
                       }),
                     if (chat.video != null && chat.message != null)
                       const SizedBox(height: 8),
-                    if (chat.audio != null)
-                      VoiceMessage(
-                        audioSrc: chat.audio!,
-                        me: !isNotMe,
-                        contactBgColor: Colors.white,
-                        meBgColor: AppConstants.primaryColor,
-                        contactFgColor: AppConstants.primaryColor,
-                        contactPlayIconColor: Colors.white,
-                        mePlayIconColor: AppConstants.primaryColor,
-                      ),
-                    if (chat.audio != null && chat.message != null)
-                      const SizedBox(height: 8),
+                    // if (chat.audio != null)
+                    //   VoiceMessageView(
+                    //     audioSrc: chat.audio!,
+                    //     me: !isNotMe,
+                    //     contactBgColor: Colors.white,
+                    //     meBgColor: AppConstants.primaryColor,
+                    //     contactFgColor: AppConstants.primaryColor,
+                    //     contactPlayIconColor: Colors.white,
+                    //     mePlayIconColor: AppConstants.primaryColor,
+                    //   ),
+                    // if (chat.audio != null && chat.message != null)
+                    //   const SizedBox(height: 8),
                     if (chat.message != null)
                       Text(
                         decryptText(chat.message!),
