@@ -72,7 +72,7 @@ class AuthProvider {
       log('FB Result: ${result.accessToken}');
       if (result.status == LoginStatus.success) {
         final OAuthCredential credential =
-            FacebookAuthProvider.credential(result.accessToken!.token);
+            FacebookAuthProvider.credential(result.accessToken!.tokenString);
         log('FB Credentials: $credential');
 
         final userCred =

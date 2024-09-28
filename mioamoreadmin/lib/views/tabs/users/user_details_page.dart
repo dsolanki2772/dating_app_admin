@@ -85,9 +85,9 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
 class UserDetailsAccountSettingsCard extends StatelessWidget {
   final UserProfileModel profile;
   const UserDetailsAccountSettingsCard({
-    Key? key,
+    super.key,
     required this.profile,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -171,9 +171,9 @@ class UserDetailsAccountSettingsCard extends StatelessWidget {
 class UserDetailsProfileCard extends StatelessWidget {
   final UserProfileModel profile;
   const UserDetailsProfileCard({
-    Key? key,
+    super.key,
     required this.profile,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

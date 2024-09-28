@@ -68,7 +68,8 @@ class AccountDeleteRequestsPage extends ConsumerWidget {
                       if (daysRemaining <= 0)
                         FilledButton(
                           style: ButtonStyle(
-                            backgroundColor: ButtonState.all(Colors.red),
+                            backgroundColor:
+                                WidgetStateProperty.all(Colors.red),
                           ),
                           child: const Text("Delete"),
                           onPressed: () async {

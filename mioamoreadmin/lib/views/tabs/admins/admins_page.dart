@@ -270,8 +270,8 @@ class _EditAdminPermissionState extends ConsumerState<EditAdminPermission> {
           IconButton(
             icon: const Icon(FluentIcons.delete),
             style: ButtonStyle(
-              backgroundColor: ButtonState.all(Colors.red),
-              foregroundColor: ButtonState.all(Colors.white),
+              backgroundColor: WidgetStateProperty.all(Colors.red),
+              foregroundColor: WidgetStateProperty.all(Colors.white),
             ),
             onPressed: () async {
               showDialog(

@@ -8,7 +8,7 @@ import 'package:mioamoreadmin/providers/admin_provider.dart';
 import 'package:mioamoreadmin/providers/auth_provider.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _LoginPageState();
