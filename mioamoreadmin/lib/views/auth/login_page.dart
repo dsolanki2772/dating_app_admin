@@ -59,6 +59,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       labelStyle: FluentTheme.of(context).typography.body,
                       border: material.OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.grey),
                       ),
                     ),
                     validator: (value) {
@@ -81,6 +82,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       labelStyle: FluentTheme.of(context).typography.body,
                       border: material.OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.grey),
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
@@ -243,6 +245,10 @@ class _ResetPasswordFormState extends ConsumerState<ResetPasswordForm> {
           child: TextFormBox(
             controller: _emailController,
             placeholder: "Enter your email",
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(4),
+            ),
             validator: (value) {
               if (value!.isEmpty) {
                 return 'Please enter your email';

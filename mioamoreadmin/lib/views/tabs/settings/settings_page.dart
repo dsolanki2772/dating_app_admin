@@ -165,18 +165,7 @@ class SettingsPage extends ConsumerWidget {
                                       child: const Text("Yes"),
                                       onPressed: () async {
                                         Navigator.of(context).pop();
-                                        EasyLoading.show(
-                                            status: 'Resetting database...');
-                                        await ResetDatabaseProvider.start()
-                                            .then((value) {
-                                          if (value) {
-                                            EasyLoading.showSuccess(
-                                                'Database reset to default!\nReload the app to see changes!');
-                                          } else {
-                                            EasyLoading.showError(
-                                                'Failed to reset database!');
-                                          }
-                                        });
+                                        await ResetDatabaseProvider.start();
                                       },
                                     ),
                                   ],
