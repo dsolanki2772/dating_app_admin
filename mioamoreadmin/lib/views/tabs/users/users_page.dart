@@ -1,12 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:data_table_2/data_table_2.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter/material.dart' as material;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mioamoreadmin/helpers/firebase_constants.dart';
 import 'package:mioamoreadmin/models/user_profile_model.dart';
-import 'package:mioamoreadmin/providers/user_profiles_provider.dart';
-import 'package:mioamoreadmin/views/others/other_widgets.dart';
 import 'package:mioamoreadmin/views/tabs/users/user_details_page.dart';
+import 'package:paginate_firestore_plus/bloc/pagination_listeners.dart';
+import 'package:paginate_firestore_plus/paginate_firestore.dart';
+
+PaginateRefreshedChangeListener customerListRefreshListener =
+    PaginateRefreshedChangeListener();
 
 class UsersPage extends ConsumerStatefulWidget {
   const UsersPage({super.key});
@@ -16,150 +19,139 @@ class UsersPage extends ConsumerStatefulWidget {
 }
 
 class _UsersPageState extends ConsumerState<UsersPage> {
-  final _searchController = TextEditingController();
-  bool _sortAscending = true;
+  bool _isLoading = false;
+  final _searchByEmailController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    final totalUsersRef = ref.watch(usersShortStreamProvider);
+    String email = _searchByEmailController.text.trim();
+
+    final query = email.isNotEmpty
+        ? FirebaseFirestore.instance
+            .collection(FirebaseConstants.userProfileCollection)
+            .where("email", isEqualTo: email.toLowerCase())
+        : FirebaseFirestore.instance
+            .collection(FirebaseConstants.userProfileCollection);
 
     return NavigationView(
       appBar: NavigationAppBar(
-        title: const Text('Users'),
-        leading: const Icon(FluentIcons.people),
-        actions: Align(
-          alignment: Alignment.centerRight,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                width: 200,
-                child: TextBox(
-                  controller: _searchController,
-                  onChanged: (value) {
-                    if (value.isEmpty) {
-                      setState(() {});
-                    } else if (value.length > 2) {
-                      setState(() {});
-                    }
-                  },
-                  placeholder: 'Search By Name',
+        leading: const SizedBox(),
+        title: Row(
+          children: [
+            Text('Users', style: FluentTheme.of(context).typography.bodyStrong),
+            const SizedBox(width: 16),
+            SizedBox(
+              width: 400,
+              height: 32,
+              child: TextBox(
+                controller: _searchByEmailController,
+                placeholder: "Search by Email",
+                suffix: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(FluentIcons.clear),
+                      onPressed: () async {
+                        setState(() {
+                          _isLoading = true;
+                        });
+                        _searchByEmailController.clear();
+                        await Future.delayed(const Duration(milliseconds: 200));
+                        setState(() {
+                          _isLoading = false;
+                        });
+                      },
+                    ),
+                    const SizedBox(width: 8),
+                    FilledButton(
+                      child: const Text("Search"),
+                      onPressed: () async {
+                        setState(() {
+                          _isLoading = true;
+                        });
+                        await Future.delayed(const Duration(milliseconds: 500));
+                        setState(() {
+                          _isLoading = false;
+                        });
+                      },
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(width: 16),
-              totalUsersRef.when(
-                data: (totalUsers) => Text('Total ${totalUsers.length} users'),
-                loading: () => const SizedBox(),
-                error: (error, stack) => const SizedBox(),
-              ),
-              const SizedBox(width: 16),
-            ],
-          ),
-        ),
-      ),
-      content: totalUsersRef.when(
-        data: (totalUsers) {
-          if (_searchController.text.isNotEmpty) {
-            totalUsers = totalUsers
-                .where((user) => user.fullName
-                    .toLowerCase()
-                    .contains(_searchController.text.toLowerCase()))
-                .toList();
-          }
-
-          if (_sortAscending) {
-            totalUsers.sort((a, b) => a.fullName.compareTo(b.fullName));
-          } else {
-            totalUsers.sort((a, b) => b.fullName.compareTo(a.fullName));
-          }
-
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: DataTable2(
-              columnSpacing: 16,
-              horizontalMargin: 8,
-              minWidth: 600,
-              sortAscending: _sortAscending,
-              sortColumnIndex: 1,
-              columns: [
-                const DataColumn2(label: Text("Order"), fixedWidth: 60),
-                const DataColumn2(label: Text("Image"), fixedWidth: 100),
-                DataColumn2(
-                  label: const Text('Full Name'),
-                  onSort: (i, b) {
-                    setState(() {
-                      _sortAscending = !_sortAscending;
-                    });
-                  },
-                ),
-                const DataColumn2(label: Text("Gender")),
-                const DataColumn2(label: Text('Verification Status')),
-                const DataColumn2(label: Text("View"), fixedWidth: 100)
-              ],
-              rows: List.generate(
-                totalUsers.length,
-                (index) {
-                  final user = totalUsers[index];
-                  return userDataRow(index, user);
-                },
               ),
             ),
-          );
-        },
-        loading: () => const MyLoadingWidget(),
-        error: (error, stack) => const MyErrorWidget(),
+            const SizedBox(width: 16),
+            IconButton(
+              icon: const Icon(FluentIcons.refresh),
+              onPressed: () {
+                customerListRefreshListener.refreshed = true;
+              },
+            ),
+          ],
+        ),
       ),
+      content: _isLoading
+          ? const Center(child: ProgressRing())
+          : PaginateFirestore(
+              bottomLoader: const Center(child: ProgressRing()),
+              initialLoader: const Center(child: ProgressRing()),
+              onEmpty: const Center(child: Text("No data found")),
+              padding: const EdgeInsets.all(16),
+              itemBuilder: (context, documentSnapshots, index) {
+                final data =
+                    documentSnapshots[index].data() as Map<String, dynamic>;
+                final UserProfileModel items = UserProfileModel.fromMap(data);
+                return CustomerListItemCard(user: items, index: index);
+              },
+              query: query,
+              itemBuilderType: PaginateBuilderType.listView,
+              itemsPerPage: 20,
+              listeners: [customerListRefreshListener],
+            ),
     );
   }
+}
 
-  material.DataRow userDataRow(int index, UserProfileShortModel user) {
-    return material.DataRow(
-      cells: [
-        material.DataCell(Text((index + 1).toString())),
-        material.DataCell(
-          Padding(
-            padding: const EdgeInsets.all(4),
-            child: user.profilePicture == null
-                ? const Icon(FluentIcons.file_image, size: 20)
-                : CachedNetworkImage(
-                    imageUrl: user.profilePicture!,
-                    imageBuilder: (context, imageProvider) => Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          image: imageProvider,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    placeholder: (context, url) => const ProgressRing(),
-                    errorWidget: (context, url, error) =>
-                        const Icon(FluentIcons.error),
-                  ),
-          ),
+class CustomerListItemCard extends StatelessWidget {
+  final UserProfileModel user;
+  final int index;
+  final Function(UserProfileModel)? onSelected;
+  const CustomerListItemCard({
+    super.key,
+    required this.user,
+    required this.index,
+    this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        title: SelectableText(user.fullName),
+        leading: CircleAvatar(
+          backgroundImage: user.profilePicture == null
+              ? null
+              : CachedNetworkImageProvider(user.profilePicture!),
+          child: user.profilePicture == null
+              ? SelectableText(user.fullName[0].toUpperCase())
+              : null,
         ),
-        material.DataCell(Text(user.fullName)),
-        material.DataCell(Text(user.gender.toUpperCase())),
-        material.DataCell(
-          Text(
-            user.isVerified ? 'Verified' : 'Not verified',
-            style: TextStyle(
-              color: user.isVerified ? Colors.green : Colors.red,
-            ),
-          ),
+        subtitle: SelectableText(user.email ?? user.phoneNumber ?? ""),
+        trailing: FilledButton(
+          child: onSelected == null ? const Text("View") : const Text("Select"),
+          onPressed: () {
+            if (onSelected != null) {
+              onSelected!(user);
+            } else {
+              Navigator.of(context).push(
+                FluentPageRoute(
+                  builder: (context) {
+                    return UserDetailsPage(userId: user.userId);
+                  },
+                ),
+              );
+            }
+          },
         ),
-        material.DataCell(
-          FilledButton(
-            child: const Text("View"),
-            onPressed: () {
-              Navigator.of(context).push(FluentPageRoute(builder: (context) {
-                return UserDetailsPage(userId: user.userId);
-              }));
-            },
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

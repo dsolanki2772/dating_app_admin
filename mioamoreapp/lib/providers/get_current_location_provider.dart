@@ -107,7 +107,10 @@ Future<Position> _determineCurrentPosition() async {
   // When we reach here, permissions are granted and we can
   // continue accessing the position of the device.
   return await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.low);
+    locationSettings: LocationSettings(
+      accuracy: LocationAccuracy.low,
+    ),
+  );
 }
 
 String getFormattedAddress(String? country, String? administrativeAreaLevel1,

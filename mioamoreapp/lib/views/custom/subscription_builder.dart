@@ -125,12 +125,15 @@ class SubscriptionBottomSheet extends ConsumerWidget {
             },
           ).toList();
         },
-        error: (error, stackTrace) => [
-          CupertinoActionSheetAction(
-            onPressed: () {},
-            child: const Text("Error loading offers!"),
-          ),
-        ],
+        error: (error, stackTrace) {
+          print(error);
+          return [
+            CupertinoActionSheetAction(
+              onPressed: () {},
+              child: const Text("Error loading offers!"),
+            ),
+          ];
+        },
         loading: () => [],
       ),
       cancelButton: CupertinoActionSheetAction(

@@ -17,6 +17,9 @@ class AppConstants {
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
+
+  //TODO: Update this when releasing the app for the LIVE mode
+  static const bool isTestMode = true;
 }
 
 class FirebaseConstants {

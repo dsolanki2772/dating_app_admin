@@ -145,7 +145,7 @@ class _VerificationDetailsPageState
                   ),
                   FilledButton(
                     style: ButtonStyle(
-                      backgroundColor: ButtonState.all(material.Colors.red),
+                      backgroundColor: WidgetStateProperty.all(material.Colors.red),
                     ),
                     child: const Text("Reject"),
                     onPressed: () {
