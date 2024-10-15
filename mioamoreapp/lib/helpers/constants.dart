@@ -19,7 +19,7 @@ class AppConstants {
   );
 
   //TODO: Update this when releasing the app for the LIVE mode
-  static const bool isTestMode = true;
+  static const bool isTestMode = false;
 }
 
 class FirebaseConstants {
