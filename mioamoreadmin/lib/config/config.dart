@@ -1,5 +1,5 @@
 class AppConstants {
   AppConstants._();
 
-  static const String appName = 'mio amore admin';
+  static const String appName = 'Dating App admin';
 }
